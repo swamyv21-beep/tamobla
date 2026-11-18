@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Royal Tambola (Housie) - Digital Swami 3D Paper Edition. Multi-device global online Tambola with STUN/TURN relay, pen-cross animations, and folding paper winner reveals." />
+  <title>Royal Tambola (Housie) • Digital Swami</title>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Kalam:wght@700&family=Poppins:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- 3D Floating Tambola Balls Background -->
+  <canvas id="bg3dCanvas"></canvas>
+  <div class="ambient-3d-glow"></div>
+
+  <!-- Repeating Diagonal Watermark -->
+  <div class="watermark-layer" aria-hidden="true">
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+  </div>
+  <div class="brand-stamp">👑 Digital Swami</div>
+
+  <h1>👑 Royal Tambola (Housie)</h1>
+  <div class="top-action-bar">
+    <div class="subtitle">🌐 Any Network • Any Area • Worldwide Multi-Device Sync</div>
+    <button class="sticker-btn rules-btn" onclick="openRulesPopup()">📜 Game Rules & How to Play</button>
+  </div>
+
+  <div class="container">
+    <!-- Connection Setup -->
+    <div class="paper-panel" id="setupPanel">
+      <div class="network-banner">
+        <span>📡 Play Across Any Network (4G/5G Mobile Data, Home Wi-Fi, Any City/Area)</span>
+        <span class="paper-sticker-badge" style="background:#bbf7d0; color:#14532d;">● Cloud Relay Active</span>
+      </div>
+      <div class="row">
+        <input type="text" id="playerName" placeholder="Your Name (e.g., Arjun)" maxlength="20" />
+        <button class="sticker-btn" id="hostBtn" onclick="hostGame()">✨ Host New Room</button>
+      </div>
+      <div class="row" style="margin-top: 12px;">
+        <input type="text" id="joinRoomId" placeholder="Enter Host Room ID (e.g., TAM-4821)" style="text-transform: uppercase;" />
+        <button class="sticker-btn secondary" id="joinBtn" onclick="joinGame()">🚀 Join Room</button>
+      </div>
+      <div id="connStatus" style="margin-top: 10px; font-size: 0.88rem; font-weight: 700; color: var(--ink-blue);"></div>
+      <span class="panel-watermark">Digital Swami</span>
+    </div>
+
+    <!-- Active Game Area -->
+    <div id="gameArea" style="display: none; gap: 18px;" class="container">
+      <div class="paper-panel">
+        <div class="status-bar">
+          <div class="row">
+            <span>Room ID: <span class="paper-sticker-badge" id="displayRoomId" style="user-select: all;">-</span></span>
+            <button class="sticker-btn secondary" style="padding: 5px 11px; font-size: 0.78rem;" onclick="copyInviteLink()">🔗 Share Any-Area Link</button>
+            <button class="sticker-btn secondary" id="reconnectBtn" style="padding: 5px 11px; font-size: 0.78rem; display: none;" onclick="reconnectClient()">🔄 Reconnect</button>
+          </div>
+          <div>Role: <strong id="displayRole">-</strong></div>
+          <div class="row">
+            <span>Called: <span class="paper-sticker-badge" style="background:#dbeafe; color:#1e40af;"><span id="calledCount">0</span>/90</span></span>
+            <button class="sticker-btn rules-btn" onclick="openRulesPopup()">📜 Rules</button>
+          </div>
+        </div>
+        <div class="players-strip" id="playersStrip"></div>
+        <span class="panel-watermark">Digital Swami</span>
+      </div>
+
+      <!-- Host Controls -->
+      <div class="paper-panel" id="hostControls" style="display: none;">
+        <div class="row" style="justify-content: space-between;">
+          <div class="row">
+            <button class="sticker-btn" id="drawBtn" onclick="drawNextNumber()">🎲 Draw Number</button>
+            <button class="sticker-btn secondary" id="autoBtn" onclick="toggleAutoDraw()">▶ Auto Draw (5s)</button>
+            <button class="sticker-btn danger" id="resetBtn" onclick="resetGameRound()">🔁 New Round</button>
+          </div>
+          <label style="font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="voiceToggle" checked style="min-width: auto; accent-color: #dc2626;" /> 🔊 Voice Caller
+          </label>
+        </div>
+        <span class="panel-watermark">Digital Swami</span>
+      </div>
+
+      <!-- Player Ticket & Claims -->
+      <div class="paper-panel">
+        <div class="row" style="justify-content: space-between;">
+          <strong style="font-size: 1.05rem;">🎟️ Your Tambola Ticket</strong>
+          <span class="paper-sticker-badge">✒️ Tap called numbers to cross with pen</span>
+        </div>
+        <div class="ticket" id="ticketGrid"></div>
+
+        <div style="margin-top: 16px; font-weight: 800; font-size: 0.95rem;">🏆 Claim Prize Stickers:</div>
+        <div class="row" style="margin-top: 10px;" id="claimButtons">
+          <button class="sticker-btn claim-btn" id="btn-jaldi5" onclick="requestClaim('jaldi5')">Jaldi Five</button>
+          <button class="sticker-btn claim-btn" id="btn-topLine" onclick="requestClaim('topLine')">Top Line</button>
+          <button class="sticker-btn claim-btn" id="btn-midLine" onclick="requestClaim('midLine')">Middle Line</button>
+          <button class="sticker-btn claim-btn" id="btn-botLine" onclick="requestClaim('botLine')">Bottom Line</button>
+          <button class="sticker-btn claim-btn" id="btn-corners" onclick="requestClaim('corners')">Four Corners</button>
+          <button class="sticker-btn claim-btn" id="btn-fullHouse" onclick="requestClaim('fullHouse')">Full House</button>
+        </div>
+        <span class="panel-watermark">Digital Swami</span>
+      </div>
+
+      <!-- Master 1-90 Board -->
+      <div class="paper-panel">
+        <strong style="font-size: 1.05rem;">📋 Master Board (1–90)</strong>
+        <div class="board" id="masterBoard"></div>
+        <span class="panel-watermark">Digital Swami</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Rules & How to Play Popup Modal -->
+  <div id="rulesPopupModal" onclick="closeRulesPopup()">
+    <div class="rules-paper-card" onclick="event.stopPropagation()">
+      <h2 class="rules-title">📜 Royal Tambola — Rules & How to Play</h2>
+
+      <div class="rules-section">
+        <h3>🌐 Any Network • Any Area Connection</h3>
+        <ul>
+          <li><strong>Cross-Network Play:</strong> Works across 4G/5G mobile data, home Wi-Fi, and different cities/countries via global STUN/TURN relays.</li>
+          <li><strong>Host a Game:</strong> Enter your name and tap <b>Host New Room</b> to generate a unique Room ID (<code>TAM-XXXX</code>) or share the direct invite link.</li>
+          <li><strong>Join a Game:</strong> Friends in any area enter the Room ID (or open the shared link) and tap <b>Join Room</b> to receive their unique 15-number ticket.</li>
+        </ul>
+      </div>
+
+      <div class="rules-section">
+        <h3>🎮 How to Play</h3>
+        <ol>
+          <li>The Host draws numbers from <b>1 to 90</b> manually or via <b>Auto Draw (5s)</b>.</li>
+          <li>When a called number matches your 3×9 ticket, tap it to cross it off with a <b>hand-drawn pen mark</b>.</li>
+          <li>As soon as you complete a winning pattern, tap the matching <b>Prize Sticker</b> button before other players!</li>
+          <li><b>Anti-Bogey Protection:</b> Uncalled numbers cannot be marked, and every claim is automatically verified against the Host's called numbers.</li>
+        </ol>
+      </div>
+
+      <div class="rules-section">
+        <h3>🏆 Winning Prize Patterns</h3>
+        <div class="rules-grid">
+          <div class="rule-chip"><strong>⚡ Jaldi Five</strong>First player to cross off any <b>5 numbers</b> on their ticket.</div>
+          <div class="rule-chip"><strong>⬆️ Top Line</strong>All <b>5 numbers</b> in the top row of the ticket.</div>
+          <div class="rule-chip"><strong>➡️ Middle Line</strong>All <b>5 numbers</b> in the middle row of the ticket.</div>
+          <div class="rule-chip"><strong>⬇️ Bottom Line</strong>All <b>5 numbers</b> in the bottom row of the ticket.</div>
+          <div class="rule-chip"><strong>📐 Four Corners</strong>First & last numbers of both the <b>Top Row</b> and <b>Bottom Row</b> (4 numbers).</div>
+          <div class="rule-chip"><strong>👑 Full House</strong>All <b>15 numbers</b> on the entire ticket crossed off.</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 14px;">
+        <button class="sticker-btn" onclick="closeRulesPopup()">✅ Got It, Let's Play!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Draw Number Popup -->
+  <div id="drawPopup" onclick="closeDrawPopup()">
+    <div class="popup-card" onclick="event.stopPropagation(); closeDrawPopup();">
+      <div class="popup-label">Number Drawn</div>
+      <div class="popup-number" id="popupNumber">--</div>
+      <div class="popup-lingo" id="popupLingo">Get ready!</div>
+      <div class="popup-hint">Digital Swami • Tap sticker to dismiss</div>
+    </div>
+  </div>
+
+  <!-- Winner Name Reveal Folding Paper Modal -->
+  <div id="winnerFoldModal" onclick="closeWinnerReveal()">
+    <div class="folding-paper-wrapper" id="foldingPaperBox" onclick="event.stopPropagation(); closeWinnerReveal();">
+      <div class="paper-flap-top">
+        <div class="wax-seal">🏆</div>
+        <div style="font-size: 0.78rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #92400e;">
+          Official Tambola Result
+        </div>
+      </div>
+      <div class="paper-center-sheet">
+        <div class="winner-prize-sticker" id="winnerPrizeLabel">JALDI FIVE</div>
+        <div class="winner-name-reveal" id="winnerNameText">Player Name</div>
+        <div class="winner-sub-note">Verified & Approved! 🎉</div>
+      </div>
+      <div class="paper-flap-bottom">
+        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">
+          Digital Swami • Tap paper to continue
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
