@@ -853,7 +853,7 @@
         <button class="sticker-btn" id="hostBtn" onclick="hostGame()">✨ Host New Room</button>
       </div>
       <div class="row" style="margin-top: 12px;">
-        <input type="text" id="joinRoomId" placeholder="Enter Host Room ID (e.g., TAM-4821)" style="text-transform: uppercase;" />
+        <input type="text" id="joinRoomId" placeholder="Enter Host Room ID (e.g., VSA-4821)" style="text-transform: uppercase;" />
         <button class="sticker-btn secondary" id="joinBtn" onclick="joinGame()">🚀 Join Room</button>
       </div>
       <div id="connStatus" style="margin-top: 10px; font-size: 0.88rem; font-weight: 700; color: var(--ink-blue);"></div>
@@ -934,7 +934,7 @@
         <ul>
           <li><strong>No Same Numbers / No Duplicate Tickets:</strong> The Host generates and assigns a strictly unique 15-number ticket to every player—no two players ever get the same ticket numbers.</li>
           <li><strong>Room Capacity (2–100 Players):</strong> Set room size from <b>2 up to 100 players</b> across 4G/5G mobile data, Wi-Fi, and any city.</li>
-          <li><strong>Join a Game:</strong> Friends enter the Room ID (<code>TAM-XXXX</code>) or open the shared link to receive their unique assigned ticket.</li>
+          <li><strong>Join a Game:</strong> Friends enter the Room ID (<code>VSA-XXXX</code>) or open the shared link to receive their unique assigned ticket.</li>
         </ul>
       </div>
       <div class="rules-section">
@@ -1216,7 +1216,7 @@
       if (queryRoom) return queryRoom.trim().toUpperCase();
       if (window.location.hash && window.location.hash.length > 1) {
         const hashVal = window.location.hash.replace("#", "").trim().toUpperCase();
-        if (hashVal.startsWith("TAM-")) return hashVal;
+        if (hashVal.startsWith("VSA-")) return hashVal;
       }
       return "";
     }
@@ -1674,7 +1674,7 @@
       } else {
         maxPlayersAllowed = clampMaxPlayers(document.getElementById("maxPlayersInput").value);
         document.getElementById("maxPlayersInput").value = maxPlayersAllowed;
-        targetRoomId = "TAM-" + Math.floor(1000 + Math.random() * 9000);
+        targetRoomId = "VSA-" + Math.floor(1000 + Math.random() * 9000);
       }
 
       document.getElementById("connStatus").textContent =
@@ -1750,13 +1750,13 @@
           const parsed = new URL(rawInput);
           rawInput = parsed.searchParams.get("room") || rawInput;
         } catch (e) {
-          const match = rawInput.match(/TAM-\d{4}/i);
+          const match = rawInput.match(/VSA-\d{4}/i);
           if (match) rawInput = match[0];
         }
       }
 
       const roomId = rawInput.toUpperCase();
-      if (!roomId) return showToast("Enter a valid Room ID (e.g., TAM-4821)");
+      if (!roomId) return showToast("Enter a valid Room ID (e.g., VSA-4821)");
 
       isHost = false;
       currentRoomId = roomId;
