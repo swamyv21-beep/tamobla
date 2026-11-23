@@ -3,19 +3,816 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Royal Tambola (Housie) - Digital Swami 3D Paper Edition. Multi-device global online Tambola with STUN/TURN relay, pen-cross animations, and folding paper winner reveals." />
-  <title>Royal Tambola (Housie) • Digital Swami</title>
+  <meta name="description" content="Digital Tambola (Housie) - Digital Swami 3D Paper Edition. 2 to 100 players with guaranteed unique non-duplicate tickets for every player." />
+  <title>Digital Tambola (Housie) • Digital Swami</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>" />
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Kalam:wght@700&family=Poppins:wght@500;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --paper-cream: #fdf8eb;
+      --paper-lines: #e2d8c0;
+      --paper-shadow: rgba(0, 0, 0, 0.35);
+      --ink-blue: #1d4ed8;
+      --ink-red: #dc2626;
+      --ink-dark: #1e293b;
+      --gold: #f59e0b;
+      --gold-dark: #b45309;
+      --sticker-green: #10b981;
+      --sticker-blue: #3b82f6;
+    }
+
+    * { box-sizing: border-box; font-family: 'Poppins', system-ui, sans-serif; }
+    body {
+      margin: 0;
+      background: var(--bg-dark);
+      color: #f8fafc;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      perspective: 1200px;
+    }
+
+    #bg3dCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
+      pointer-events: none;
+    }
+    .ambient-3d-glow {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(245, 158, 11, 0.16), transparent 45%),
+        radial-gradient(circle at 80% 75%, rgba(59, 130, 246, 0.18), transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.3), rgba(6, 9, 19, 0.92));
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .watermark-layer {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: space-around;
+      justify-content: space-around;
+      transform: rotate(-22deg) scale(1.35);
+      opacity: 0.065;
+    }
+    .watermark-layer span {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.3rem, 3vw, 2.2rem);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fbbf24;
+      padding: 28px 42px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .brand-stamp {
+      position: fixed;
+      bottom: 10px;
+      left: 14px;
+      z-index: 50;
+      pointer-events: none;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(253, 248, 235, 0.55);
+      background: rgba(15, 23, 42, 0.65);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      margin: 4px 0 4px;
+      color: var(--gold);
+      text-align: center;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      text-shadow: 0 4px 18px rgba(245, 158, 11, 0.45), 0 2px 0 #78350f;
+      letter-spacing: 0.5px;
+    }
+
+    .top-action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .subtitle {
+      color: #cbd5e1;
+      font-size: 0.84rem;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.72);
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .paper-panel {
+      position: relative;
+      background: var(--paper-cream);
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 27px,
+          rgba(148, 163, 184, 0.22) 28px
+        );
+      color: var(--ink-dark);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow:
+        0 14px 32px var(--paper-shadow),
+        0 2px 0 #d6cbb5,
+        inset 0 0 35px rgba(217, 199, 163, 0.35);
+      border: 1px solid #dfd3bc;
+      transform-style: preserve-3d;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .paper-panel .panel-watermark {
+      position: absolute;
+      bottom: 8px;
+      right: 14px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: rgba(180, 83, 9, 0.26);
+      letter-spacing: 0.8px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .paper-panel::before,
+    .paper-panel::after {
+      content: "";
+      position: absolute;
+      top: -9px;
+      width: 68px;
+      height: 18px;
+      background: rgba(245, 158, 11, 0.52);
+      border-left: 2px dashed rgba(255,255,255,0.45);
+      border-right: 2px dashed rgba(255,255,255,0.45);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      pointer-events: none;
+    }
+    .paper-panel::before { left: 18px; transform: rotate(-4deg); }
+    .paper-panel::after { right: 18px; transform: rotate(3.5deg); background: rgba(59, 130, 246, 0.42); }
+
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    input, select {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      color: var(--ink-dark);
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    }
+    input { flex: 1; min-width: 140px; }
+    select { cursor: pointer; }
+    input:focus, select:focus { outline: none; border-color: var(--gold); }
+
+    .capacity-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #fffbeb;
+      border: 1.5px dashed #d97706;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #92400e;
+    }
+    .capacity-group input[type="number"] {
+      width: 74px;
+      min-width: 74px;
+      flex: 0 0 auto;
+      padding: 6px 8px;
+      text-align: center;
+    }
+
+    .sticker-btn {
+      position: relative;
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: var(--gold);
+      color: #1e1b18;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow:
+        0 4px 0 var(--gold-dark),
+        0 8px 16px rgba(0,0,0,0.28);
+      transform: rotate(-1deg);
+      transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.16s ease;
+    }
+    .sticker-btn:hover:not(:disabled) {
+      transform: translateY(-3px) rotate(1.2deg) scale(1.04);
+      box-shadow:
+        0 6px 0 var(--gold-dark),
+        0 12px 22px rgba(0,0,0,0.34);
+    }
+    .sticker-btn:active:not(:disabled) {
+      transform: translateY(2px) rotate(0deg) scale(0.97);
+      box-shadow: 0 2px 0 var(--gold-dark), 0 4px 8px rgba(0,0,0,0.25);
+    }
+    .sticker-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .sticker-btn.secondary {
+      background: #475569;
+      color: #ffffff;
+      box-shadow: 0 4px 0 #1e293b, 0 8px 14px rgba(0,0,0,0.25);
+    }
+    .sticker-btn.success {
+      background: #10b981;
+      color: #052e16;
+      box-shadow: 0 4px 0 #047857, 0 8px 14px rgba(0,0,0,0.25);
+    }
+    .sticker-btn.danger {
+      background: #ef4444;
+      color: #ffffff;
+      box-shadow: 0 4px 0 #991b1b, 0 8px 14px rgba(0,0,0,0.25);
+    }
+    .sticker-btn.rules-btn {
+      background: #ec4899;
+      color: #ffffff;
+      font-size: 0.82rem;
+      padding: 6px 13px;
+      box-shadow: 0 3px 0 #9d174d, 0 6px 12px rgba(0,0,0,0.28);
+    }
+    .sticker-btn.claim-btn {
+      background: var(--sticker-blue);
+      color: #ffffff;
+      font-size: 0.84rem;
+      padding: 8px 13px;
+      box-shadow: 0 4px 0 #1d4ed8, 0 6px 14px rgba(0,0,0,0.22);
+    }
+    .sticker-btn.claim-btn:nth-child(even) { transform: rotate(1.3deg); }
+    .sticker-btn.claim-btn:nth-child(odd) { transform: rotate(-1.3deg); }
+    .sticker-btn.claim-btn.won {
+      background: var(--sticker-green);
+      color: #052e16;
+      box-shadow: 0 4px 0 #047857, 0 8px 16px rgba(16, 185, 129, 0.35);
+      animation: stickerSlap 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes stickerSlap {
+      0% { transform: scale(1.45) rotate(-8deg); opacity: 0.7; }
+      70% { transform: scale(0.92) rotate(2deg); }
+      100% { transform: scale(1) rotate(-1deg); opacity: 1; }
+    }
+
+    .paper-sticker-badge {
+      display: inline-block;
+      background: #fef08a;
+      color: #854d0e;
+      border: 2.5px solid #ffffff;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+      transform: rotate(-2deg);
+    }
+    .network-banner {
+      background: #dcfce7;
+      border: 1.5px dashed #16a34a;
+      color: #14532d;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .invite-alert-box {
+      background: #dbeafe;
+      border: 2px dashed #2563eb;
+      color: #1e3a8a;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .resume-host-box {
+      background: #fef3c7;
+      border: 2px dashed #d97706;
+      color: #78350f;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .players-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed #cbd5e1;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .players-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      max-height: 112px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .player-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      color: #1e293b;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .player-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    .player-dot.offline { background: #ef4444; }
+
+    .ticket {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 6px;
+      background: #f3ead3;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2.5px dashed #b45309;
+      margin-top: 12px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .cell {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1.5px solid #d6cbb5;
+      border-radius: 8px;
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: clamp(1rem, 2.8vw, 1.35rem);
+      color: var(--ink-dark);
+      user-select: none;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      transition: transform 0.15s ease, background 0.2s ease;
+      overflow: hidden;
+    }
+    .cell:hover:not(.empty) {
+      transform: translateY(-2px) scale(1.03);
+      border-color: var(--gold);
+    }
+    .cell.empty {
+      background: rgba(214, 203, 181, 0.35);
+      border: 1px dashed rgba(180, 165, 140, 0.5);
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .cell .pen-mark {
+      position: absolute;
+      inset: 2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .cell .pen-stroke-1 {
+      stroke-dasharray: 120;
+      stroke-dashoffset: 120;
+      animation: penDraw 0.24s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    .cell .pen-stroke-2 {
+      stroke-dasharray: 120;
+      stroke-dashoffset: 120;
+      animation: penDraw 0.24s cubic-bezier(0.25, 0.8, 0.25, 1) 0.14s forwards;
+    }
+    .cell .pen-circle {
+      stroke-dasharray: 260;
+      stroke-dashoffset: 260;
+      animation: penDraw 0.32s ease-out 0.22s forwards;
+    }
+
+    @keyframes penDraw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .cell.marked {
+      background: #fffbeb;
+      border-color: var(--ink-red);
+      color: #64748b;
+      transform: scale(0.96);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .b-num {
+      position: relative;
+      text-align: center;
+      padding: 6px 2px;
+      background: #ffffff;
+      border: 1px solid #d6cbb5;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #64748b;
+      overflow: hidden;
+    }
+    .b-num.called {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: var(--gold);
+      font-weight: 800;
+    }
+    .b-num.called::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border: 2px solid var(--ink-red);
+      border-radius: 50%;
+      transform: rotate(-12deg);
+      opacity: 0.75;
+      animation: penPop 0.25s ease-out;
+    }
+    @keyframes penPop {
+      from { transform: scale(1.6) rotate(-25deg); opacity: 0; }
+      to { transform: scale(1) rotate(-12deg); opacity: 0.75; }
+    }
+
+    #drawPopup {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.76);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      backdrop-filter: blur(5px);
+    }
+    #drawPopup.active { display: flex; animation: fadeIn 0.2s ease-out; }
+    .popup-card {
+      position: relative;
+      background: var(--paper-cream);
+      color: var(--ink-dark);
+      border: 5px solid #ffffff;
+      border-radius: 24px;
+      padding: 28px 36px;
+      text-align: center;
+      box-shadow:
+        0 25px 55px rgba(0,0,0,0.65),
+        0 8px 0 #d6cbb5;
+      max-width: 340px;
+      width: 90%;
+      animation: stickerPopup 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .popup-label {
+      display: inline-block;
+      background: var(--gold);
+      color: #1e1b18;
+      padding: 3px 12px;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.18);
+    }
+    .popup-number {
+      font-family: 'Kalam', cursive;
+      font-size: 5.4rem;
+      font-weight: 700;
+      color: var(--ink-red);
+      line-height: 1.05;
+      margin: 10px 0 4px;
+      text-shadow: 3px 3px 0 rgba(245, 158, 11, 0.35);
+    }
+    .popup-lingo {
+      font-family: 'Caveat', cursive;
+      font-size: 1.55rem;
+      color: var(--ink-blue);
+      margin-bottom: 10px;
+    }
+    .popup-hint { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+
+    @keyframes stickerPopup {
+      0% { transform: scale(0.35) rotate(-14deg) translateY(40px); opacity: 0; }
+      70% { transform: scale(1.06) rotate(3deg); opacity: 1; }
+      100% { transform: scale(1) rotate(-1deg); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #rulesPopupModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 19, 0.84);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+      padding: 14px;
+      backdrop-filter: blur(6px);
+    }
+    #rulesPopupModal.active {
+      display: flex;
+      animation: fadeIn 0.22s ease-out;
+    }
+    .rules-paper-card {
+      position: relative;
+      background: var(--paper-cream);
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 26px,
+          rgba(148, 163, 184, 0.22) 27px
+        );
+      color: var(--ink-dark);
+      border: 4px solid #ffffff;
+      border-radius: 20px;
+      padding: 22px 22px 18px;
+      max-width: 540px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 6px 0 #d6cbb5;
+      animation: stickerPopup 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .rules-title {
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+      color: #92400e;
+      text-align: center;
+    }
+    .rules-section {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1.5px solid #dfd3bc;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .rules-section h3 {
+      margin: 0 0 6px;
+      font-size: 0.96rem;
+      color: var(--ink-blue);
+    }
+    .rules-section ul, .rules-section ol {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      font-size: 0.83rem;
+    }
+    .rule-chip {
+      background: #fef3c7;
+      border: 1.5px solid #f59e0b;
+      border-radius: 9px;
+      padding: 7px 10px;
+    }
+    .rule-chip strong { color: #92400e; display: block; }
+
+    #winnerFoldModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 19, 0.84);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      backdrop-filter: blur(6px);
+      perspective: 1400px;
+    }
+    #winnerFoldModal.active {
+      display: flex;
+      animation: fadeIn 0.22s ease-out;
+    }
+    .folding-paper-wrapper {
+      width: 92%;
+      max-width: 390px;
+      transform-style: preserve-3d;
+      animation: paperDropBounce 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes paperDropBounce {
+      0% { transform: translateY(-90px) scale(0.75) rotate(-6deg); opacity: 0; }
+      100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .paper-flap-top {
+      background: linear-gradient(180deg, #f3e7c9 0%, #fdf8eb 100%);
+      color: var(--ink-dark);
+      border: 3px solid #ffffff;
+      border-bottom: 2px dashed #cbbba0;
+      border-radius: 18px 18px 4px 4px;
+      padding: 16px 20px 12px;
+      text-align: center;
+      transform-origin: bottom center;
+      transform: rotateX(-165deg);
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.25);
+      animation: unfoldTopFlap 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s forwards;
+      backface-visibility: visible;
+    }
+    @keyframes unfoldTopFlap {
+      0% { transform: rotateX(-165deg); filter: brightness(0.78); }
+      100% { transform: rotateX(0deg); filter: brightness(1); }
+    }
+
+    .paper-center-sheet {
+      position: relative;
+      background: var(--paper-cream);
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 26px,
+          rgba(148, 163, 184, 0.25) 27px
+        );
+      color: var(--ink-dark);
+      border-left: 3px solid #ffffff;
+      border-right: 3px solid #ffffff;
+      padding: 20px 24px;
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.55);
+      z-index: 2;
+    }
+    .winner-prize-sticker {
+      display: inline-block;
+      background: var(--gold);
+      color: #1e1b18;
+      font-weight: 900;
+      font-size: 0.92rem;
+      padding: 5px 16px;
+      border-radius: 999px;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+    .winner-name-reveal {
+      font-family: 'Kalam', cursive;
+      font-size: clamp(2.2rem, 7vw, 3.1rem);
+      font-weight: 700;
+      color: var(--ink-red);
+      line-height: 1.1;
+      margin: 6px 0;
+      text-shadow: 2px 2px 0 rgba(245, 158, 11, 0.35);
+      opacity: 0;
+      transform: scale(0.5);
+      animation: winnerNamePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.55s forwards;
+    }
+    @keyframes winnerNamePop {
+      0% { opacity: 0; transform: scale(0.45) rotate(-6deg); }
+      70% { opacity: 1; transform: scale(1.12) rotate(2deg); }
+      100% { opacity: 1; transform: scale(1) rotate(-1deg); }
+    }
+    .winner-sub-note {
+      font-family: 'Caveat', cursive;
+      font-size: 1.35rem;
+      color: var(--ink-blue);
+      font-weight: 700;
+    }
+
+    .paper-flap-bottom {
+      background: linear-gradient(0deg, #f3e7c9 0%, #fdf8eb 100%);
+      color: var(--ink-dark);
+      border: 3px solid #ffffff;
+      border-top: 2px dashed #cbbba0;
+      border-radius: 4px 4px 18px 18px;
+      padding: 12px 20px 16px;
+      text-align: center;
+      transform-origin: top center;
+      transform: rotateX(165deg);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.4);
+      animation: unfoldBottomFlap 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.38s forwards;
+      backface-visibility: visible;
+    }
+    @keyframes unfoldBottomFlap {
+      0% { transform: rotateX(165deg); filter: brightness(0.78); }
+      100% { transform: rotateX(0deg); filter: brightness(1); }
+    }
+
+    .wax-seal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ef4444, #991b1b);
+      color: #fef08a;
+      font-weight: 900;
+      font-size: 1.2rem;
+      border: 3px solid #fca5a5;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+      margin-bottom: 4px;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink-dark);
+    }
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: var(--paper-cream);
+      color: var(--ink-dark);
+      border: 3px solid #ffffff;
+      border-left: 6px solid var(--ink-red);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+      z-index: 9997;
+      display: none;
+      animation: stickerSlap 0.3s ease-out;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- 3D Floating Tambola Balls Background -->
   <canvas id="bg3dCanvas"></canvas>
   <div class="ambient-3d-glow"></div>
 
-  <!-- Repeating Diagonal Watermark -->
   <div class="watermark-layer" aria-hidden="true">
     <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
     <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
@@ -24,21 +821,35 @@
   </div>
   <div class="brand-stamp">👑 Digital Swami</div>
 
-  <h1>👑 Royal Tambola (Housie)</h1>
+  <h1>👑 Digital Tambola (Housie)</h1>
   <div class="top-action-bar">
-    <div class="subtitle">🌐 Any Network • Any Area • Worldwide Multi-Device Sync</div>
+    <div class="subtitle">🌐 2 to 100 Players • 100% Unique Tickets • Any Network Sync</div>
     <button class="sticker-btn rules-btn" onclick="openRulesPopup()">📜 Game Rules & How to Play</button>
   </div>
 
   <div class="container">
-    <!-- Connection Setup -->
     <div class="paper-panel" id="setupPanel">
       <div class="network-banner">
-        <span>📡 Play Across Any Network (4G/5G Mobile Data, Home Wi-Fi, Any City/Area)</span>
-        <span class="paper-sticker-badge" style="background:#bbf7d0; color:#14532d;">● Cloud Relay Active</span>
+        <span>📡 Every Player Gets a Strictly Different 15-Number Ticket (Zero Duplicate Tickets)</span>
+        <span class="paper-sticker-badge" style="background:#bbf7d0; color:#14532d;" id="relayBadge">● 2–100 Unique Tickets Ready</span>
       </div>
+
+      <div class="resume-host-box" id="resumeHostBox">
+        <span>👑 Previous Hosted Room <strong id="savedHostRoomCode">-</strong> found (<span id="savedHostCalledCount">0</span>/90 called).</span>
+        <button class="sticker-btn" style="padding: 6px 14px; font-size: 0.85rem;" onclick="resumeHostedRoom()">♻️ Resume Hosted Room</button>
+      </div>
+
+      <div class="invite-alert-box" id="inviteAlertBox">
+        <span>🎟️ Invited to Room <strong id="invitedRoomCode">-</strong>! Enter your name and tap Quick Join.</span>
+        <button class="sticker-btn success" style="padding: 6px 14px; font-size: 0.85rem;" onclick="joinGame()">⚡ Quick Join Now</button>
+      </div>
+
       <div class="row">
         <input type="text" id="playerName" placeholder="Your Name (e.g., Arjun)" maxlength="20" />
+        <div class="capacity-group" title="Set maximum players allowed in this room (2 to 100)">
+          <span>👥 Players (2–100):</span>
+          <input type="number" id="maxPlayersInput" min="2" max="100" value="100" />
+        </div>
         <button class="sticker-btn" id="hostBtn" onclick="hostGame()">✨ Host New Room</button>
       </div>
       <div class="row" style="margin-top: 12px;">
@@ -49,26 +860,31 @@
       <span class="panel-watermark">Digital Swami</span>
     </div>
 
-    <!-- Active Game Area -->
     <div id="gameArea" style="display: none; gap: 18px;" class="container">
       <div class="paper-panel">
         <div class="status-bar">
           <div class="row">
             <span>Room ID: <span class="paper-sticker-badge" id="displayRoomId" style="user-select: all;">-</span></span>
-            <button class="sticker-btn secondary" style="padding: 5px 11px; font-size: 0.78rem;" onclick="copyInviteLink()">🔗 Share Any-Area Link</button>
+            <button class="sticker-btn secondary" style="padding: 5px 11px; font-size: 0.78rem;" onclick="copyRoomCode()">📋 Copy ID</button>
+            <button class="sticker-btn success" style="padding: 5px 11px; font-size: 0.78rem;" onclick="shareInviteLink()">📤 Share Link</button>
             <button class="sticker-btn secondary" id="reconnectBtn" style="padding: 5px 11px; font-size: 0.78rem; display: none;" onclick="reconnectClient()">🔄 Reconnect</button>
           </div>
-          <div>Role: <strong id="displayRole">-</strong></div>
+          <div>Role: <strong id="displayRole">-</strong> • Round <strong id="roundNumberBadge">1</strong></div>
           <div class="row">
+            <span>Players: <span class="paper-sticker-badge" style="background:#dcfce7; color:#14532d;"><span id="playerCountBadge">1</span>/<span id="maxPlayersBadge">100</span></span></span>
             <span>Called: <span class="paper-sticker-badge" style="background:#dbeafe; color:#1e40af;"><span id="calledCount">0</span>/90</span></span>
             <button class="sticker-btn rules-btn" onclick="openRulesPopup()">📜 Rules</button>
           </div>
+        </div>
+
+        <div class="players-header-row">
+          <span>👥 Connected Lobby (<span id="onlineCountText">1</span> online / <span id="capacityText">100</span> max)</span>
+          <span style="font-size: 0.75rem; color: #64748b;">Unique Ticket ID: <strong id="ticketSerialBadge">#T-01</strong></span>
         </div>
         <div class="players-strip" id="playersStrip"></div>
         <span class="panel-watermark">Digital Swami</span>
       </div>
 
-      <!-- Host Controls -->
       <div class="paper-panel" id="hostControls" style="display: none;">
         <div class="row" style="justify-content: space-between;">
           <div class="row">
@@ -83,10 +899,9 @@
         <span class="panel-watermark">Digital Swami</span>
       </div>
 
-      <!-- Player Ticket & Claims -->
       <div class="paper-panel">
         <div class="row" style="justify-content: space-between;">
-          <strong style="font-size: 1.05rem;">🎟️ Your Tambola Ticket</strong>
+          <strong style="font-size: 1.05rem;">🎟️ Your Unique Tambola Ticket</strong>
           <span class="paper-sticker-badge">✒️ Tap called numbers to cross with pen</span>
         </div>
         <div class="ticket" id="ticketGrid"></div>
@@ -103,7 +918,6 @@
         <span class="panel-watermark">Digital Swami</span>
       </div>
 
-      <!-- Master 1-90 Board -->
       <div class="paper-panel">
         <strong style="font-size: 1.05rem;">📋 Master Board (1–90)</strong>
         <div class="board" id="masterBoard"></div>
@@ -112,30 +926,26 @@
     </div>
   </div>
 
-  <!-- Game Rules & How to Play Popup Modal -->
   <div id="rulesPopupModal" onclick="closeRulesPopup()">
     <div class="rules-paper-card" onclick="event.stopPropagation()">
-      <h2 class="rules-title">📜 Royal Tambola — Rules & How to Play</h2>
-
+      <h2 class="rules-title">📜 Digital Tambola — Rules & How to Play</h2>
       <div class="rules-section">
-        <h3>🌐 Any Network • Any Area Connection</h3>
+        <h3>🎟️ 100% Unique Tickets • 2 to 100 Players</h3>
         <ul>
-          <li><strong>Cross-Network Play:</strong> Works across 4G/5G mobile data, home Wi-Fi, and different cities/countries via global STUN/TURN relays.</li>
-          <li><strong>Host a Game:</strong> Enter your name and tap <b>Host New Room</b> to generate a unique Room ID (<code>TAM-XXXX</code>) or share the direct invite link.</li>
-          <li><strong>Join a Game:</strong> Friends in any area enter the Room ID (or open the shared link) and tap <b>Join Room</b> to receive their unique 15-number ticket.</li>
+          <li><strong>No Same Numbers / No Duplicate Tickets:</strong> The Host generates and assigns a strictly unique 15-number ticket to every player—no two players ever get the same ticket numbers.</li>
+          <li><strong>Room Capacity (2–100 Players):</strong> Set room size from <b>2 up to 100 players</b> across 4G/5G mobile data, Wi-Fi, and any city.</li>
+          <li><strong>Join a Game:</strong> Friends enter the Room ID (<code>TAM-XXXX</code>) or open the shared link to receive their unique assigned ticket.</li>
         </ul>
       </div>
-
       <div class="rules-section">
         <h3>🎮 How to Play</h3>
         <ol>
           <li>The Host draws numbers from <b>1 to 90</b> manually or via <b>Auto Draw (5s)</b>.</li>
           <li>When a called number matches your 3×9 ticket, tap it to cross it off with a <b>hand-drawn pen mark</b>.</li>
           <li>As soon as you complete a winning pattern, tap the matching <b>Prize Sticker</b> button before other players!</li>
-          <li><b>Anti-Bogey Protection:</b> Uncalled numbers cannot be marked, and every claim is automatically verified against the Host's called numbers.</li>
+          <li><b>Anti-Bogey Protection:</b> Uncalled numbers cannot be marked, and every claim is verified against the Host's issued ticket.</li>
         </ol>
       </div>
-
       <div class="rules-section">
         <h3>🏆 Winning Prize Patterns</h3>
         <div class="rules-grid">
@@ -147,14 +957,12 @@
           <div class="rule-chip"><strong>👑 Full House</strong>All <b>15 numbers</b> on the entire ticket crossed off.</div>
         </div>
       </div>
-
       <div style="text-align: center; margin-top: 14px;">
         <button class="sticker-btn" onclick="closeRulesPopup()">✅ Got It, Let's Play!</button>
       </div>
     </div>
   </div>
 
-  <!-- Draw Number Popup -->
   <div id="drawPopup" onclick="closeDrawPopup()">
     <div class="popup-card" onclick="event.stopPropagation(); closeDrawPopup();">
       <div class="popup-label">Number Drawn</div>
@@ -164,13 +972,12 @@
     </div>
   </div>
 
-  <!-- Winner Name Reveal Folding Paper Modal -->
   <div id="winnerFoldModal" onclick="closeWinnerReveal()">
     <div class="folding-paper-wrapper" id="foldingPaperBox" onclick="event.stopPropagation(); closeWinnerReveal();">
       <div class="paper-flap-top">
         <div class="wax-seal">🏆</div>
         <div style="font-size: 0.78rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #92400e;">
-          Official Tambola Result
+          Official Digital Tambola Result
         </div>
       </div>
       <div class="paper-center-sheet">
@@ -188,6 +995,1182 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="assets/js/app.js"></script>
+  <script>
+    (function init3DBackground() {
+      const canvas = document.getElementById("bg3dCanvas");
+      const ctx = canvas.getContext("2d");
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const colors = [
+        { main: "#f59e0b", dark: "#92400e" },
+        { main: "#ef4444", dark: "#991b1b" },
+        { main: "#3b82f6", dark: "#1e40af" },
+        { main: "#10b981", dark: "#065f46" },
+        { main: "#a855f7", dark: "#581c87" }
+      ];
+
+      const balls = Array.from({ length: 24 }, (_, idx) => {
+        const c = colors[idx % colors.length];
+        return {
+          num: Math.floor(Math.random() * 90) + 1,
+          x: (Math.random() - 0.5) * 1400,
+          y: (Math.random() - 0.5) * 900,
+          z: Math.random() * 900 + 150,
+          vz: -(Math.random() * 0.9 + 0.35),
+          rot: Math.random() * Math.PI * 2,
+          vrot: (Math.random() - 0.5) * 0.02,
+          color: c
+        };
+      });
+
+      function render3D() {
+        ctx.clearRect(0, 0, width, height);
+        const focalLength = 420;
+        const cx = width / 2;
+        const cy = height / 2;
+
+        ctx.strokeStyle = "rgba(245, 158, 11, 0.07)";
+        ctx.lineWidth = 1;
+        for (let gx = -800; gx <= 800; gx += 160) {
+          ctx.beginPath();
+          ctx.moveTo(cx + gx * 0.25, cy * 0.6);
+          ctx.lineTo(cx + gx * 1.6, height);
+          ctx.stroke();
+        }
+
+        balls.sort((a, b) => b.z - a.z);
+
+        for (const b of balls) {
+          b.z += b.vz;
+          b.rot += b.vrot;
+          if (b.z < 80) {
+            b.z = 1050;
+            b.x = (Math.random() - 0.5) * 1400;
+            b.y = (Math.random() - 0.5) * 900;
+            b.num = Math.floor(Math.random() * 90) + 1;
+          }
+
+          const scale = focalLength / b.z;
+          const sx = cx + b.x * scale;
+          const sy = cy + b.y * scale;
+          const radius = Math.max(8, 34 * scale);
+
+          ctx.save();
+          ctx.translate(sx, sy);
+          ctx.rotate(b.rot);
+
+          const grad = ctx.createRadialGradient(
+            -radius * 0.32, -radius * 0.32, radius * 0.1,
+            0, 0, radius
+          );
+          grad.addColorStop(0, "#ffffff");
+          grad.addColorStop(0.28, b.color.main);
+          grad.addColorStop(1, b.color.dark);
+
+          ctx.globalAlpha = Math.min(0.85, scale * 1.15);
+          ctx.beginPath();
+          ctx.arc(0, 0, radius, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(0, 0, radius * 0.54, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+          ctx.fill();
+
+          ctx.fillStyle = "#0f172a";
+          ctx.font = `800 ${Math.max(7, Math.floor(radius * 0.52))}px Poppins, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(b.num, 0, 1);
+
+          ctx.restore();
+        }
+        requestAnimationFrame(render3D);
+      }
+      render3D();
+    })();
+
+    const LINGO = {
+      1: "Kelly's Eye, Number 1", 2: "One Little Duck, Number 2", 3: "Cup of Tea, Number 3",
+      4: "Knock at the Door, Number 4", 5: "Man Alive, Number 5", 6: "Tom Mix, Number 6",
+      7: "Lucky Seven", 8: "Garden Gate, Number 8", 9: "Doctor's Orders, Number 9",
+      10: "Prime Minister's Den, 10", 11: "Legs Eleven", 12: "One Dozen, 12",
+      13: "Unlucky for Some, 13", 14: "Valentine's Day, 14", 15: "Young and Keen, 15",
+      16: "Sweet Sixteen", 17: "Dancing Queen, 17", 18: "Coming of Age, 18",
+      19: "Goodbye Teens, 19", 20: "One Score, 20", 21: "Key of the Door, 21",
+      22: "Two Little Ducks, 22", 25: "Duck and Dive, 25", 30: "Dirty Gertie, 30",
+      33: "All the Threes, 33", 40: "Life Begins at 40", 44: "Droopy Drawers, 44",
+      45: "Halfway There, 45", 50: "Half a Century, 50", 55: "Snakes Alive, 55",
+      60: "Five Dozen, 60", 66: "Clickety Click, 66", 70: "Three Score and Ten, 70",
+      77: "Sunset Strip, 77", 80: "Eight and Blank, 80", 88: "Two Fat Ladies, 88",
+      89: "Nearly There, 89", 90: "Top of the Shop, 90"
+    };
+
+    const PRIZE_LABELS = {
+      jaldi5: "Jaldi Five",
+      topLine: "Top Line",
+      midLine: "Middle Line",
+      botLine: "Bottom Line",
+      corners: "Four Corners",
+      fullHouse: "Full House"
+    };
+
+    const ANY_NETWORK_ICE = {
+      iceCandidatePoolSize: 4,
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:stun2.l.google.com:19302" },
+        { urls: "stun:global.stun.twilio.com:3478" },
+        {
+          urls: "turn:openrelay.metered.ca:80",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:openrelay.metered.ca:443",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        }
+      ]
+    };
+
+    const MIN_PLAYERS = 2;
+    const MAX_PLAYERS_CAP = 100;
+    const HOST_BACKUP_KEY = "digital_tambola_host_backup_v1";
+
+    let peer = null;
+    let isHost = false;
+    let currentRoomId = "";
+    let roundNumber = 1;
+    let maxPlayersAllowed = 100;
+    let myUid = localStorage.getItem("tambola_uid") || ("P-" + Math.random().toString(36).slice(2, 9));
+    localStorage.setItem("tambola_uid", myUid);
+
+    let hostConn = null;
+    let connections = new Map();
+    let playersRoster = {};
+    let myName = "Player";
+
+    let issuedTickets = new Map();
+    let issuedNumberSetSignatures = new Set();
+    let numberUsageCounts = Array(91).fill(0);
+
+    let calledNumbers = [];
+    let claims = {
+      jaldi5: null, topLine: null, midLine: null,
+      botLine: null, corners: null, fullHouse: null
+    };
+
+    let ticket = [];
+    let ticketSerial = 1;
+    let markedSet = new Set();
+    let autoTimer = null;
+    let heartbeatTimer = null;
+    let drawLock = false;
+    let popupTimer = null;
+    let winnerTimer = null;
+    let gameStarted = false;
+    let connectTimeout = null;
+    let wakeLock = null;
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[ch]));
+    }
+
+    function clampMaxPlayers(val) {
+      const n = parseInt(val, 10);
+      if (isNaN(n)) return 100;
+      return Math.min(MAX_PLAYERS_CAP, Math.max(MIN_PLAYERS, n));
+    }
+
+    async function requestScreenWakeLock() {
+      try {
+        if ("wakeLock" in navigator) {
+          wakeLock = await navigator.wakeLock.request("screen");
+        }
+      } catch (e) {}
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && gameStarted) {
+        requestScreenWakeLock();
+        if (peer && peer.disconnected) {
+          try { peer.reconnect(); } catch (e) {}
+        }
+      }
+    });
+
+    function getInviteRoomFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const queryRoom = params.get("room");
+      if (queryRoom) return queryRoom.trim().toUpperCase();
+      if (window.location.hash && window.location.hash.length > 1) {
+        const hashVal = window.location.hash.replace("#", "").trim().toUpperCase();
+        if (hashVal.startsWith("TAM-")) return hashVal;
+      }
+      return "";
+    }
+
+    const invitedRoom = getInviteRoomFromURL();
+    if (invitedRoom) {
+      document.getElementById("joinRoomId").value = invitedRoom;
+      document.getElementById("invitedRoomCode").textContent = invitedRoom;
+      document.getElementById("inviteAlertBox").style.display = "flex";
+    }
+
+    (function checkHostBackupBanner() {
+      if (invitedRoom) return;
+      try {
+        const raw = localStorage.getItem(HOST_BACKUP_KEY);
+        if (!raw) return;
+        const backup = JSON.parse(raw);
+        if (backup && backup.roomId && (Date.now() - (backup.updatedAt || 0) < 6 * 3600 * 1000)) {
+          document.getElementById("savedHostRoomCode").textContent = backup.roomId;
+          document.getElementById("savedHostCalledCount").textContent = (backup.calledNumbers || []).length;
+          document.getElementById("resumeHostBox").style.display = "flex";
+          if (backup.hostName && !document.getElementById("playerName").value) {
+            document.getElementById("playerName").value = backup.hostName;
+          }
+        }
+      } catch (e) {}
+    })();
+
+    if (typeof Peer === "undefined") {
+      document.getElementById("relayBadge").textContent = "● Offline / CDN Blocked";
+      document.getElementById("connStatus").textContent =
+        "⚠️ Multiplayer signaling library could not load. Check internet connection and refresh.";
+    }
+
+    const boardEl = document.getElementById("masterBoard");
+    for (let i = 1; i <= 90; i++) {
+      const div = document.createElement("div");
+      div.className = "b-num";
+      div.id = `b-${i}`;
+      div.textContent = i;
+      boardEl.appendChild(div);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeRulesPopup();
+        closeDrawPopup();
+        closeWinnerReveal();
+      }
+    });
+
+    document.getElementById("joinRoomId").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") joinGame();
+    });
+    document.getElementById("playerName").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (document.getElementById("joinRoomId").value.trim()) joinGame();
+        else hostGame();
+      }
+    });
+
+    function saveHostBackup() {
+      if (!isHost || !currentRoomId) return;
+      try {
+        const issuedObj = {};
+        issuedTickets.forEach((rec, uid) => { issuedObj[uid] = rec; });
+        localStorage.setItem(HOST_BACKUP_KEY, JSON.stringify({
+          roomId: currentRoomId,
+          hostName: myName,
+          roundNumber,
+          maxPlayersAllowed,
+          calledNumbers,
+          claims,
+          playersRoster,
+          issuedTickets: issuedObj,
+          issuedSignatures: Array.from(issuedNumberSetSignatures),
+          numberUsageCounts,
+          updatedAt: Date.now()
+        }));
+      } catch (e) {}
+    }
+
+    function saveLocalSession() {
+      if (!currentRoomId || !ticket.length) return;
+      try {
+        localStorage.setItem(`tambola_state_${currentRoomId}`, JSON.stringify({
+          roundNumber,
+          ticket,
+          ticketSerial,
+          marked: Array.from(markedSet)
+        }));
+      } catch (e) {}
+      if (isHost) saveHostBackup();
+    }
+
+    function loadLocalSession(roomId, expectedRound = null) {
+      try {
+        const raw = localStorage.getItem(`tambola_state_${roomId}`);
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        if (expectedRound !== null && saved.roundNumber !== expectedRound) {
+          return false;
+        }
+        if (Array.isArray(saved.ticket) && saved.ticket.length === 3) {
+          ticket = saved.ticket;
+          if (saved.ticketSerial) ticketSerial = saved.ticketSerial;
+          if (saved.roundNumber) roundNumber = saved.roundNumber;
+          markedSet = new Set(saved.marked || []);
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function openRulesPopup() {
+      document.getElementById("rulesPopupModal").classList.add("active");
+    }
+
+    function closeRulesPopup() {
+      document.getElementById("rulesPopupModal").classList.remove("active");
+    }
+
+    function buildShareURL() {
+      const base = `${window.location.origin}${window.location.pathname}`;
+      return `${base}?room=${encodeURIComponent(currentRoomId)}`;
+    }
+
+    function copyRoomCode() {
+      if (!currentRoomId) return;
+      copyTextSafe(currentRoomId, `📋 Room Code ${currentRoomId} copied!`);
+    }
+
+    function shareInviteLink() {
+      if (!currentRoomId) return;
+      if (window.location.protocol === "file:") {
+        copyTextSafe(currentRoomId, `⚠️ Local file cannot be shared as a web link. Room ID ${currentRoomId} copied!`);
+        return;
+      }
+      const shareUrl = buildShareURL();
+      const shareText = `Join my Digital Tambola game (2–${maxPlayersAllowed} players)! Room ID: ${currentRoomId}`;
+
+      if (navigator.share) {
+        navigator.share({
+          title: "Digital Tambola (Housie) • Digital Swami",
+          text: shareText,
+          url: shareUrl
+        }).catch(() => {
+          copyTextSafe(shareUrl, `🔗 Invite Link Copied! (${shareUrl})`);
+        });
+      } else {
+        copyTextSafe(shareUrl, `🔗 Invite Link Copied! Share with friends: ${shareUrl}`);
+      }
+    }
+
+    function copyTextSafe(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg);
+        }).catch(() => fallbackCopy(text, successMsg));
+      } else {
+        fallbackCopy(text, successMsg);
+      }
+    }
+
+    function fallbackCopy(text, successMsg) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast(successMsg);
+      } catch (e) {
+        showToast(`Room ID: ${currentRoomId}`);
+      }
+      document.body.removeChild(ta);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.style.display = "none", 3800);
+    }
+
+    function showDrawPopup(num) {
+      const popup = document.getElementById("drawPopup");
+      document.getElementById("popupNumber").textContent = num;
+      document.getElementById("popupLingo").textContent = LINGO[num] || `Single number ${num}`;
+      popup.classList.add("active");
+
+      clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => {
+        closeDrawPopup();
+      }, 2500);
+
+      if (document.getElementById("voiceToggle")?.checked !== false && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(LINGO[num] || `Number ${num}`);
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    function closeDrawPopup() {
+      document.getElementById("drawPopup").classList.remove("active");
+    }
+
+    function showWinnerReveal(prizeKey, winnerName) {
+      closeDrawPopup();
+      const modal = document.getElementById("winnerFoldModal");
+      const oldBox = document.getElementById("foldingPaperBox");
+      const newBox = oldBox.cloneNode(true);
+      oldBox.parentNode.replaceChild(newBox, oldBox);
+
+      document.getElementById("winnerPrizeLabel").textContent = `🏅 ${PRIZE_LABELS[prizeKey].toUpperCase()} WINNER`;
+      document.getElementById("winnerNameText").textContent = winnerName;
+
+      modal.classList.add("active");
+
+      if (document.getElementById("voiceToggle")?.checked !== false && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`Congratulations ${winnerName} for winning ${PRIZE_LABELS[prizeKey]}`);
+        window.speechSynthesis.speak(utter);
+      }
+
+      clearTimeout(winnerTimer);
+      winnerTimer = setTimeout(() => {
+        closeWinnerReveal();
+      }, 4500);
+    }
+
+    function closeWinnerReveal() {
+      document.getElementById("winnerFoldModal").classList.remove("active");
+    }
+
+    function getTicketNumberSignature(grid) {
+      const nums = [];
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 9; c++) {
+          if (grid[r][c] > 0) nums.push(grid[r][c]);
+        }
+      }
+      nums.sort((a, b) => a - b);
+      return nums.join(",");
+    }
+
+    function buildCandidateTicket() {
+      const colRanges = [
+        [1, 9], [10, 19], [20, 29], [30, 39], [40, 49],
+        [50, 59], [60, 69], [70, 79], [80, 90]
+      ];
+
+      let mask;
+      while (true) {
+        mask = Array.from({ length: 3 }, () => Array(9).fill(0));
+        const colTotals = Array(9).fill(0);
+        let ok = true;
+
+        for (let r = 0; r < 3; r++) {
+          const cols = [0, 1, 2, 3, 4, 5, 6, 7, 8].sort(() => Math.random() - 0.5);
+          if (r === 2) {
+            cols.sort((a, b) => colTotals[a] - colTotals[b]);
+          }
+          let picked = 0;
+          for (const c of cols) {
+            if (picked === 5) break;
+            if (colTotals[c] < 3) {
+              mask[r][c] = 1;
+              colTotals[c]++;
+              picked++;
+            }
+          }
+          if (picked < 5) { ok = false; break; }
+        }
+        if (ok && colTotals.every(cnt => cnt >= 1 && cnt <= 3)) break;
+      }
+
+      const grid = Array.from({ length: 3 }, () => Array(9).fill(0));
+      for (let c = 0; c < 9; c++) {
+        const rowsWithNum = [0, 1, 2].filter(r => mask[r][c] === 1);
+        const [min, max] = colRanges[c];
+        const pool = [];
+        for (let n = min; n <= max; n++) pool.push(n);
+
+        pool.sort(() => Math.random() - 0.5);
+        pool.sort((a, b) => numberUsageCounts[a] - numberUsageCounts[b]);
+
+        const chosen = pool.slice(0, rowsWithNum.length).sort((a, b) => a - b);
+        rowsWithNum.forEach((r, idx) => {
+          grid[r][c] = chosen[idx];
+        });
+      }
+      return grid;
+    }
+
+    function allocateUniqueTicketForPlayer(uid) {
+      if (issuedTickets.has(uid)) {
+        return issuedTickets.get(uid);
+      }
+
+      let candidate = null;
+      let signature = "";
+      let attempts = 0;
+
+      do {
+        candidate = buildCandidateTicket();
+        signature = getTicketNumberSignature(candidate);
+        attempts++;
+      } while (issuedNumberSetSignatures.has(signature) && attempts < 200);
+
+      issuedNumberSetSignatures.add(signature);
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 9; c++) {
+          const val = candidate[r][c];
+          if (val > 0) numberUsageCounts[val]++;
+        }
+      }
+
+      const serial = issuedTickets.size + 1;
+      const record = { ticket: candidate, serial };
+      issuedTickets.set(uid, record);
+      return record;
+    }
+
+    function resetUniqueTicketRegistry() {
+      issuedTickets.clear();
+      issuedNumberSetSignatures.clear();
+      numberUsageCounts = Array(91).fill(0);
+    }
+
+    function createPenCrossSVG(animate = true) {
+      const s1Class = animate ? 'class="pen-stroke-1"' : '';
+      const s2Class = animate ? 'class="pen-stroke-2"' : '';
+      const cClass = animate ? 'class="pen-circle"' : '';
+      return `
+        <svg class="pen-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path ${s1Class} d="M18 22 C40 42, 62 60, 84 82" stroke="#dc2626" stroke-width="7.5" stroke-linecap="round"/>
+          <path ${s2Class} d="M82 18 C60 42, 38 62, 16 84" stroke="#dc2626" stroke-width="7.5" stroke-linecap="round"/>
+          <path ${cClass} d="M50 10 C76 8, 92 28, 90 52 C88 76, 68 92, 46 90 C22 88, 8 68, 11 45 C14 24, 32 11, 54 11" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+      `;
+    }
+
+    function renderTicket(newlyMarkedNum = null) {
+      const serialEl = document.getElementById("ticketSerialBadge");
+      if (serialEl) {
+        serialEl.textContent = `#T-${String(ticketSerial).padStart(2, "0")} (Unique)`;
+      }
+
+      const el = document.getElementById("ticketGrid");
+      el.innerHTML = "";
+      if (!Array.isArray(ticket) || ticket.length !== 3) return;
+
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 9; c++) {
+          const val = ticket[r][c];
+          const cell = document.createElement("div");
+          if (val === 0) {
+            cell.className = "cell empty";
+          } else {
+            const isMarked = markedSet.has(val);
+            cell.className = "cell" + (isMarked ? " marked" : "");
+            cell.innerHTML = `<span>${val}</span>` + (isMarked ? createPenCrossSVG(val === newlyMarkedNum) : "");
+            cell.onclick = () => toggleMark(val);
+          }
+          el.appendChild(cell);
+        }
+      }
+    }
+
+    function toggleMark(num) {
+      if (!calledNumbers.includes(num)) {
+        showToast(`⚠️ ${num} hasn't been called yet!`);
+        return;
+      }
+      if (markedSet.has(num)) {
+        markedSet.delete(num);
+        saveLocalSession();
+        renderTicket(null);
+      } else {
+        markedSet.add(num);
+        saveLocalSession();
+        renderTicket(num);
+      }
+    }
+
+    function setLobbyButtonsDisabled(disabled) {
+      document.getElementById("hostBtn").disabled = disabled;
+      document.getElementById("joinBtn").disabled = disabled;
+    }
+
+    function startHeartbeat() {
+      clearInterval(heartbeatTimer);
+      heartbeatTimer = setInterval(() => {
+        if (isHost) {
+          broadcast({ type: "PING" });
+        } else if (hostConn && hostConn.open) {
+          hostConn.send({ type: "PING" });
+        }
+      }, 4000);
+    }
+
+    function getOnlinePlayerCount() {
+      return Object.values(playersRoster).filter(p => p && p.online).length;
+    }
+
+    function resumeHostedRoom() {
+      try {
+        const raw = localStorage.getItem(HOST_BACKUP_KEY);
+        if (!raw) return hostGame();
+        const backup = JSON.parse(raw);
+        hostGame(0, backup);
+      } catch (e) {
+        hostGame();
+      }
+    }
+
+    function hostGame(retryCount = 0, resumeBackup = null) {
+      if (typeof Peer === "undefined") {
+        return showToast("⚠️ Network signaling unavailable. Please refresh.");
+      }
+      myName = document.getElementById("playerName").value.trim().slice(0, 20) ||
+               (resumeBackup?.hostName) || "Host";
+
+      isHost = true;
+      setLobbyButtonsDisabled(true);
+
+      let targetRoomId;
+      if (resumeBackup && resumeBackup.roomId && retryCount === 0) {
+        targetRoomId = resumeBackup.roomId;
+        maxPlayersAllowed = clampMaxPlayers(resumeBackup.maxPlayersAllowed || 100);
+        roundNumber = resumeBackup.roundNumber || 1;
+        calledNumbers = Array.isArray(resumeBackup.calledNumbers) ? resumeBackup.calledNumbers : [];
+        claims = resumeBackup.claims || claims;
+        playersRoster = resumeBackup.playersRoster || {};
+        Object.values(playersRoster).forEach(p => { if (p) p.online = false; });
+
+        resetUniqueTicketRegistry();
+        if (resumeBackup.issuedTickets) {
+          Object.entries(resumeBackup.issuedTickets).forEach(([uid, rec]) => {
+            issuedTickets.set(uid, rec);
+          });
+        }
+        if (Array.isArray(resumeBackup.issuedSignatures)) {
+          resumeBackup.issuedSignatures.forEach(s => issuedNumberSetSignatures.add(s));
+        }
+        if (Array.isArray(resumeBackup.numberUsageCounts) && resumeBackup.numberUsageCounts.length === 91) {
+          numberUsageCounts = resumeBackup.numberUsageCounts;
+        }
+      } else {
+        maxPlayersAllowed = clampMaxPlayers(document.getElementById("maxPlayersInput").value);
+        document.getElementById("maxPlayersInput").value = maxPlayersAllowed;
+        targetRoomId = "TAM-" + Math.floor(1000 + Math.random() * 9000);
+      }
+
+      document.getElementById("connStatus").textContent =
+        resumeBackup ? `Resuming Room ${targetRoomId}...` : `Creating room for 2–${maxPlayersAllowed} players...`;
+      if (peer) { try { peer.destroy(); } catch (e) {} }
+
+      peer = new Peer(targetRoomId, { config: ANY_NETWORK_ICE });
+
+      peer.on("open", (id) => {
+        currentRoomId = id;
+        if (!resumeBackup) {
+          resetUniqueTicketRegistry();
+        }
+        const hostRecord = allocateUniqueTicketForPlayer(myUid);
+        ticket = hostRecord.ticket;
+        ticketSerial = hostRecord.serial;
+
+        if (!loadLocalSession(id, roundNumber)) {
+          markedSet.clear();
+        }
+
+        playersRoster[myUid] = { name: myName, online: true, isHost: true, serial: ticketSerial };
+        startGameUI(id, "Host");
+        document.getElementById("hostControls").style.display = "block";
+        renderPlayersStrip();
+        startHeartbeat();
+        if (resumeBackup) {
+          showToast(`♻️ Resumed Room ${id}! Players can tap Reconnect.`);
+        }
+      });
+
+      peer.on("disconnected", () => {
+        if (peer && !peer.destroyed) {
+          try { peer.reconnect(); } catch (e) {}
+        }
+      });
+
+      peer.on("connection", (conn) => {
+        conn.on("data", (data) => handleHostIncoming(data, conn));
+        conn.on("close", () => {
+          for (const [uid, c] of connections.entries()) {
+            if (c === conn) {
+              connections.delete(uid);
+              if (playersRoster[uid]) playersRoster[uid].online = false;
+              saveHostBackup();
+              renderPlayersStrip();
+              broadcast({ type: "ROSTER_UPDATE", playersRoster, maxPlayersAllowed });
+              break;
+            }
+          }
+        });
+      });
+
+      peer.on("error", (err) => {
+        if (err.type === "unavailable-id" && retryCount < 4) {
+          hostGame(retryCount + 1, null);
+          return;
+        }
+        setLobbyButtonsDisabled(false);
+        document.getElementById("connStatus").textContent = "Connection error: " + err.type;
+      });
+    }
+
+    function joinGame() {
+      if (typeof Peer === "undefined") {
+        return showToast("⚠️ Network signaling unavailable. Please refresh.");
+      }
+      myName = document.getElementById("playerName").value.trim().slice(0, 20) || "Player";
+      let rawInput = document.getElementById("joinRoomId").value.trim();
+
+      if (rawInput.includes("room=")) {
+        try {
+          const parsed = new URL(rawInput);
+          rawInput = parsed.searchParams.get("room") || rawInput;
+        } catch (e) {
+          const match = rawInput.match(/TAM-\d{4}/i);
+          if (match) rawInput = match[0];
+        }
+      }
+
+      const roomId = rawInput.toUpperCase();
+      if (!roomId) return showToast("Enter a valid Room ID (e.g., TAM-4821)");
+
+      isHost = false;
+      currentRoomId = roomId;
+      setLobbyButtonsDisabled(true);
+      document.getElementById("connStatus").textContent = `Connecting to ${roomId} for your unique ticket...`;
+      connectToHostRoom(roomId);
+    }
+
+    function connectToHostRoom(roomId) {
+      if (peer) { try { peer.destroy(); } catch (e) {} }
+      clearTimeout(connectTimeout);
+
+      peer = new Peer({ config: ANY_NETWORK_ICE });
+
+      connectTimeout = setTimeout(() => {
+        if (!gameStarted) {
+          setLobbyButtonsDisabled(false);
+          document.getElementById("connStatus").textContent =
+            "⚠️ Connection timed out. Make sure the Host room is open and tap Join again.";
+        }
+      }, 14000);
+
+      peer.on("open", () => {
+        hostConn = peer.connect(roomId, { reliable: true });
+
+        hostConn.on("open", () => {
+          document.getElementById("reconnectBtn").style.display = "none";
+          hostConn.send({ type: "JOIN_HELLO", uid: myUid, name: myName });
+        });
+
+        hostConn.on("data", (data) => handleClientIncoming(data));
+
+        hostConn.on("close", () => {
+          clearTimeout(connectTimeout);
+          setLobbyButtonsDisabled(false);
+          if (gameStarted) {
+            document.getElementById("reconnectBtn").style.display = "inline-block";
+            showToast("⚠️ Disconnected from host. Tap Reconnect.");
+          }
+        });
+      });
+
+      peer.on("error", (err) => {
+        clearTimeout(connectTimeout);
+        setLobbyButtonsDisabled(false);
+        if (err.type === "peer-unavailable") {
+          document.getElementById("connStatus").textContent =
+            `❌ Room "${roomId}" not found or Host closed their browser tab.`;
+        } else {
+          document.getElementById("connStatus").textContent = "Could not connect: " + err.type;
+        }
+        if (gameStarted) {
+          document.getElementById("reconnectBtn").style.display = "inline-block";
+        }
+      });
+    }
+
+    function reconnectClient() {
+      if (!currentRoomId || isHost) return;
+      showToast("🔄 Reconnecting to room...");
+      connectToHostRoom(currentRoomId);
+    }
+
+    function startGameUI(roomId, role) {
+      gameStarted = true;
+      requestScreenWakeLock();
+      document.getElementById("setupPanel").style.display = "none";
+      document.getElementById("gameArea").style.display = "grid";
+      document.getElementById("displayRoomId").textContent = roomId;
+      document.getElementById("displayRole").textContent = `${role} (${myName})`;
+      document.getElementById("roundNumberBadge").textContent = roundNumber;
+
+      saveLocalSession();
+      syncBoardAndClaimsUI();
+      renderTicket();
+    }
+
+    function renderPlayersStrip() {
+      const strip = document.getElementById("playersStrip");
+      if (!strip) return;
+      const list = Object.values(playersRoster);
+      const onlineCount = list.filter(p => p && p.online).length;
+
+      document.getElementById("playerCountBadge").textContent = onlineCount;
+      document.getElementById("maxPlayersBadge").textContent = maxPlayersAllowed;
+      document.getElementById("onlineCountText").textContent = onlineCount;
+      document.getElementById("capacityText").textContent = maxPlayersAllowed;
+
+      if (list.length === 0) {
+        strip.innerHTML = "";
+        return;
+      }
+      strip.innerHTML = list.map(p => `
+        <span class="player-tag">
+          <span class="player-dot ${p.online ? "" : "offline"}"></span>
+          ${escapeHTML(p.name)}${p.isHost ? " 👑" : ""}
+        </span>
+      `).join("");
+    }
+
+    function broadcast(payload) {
+      connections.forEach((conn) => {
+        if (conn.open) conn.send(payload);
+      });
+    }
+
+    function drawNextNumber() {
+      if (!isHost || drawLock) return;
+      if (calledNumbers.length >= 90) {
+        showToast("All 90 numbers have been called!");
+        if (autoTimer) toggleAutoDraw();
+        return;
+      }
+
+      const onlineNow = getOnlinePlayerCount();
+      if (onlineNow < MIN_PLAYERS && calledNumbers.length === 0) {
+        showToast(`👥 Tip: Room supports 2–${maxPlayersAllowed} players (currently ${onlineNow} online). Drawing number!`);
+      }
+
+      drawLock = true;
+      const available = [];
+      for (let i = 1; i <= 90; i++) {
+        if (!calledNumbers.includes(i)) available.push(i);
+      }
+      const next = available[Math.floor(Math.random() * available.length)];
+      calledNumbers.push(next);
+
+      saveLocalSession();
+      applyNewNumber(next);
+      broadcast({ type: "NUMBER_DRAWN", number: next, calledNumbers });
+
+      if (calledNumbers.length >= 90 && autoTimer) {
+        toggleAutoDraw();
+      }
+      setTimeout(() => { drawLock = false; }, 350);
+    }
+
+    function toggleAutoDraw() {
+      const btn = document.getElementById("autoBtn");
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        btn.textContent = "▶ Auto Draw (5s)";
+      } else {
+        drawNextNumber();
+        if (calledNumbers.length < 90) {
+          autoTimer = setInterval(drawNextNumber, 5000);
+          btn.textContent = "⏸ Stop Auto";
+        }
+      }
+    }
+
+    function resetGameRound() {
+      if (!isHost) return;
+      if (autoTimer) toggleAutoDraw();
+
+      roundNumber += 1;
+      calledNumbers = [];
+      claims = {
+        jaldi5: null, topLine: null, midLine: null,
+        botLine: null, corners: null, fullHouse: null
+      };
+
+      resetUniqueTicketRegistry();
+      const hostRec = allocateUniqueTicketForPlayer(myUid);
+      ticket = hostRec.ticket;
+      ticketSerial = hostRec.serial;
+      markedSet.clear();
+      saveLocalSession();
+
+      document.getElementById("roundNumberBadge").textContent = roundNumber;
+      syncBoardAndClaimsUI();
+      renderTicket();
+      showToast(`🔁 Round ${roundNumber} Started! Fresh unique tickets issued to every player.`);
+
+      connections.forEach((conn, uid) => {
+        if (conn.open) {
+          const playerRec = allocateUniqueTicketForPlayer(uid);
+          conn.send({
+            type: "NEW_ROUND",
+            roundNumber,
+            assignedTicket: playerRec.ticket,
+            assignedSerial: playerRec.serial
+          });
+        }
+      });
+    }
+
+    function applyNewNumber(num) {
+      document.getElementById(`b-${num}`)?.classList.add("called");
+      document.getElementById("calledCount").textContent = calledNumbers.length;
+      showDrawPopup(num);
+    }
+
+    function syncBoardAndClaimsUI() {
+      for (let i = 1; i <= 90; i++) {
+        const cell = document.getElementById(`b-${i}`);
+        if (cell) {
+          if (calledNumbers.includes(i)) cell.classList.add("called");
+          else cell.classList.remove("called");
+        }
+      }
+      document.getElementById("calledCount").textContent = calledNumbers.length;
+      updateClaimsUI();
+    }
+
+    function validateClaim(type, playerTicket) {
+      if (!Array.isArray(playerTicket) || playerTicket.length !== 3) return false;
+      const isCalled = (n) => Number.isInteger(n) && n >= 1 && n <= 90 && calledNumbers.includes(n);
+      const rowNums = (r) => Array.isArray(playerTicket[r]) ? playerTicket[r].filter(n => n > 0) : [];
+
+      if (rowNums(0).length !== 5 || rowNums(1).length !== 5 || rowNums(2).length !== 5) return false;
+
+      if (type === "jaldi5") {
+        let count = 0;
+        for (let r = 0; r < 3; r++)
+          for (let c = 0; c < 9; c++)
+            if (isCalled(playerTicket[r][c])) count++;
+        return count >= 5;
+      }
+      if (type === "topLine") return rowNums(0).every(isCalled);
+      if (type === "midLine") return rowNums(1).every(isCalled);
+      if (type === "botLine") return rowNums(2).every(isCalled);
+      if (type === "corners") {
+        const top = rowNums(0);
+        const bot = rowNums(2);
+        const corners = [top[0], top[top.length - 1], bot[0], bot[bot.length - 1]];
+        return corners.every(isCalled);
+      }
+      if (type === "fullHouse") {
+        return [0, 1, 2].every(r => rowNums(r).every(isCalled));
+      }
+      return false;
+    }
+
+    function requestClaim(type) {
+      if (claims[type]) return showToast(`${PRIZE_LABELS[type]} already won by ${claims[type]}!`);
+
+      if (!validateClaim(type, ticket)) {
+        return showToast(`❌ Bogey! Required numbers for ${PRIZE_LABELS[type]} are not all called yet.`);
+      }
+
+      if (isHost) {
+        processClaim(type, myName, ticket);
+      } else if (hostConn && hostConn.open) {
+        hostConn.send({ type: "CLAIM_REQUEST", uid: myUid, prize: type, playerName: myName, ticket });
+      } else {
+        showToast("⚠️ Not connected to Host. Tap Reconnect.");
+      }
+    }
+
+    function processClaim(prize, playerName, playerTicket) {
+      if (claims[prize]) return;
+      if (!validateClaim(prize, playerTicket)) return;
+
+      claims[prize] = playerName;
+      saveLocalSession();
+      updateClaimsUI();
+      showWinnerReveal(prize, playerName);
+      broadcast({ type: "CLAIM_APPROVED", prize, playerName, claims });
+    }
+
+    function updateClaimsUI() {
+      for (const [key, label] of Object.entries(PRIZE_LABELS)) {
+        const btn = document.getElementById(`btn-${key}`);
+        const winner = claims[key];
+        if (!btn) continue;
+        if (winner) {
+          btn.classList.add("won");
+          btn.textContent = `🏅 ${label} (${winner})`;
+        } else {
+          btn.classList.remove("won");
+          btn.textContent = label;
+        }
+      }
+    }
+
+    function handleHostIncoming(data, conn) {
+      if (!data || typeof data !== "object" || data.type === "PING") return;
+
+      if (data.type === "JOIN_HELLO") {
+        const uid = String(data.uid || ("G-" + Math.random().toString(36).slice(2, 7)));
+        const safeName = String(data.name || "Player").trim().slice(0, 20) || "Player";
+        const isReturningPlayer = Boolean(playersRoster[uid]);
+        const currentOnline = getOnlinePlayerCount();
+
+        if (!isReturningPlayer && currentOnline >= maxPlayersAllowed) {
+          conn.send({
+            type: "ROOM_FULL",
+            msg: `❌ Room ${currentRoomId} is full (${maxPlayersAllowed}/${maxPlayersAllowed} players).`
+          });
+          setTimeout(() => { try { conn.close(); } catch (e) {} }, 400);
+          return;
+        }
+
+        const assignedRec = allocateUniqueTicketForPlayer(uid);
+
+        connections.set(uid, conn);
+        playersRoster[uid] = {
+          name: safeName,
+          online: true,
+          isHost: false,
+          serial: assignedRec.serial
+        };
+        saveHostBackup();
+        renderPlayersStrip();
+        conn.send({
+          type: "SYNC_STATE",
+          roundNumber,
+          calledNumbers,
+          claims,
+          playersRoster,
+          maxPlayersAllowed,
+          assignedTicket: assignedRec.ticket,
+          assignedSerial: assignedRec.serial
+        });
+        broadcast({ type: "ROSTER_UPDATE", playersRoster, maxPlayersAllowed });
+      } else if (data.type === "CLAIM_REQUEST") {
+        const safeClaimant = String(data.playerName || "Player").trim().slice(0, 20) || "Player";
+        const authoritativeRec = data.uid && issuedTickets.get(String(data.uid));
+        const ticketToCheck = authoritativeRec ? authoritativeRec.ticket : data.ticket;
+
+        if (claims[data.prize]) {
+          conn.send({ type: "TOAST", msg: `Too late! ${claims[data.prize]} already claimed it.` });
+        } else if (validateClaim(data.prize, ticketToCheck)) {
+          processClaim(data.prize, safeClaimant, ticketToCheck);
+        } else {
+          conn.send({ type: "TOAST", msg: "❌ Invalid (Bogey) claim rejected by Host." });
+        }
+      }
+    }
+
+    function handleClientIncoming(data) {
+      if (!data || typeof data !== "object" || data.type === "PING") return;
+
+      if (data.type === "ROOM_FULL") {
+        clearTimeout(connectTimeout);
+        setLobbyButtonsDisabled(false);
+        document.getElementById("connStatus").textContent = data.msg;
+        showToast(data.msg);
+        return;
+      }
+
+      if (data.type === "SYNC_STATE") {
+        clearTimeout(connectTimeout);
+        const incomingRound = data.roundNumber || 1;
+        const roundChanged = incomingRound !== roundNumber;
+        roundNumber = incomingRound;
+
+        const restoredLocal = loadLocalSession(currentRoomId, roundNumber);
+
+        if (Array.isArray(data.assignedTicket) && data.assignedTicket.length === 3) {
+          const newSig = getTicketNumberSignature(data.assignedTicket);
+          const oldSig = ticket.length === 3 ? getTicketNumberSignature(ticket) : "";
+          ticket = data.assignedTicket;
+          if (data.assignedSerial) ticketSerial = data.assignedSerial;
+          if (!restoredLocal || roundChanged || (oldSig && oldSig !== newSig)) {
+            markedSet.clear();
+          }
+        } else if (!restoredLocal) {
+          ticket = buildCandidateTicket();
+          markedSet.clear();
+        }
+
+        if (!gameStarted) {
+          startGameUI(currentRoomId, "Player");
+          startHeartbeat();
+        } else {
+          document.getElementById("roundNumberBadge").textContent = roundNumber;
+        }
+
+        calledNumbers = Array.isArray(data.calledNumbers) ? data.calledNumbers : [];
+        claims = data.claims || claims;
+        playersRoster = data.playersRoster || playersRoster;
+        if (data.maxPlayersAllowed) maxPlayersAllowed = clampMaxPlayers(data.maxPlayersAllowed);
+        markedSet.forEach(n => { if (!calledNumbers.includes(n)) markedSet.delete(n); });
+        saveLocalSession();
+        syncBoardAndClaimsUI();
+        renderPlayersStrip();
+        renderTicket();
+      } else if (data.type === "ROSTER_UPDATE") {
+        playersRoster = data.playersRoster || playersRoster;
+        if (data.maxPlayersAllowed) maxPlayersAllowed = clampMaxPlayers(data.maxPlayersAllowed);
+        renderPlayersStrip();
+      } else if (data.type === "NUMBER_DRAWN") {
+        calledNumbers = data.calledNumbers;
+        applyNewNumber(data.number);
+      } else if (data.type === "CLAIM_APPROVED") {
+        claims = data.claims;
+        updateClaimsUI();
+        showWinnerReveal(data.prize, data.playerName);
+      } else if (data.type === "NEW_ROUND") {
+        roundNumber = data.roundNumber || (roundNumber + 1);
+        document.getElementById("roundNumberBadge").textContent = roundNumber;
+        calledNumbers = [];
+        claims = {
+          jaldi5: null, topLine: null, midLine: null,
+          botLine: null, corners: null, fullHouse: null
+        };
+        if (Array.isArray(data.assignedTicket) && data.assignedTicket.length === 3) {
+          ticket = data.assignedTicket;
+          if (data.assignedSerial) ticketSerial = data.assignedSerial;
+        } else {
+          ticket = buildCandidateTicket();
+        }
+        markedSet.clear();
+        saveLocalSession();
+        syncBoardAndClaimsUI();
+        renderTicket();
+        showToast(`🔁 Host started Round ${roundNumber}! Your new unique ticket is ready.`);
+      } else if (data.type === "TOAST") {
+        showToast(data.msg);
+      }
+    }
+  </script>
 </body>
 </html>
