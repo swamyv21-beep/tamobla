@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="google-site-verification" content="aFE2QqW6MiMrzI0cv3YnVj39HjHdBHcoKmi05MjVGU0" />
   <meta name="description" content="Digital Tambola (Housie) - Digital Swami 3D Paper Edition. Multi-language (English, Telugu, Hindi) mobile-friendly online Tambola." />
   <title>Digital Tambola (Housie) • Digital Swami</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>" />
@@ -497,6 +498,51 @@
     }
 
     /* Mobile-Optimized 3x9 Ticket Grid */
+
+    /* Player-Friendly Ticket Progress & Quick Feedback */
+    .ticket-meta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 7px 10px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1.5px solid #e2d8c0;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #1e293b;
+    }
+    .ticket-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 160px;
+    }
+    .ticket-progress-track {
+      flex: 1;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+    }
+    .ticket-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #10b981);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+    .cell.called-hint:not(.marked) {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.35), 0 2px 5px rgba(0,0,0,0.1);
+    }
+
     .ticket {
       display: grid;
       grid-template-columns: repeat(9, 1fr);
@@ -750,17 +796,19 @@
     }
     .rule-chip strong { color: #92400e; display: block; }
 
-    /* Winners Announcement Folding Paper Modal */
+    /* ============================================================
+       REALISTIC 3D FOLDED PAPER SLIP -> UNFOLDS TO REVEAL WINNER NAME
+       ============================================================ */
     #winnerFoldModal {
       position: fixed;
       inset: 0;
-      background: rgba(6, 9, 19, 0.86);
+      background: rgba(6, 9, 19, 0.88);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 10000;
       padding: 12px;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(7px);
       perspective: 1400px;
     }
     #winnerFoldModal.active {
@@ -768,39 +816,47 @@
       animation: fadeIn 0.22s ease-out;
     }
     .folding-paper-wrapper {
+      position: relative;
       width: 100%;
       max-width: 410px;
       transform-style: preserve-3d;
-      animation: paperDropBounce 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: foldedSlipEntrance 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    @keyframes paperDropBounce {
-      0% { transform: translateY(-80px) scale(0.75) rotate(-5deg); opacity: 0; }
+    @keyframes foldedSlipEntrance {
+      0% { transform: translateY(-110px) scale(0.62) rotate(-8deg); opacity: 0; }
+      65% { transform: translateY(6px) scale(1.02) rotate(2deg); opacity: 1; }
       100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
     }
 
+    /* Folded Paper Outer Cover Flaps that physically open up & down */
     .paper-flap-top {
-      background: linear-gradient(180deg, #f3e7c9 0%, #fdf8eb 100%);
+      position: relative;
+      background: linear-gradient(180deg, #ead8b1 0%, #f7edd4 60%, #fdf8eb 100%);
       color: var(--ink-dark);
       border: 3px solid #ffffff;
-      border-bottom: 2px dashed #cbbba0;
-      border-radius: 18px 18px 4px 4px;
-      padding: 14px 18px 10px;
+      border-bottom: 2.5px dashed #b45309;
+      border-radius: 18px 18px 3px 3px;
+      padding: 15px 18px 11px;
       text-align: center;
       transform-origin: bottom center;
-      transform: rotateX(-165deg);
-      box-shadow: 0 -8px 20px rgba(0,0,0,0.25);
-      animation: unfoldTopFlap 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.22s forwards;
+      transform: rotateX(-176deg);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.35), inset 0 -6px 14px rgba(180, 83, 9, 0.14);
+      animation: unfoldTopFlap 0.85s cubic-bezier(0.34, 1.45, 0.64, 1) 0.42s forwards;
       backface-visibility: visible;
+      z-index: 4;
     }
     @keyframes unfoldTopFlap {
-      0% { transform: rotateX(-165deg); filter: brightness(0.78); }
+      0% { transform: rotateX(-176deg); filter: brightness(0.75); }
+      55% { transform: rotateX(-35deg); filter: brightness(0.94); }
       100% { transform: rotateX(0deg); filter: brightness(1); }
     }
 
+    /* Inner Paper Sheet containing the Winner's Name (hidden while folded, revealed as flaps open) */
     .paper-center-sheet {
       position: relative;
       background: var(--paper-cream);
       background-image:
+        linear-gradient(180deg, rgba(180,83,9,0.12) 0%, transparent 14%, transparent 86%, rgba(180,83,9,0.12) 100%),
         repeating-linear-gradient(
           to bottom,
           transparent 0px,
@@ -810,11 +866,24 @@
       color: var(--ink-dark);
       border-left: 3px solid #ffffff;
       border-right: 3px solid #ffffff;
-      padding: 16px 18px;
+      padding: 18px 18px;
       text-align: center;
-      box-shadow: 0 20px 45px rgba(0,0,0,0.55);
+      box-shadow: 0 22px 48px rgba(0,0,0,0.6), inset 0 0 25px rgba(217, 199, 163, 0.4);
       z-index: 2;
+      overflow: hidden;
     }
+    /* Paper Crease Shadow Line across the middle */
+    .paper-center-sheet::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(146, 64, 14, 0.22), transparent);
+      pointer-events: none;
+    }
+
     .winner-prize-sticker {
       display: inline-block;
       background: var(--gold);
@@ -827,23 +896,33 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       transform: rotate(-2deg);
       margin-bottom: 6px;
+      opacity: 0;
+      animation: innerContentUnfold 0.4s ease-out 0.72s forwards;
     }
     .winner-name-reveal {
       font-family: 'Pirata One', 'UnifrakturMaguntia', 'Noto Sans Telugu', 'Noto Sans Devanagari', serif;
-      font-size: clamp(2.2rem, 7.6vw, 3.25rem);
+      font-size: clamp(2.25rem, 7.8vw, 3.35rem);
       font-weight: 400;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.6px;
       color: var(--ink-red);
       line-height: 1.15;
       margin: 6px 0;
       text-shadow: 2px 2px 0 rgba(245, 158, 11, 0.45), 1px 1px 0 #1e293b;
       opacity: 0;
-      transform: scale(0.5);
-      animation: winnerNamePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards;
+      transform: scale(0.4) translateY(10px);
+      animation: winnerNamePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.82s forwards;
+    }
+    @keyframes innerContentUnfold {
+      from { opacity: 0; transform: translateY(-6px) scale(0.85); }
+      to { opacity: 1; transform: translateY(0) scale(1) rotate(-2deg); }
+    }
+    @keyframes innerFadeUp {
+      from { opacity: 0; transform: translateY(8px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
     @keyframes winnerNamePop {
-      0% { opacity: 0; transform: scale(0.45) rotate(-6deg); }
-      70% { opacity: 1; transform: scale(1.1) rotate(2deg); }
+      0% { opacity: 0; transform: scale(0.4) rotate(-6deg); }
+      70% { opacity: 1; transform: scale(1.12) rotate(2deg); }
       100% { opacity: 1; transform: scale(1) rotate(-1deg); }
     }
     .winner-sub-note {
@@ -851,6 +930,8 @@
       font-size: 1.25rem;
       color: var(--ink-blue);
       font-weight: 700;
+      opacity: 0;
+      animation: innerFadeUp 0.4s ease-out 0.95s forwards;
     }
 
     .modal-top3-list {
@@ -880,24 +961,29 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 8px;
+      opacity: 0;
+      animation: innerFadeUp 0.4s ease-out 1.05s forwards;
     }
 
     .paper-flap-bottom {
-      background: linear-gradient(0deg, #f3e7c9 0%, #fdf8eb 100%);
+      position: relative;
+      background: linear-gradient(0deg, #ead8b1 0%, #f7edd4 60%, #fdf8eb 100%);
       color: var(--ink-dark);
       border: 3px solid #ffffff;
-      border-top: 2px dashed #cbbba0;
-      border-radius: 4px 4px 18px 18px;
-      padding: 10px 18px 14px;
+      border-top: 2.5px dashed #b45309;
+      border-radius: 3px 3px 18px 18px;
+      padding: 11px 18px 14px;
       text-align: center;
       transform-origin: top center;
-      transform: rotateX(165deg);
-      box-shadow: 0 14px 28px rgba(0,0,0,0.4);
-      animation: unfoldBottomFlap 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s forwards;
+      transform: rotateX(176deg);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.45), inset 0 6px 14px rgba(180, 83, 9, 0.14);
+      animation: unfoldBottomFlap 0.85s cubic-bezier(0.34, 1.45, 0.64, 1) 0.52s forwards;
       backface-visibility: visible;
+      z-index: 4;
     }
     @keyframes unfoldBottomFlap {
-      0% { transform: rotateX(165deg); filter: brightness(0.78); }
+      0% { transform: rotateX(176deg); filter: brightness(0.75); }
+      55% { transform: rotateX(35deg); filter: brightness(0.94); }
       100% { transform: rotateX(0deg); filter: brightness(1); }
     }
 
@@ -948,6 +1034,279 @@
       animation: stickerSlap 0.3s ease-out;
     }
 
+
+
+    /* ============================================================
+       PROFESSIONAL & INTERACTIVE WHATSAPP INVITATION STUDIO
+       ============================================================ */
+    .sticker-btn.whatsapp-btn {
+      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 0 #075e54, 0 8px 16px rgba(18, 140, 126, 0.35);
+    }
+
+    #waInviteModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 19, 0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10003;
+      padding: 12px;
+      backdrop-filter: blur(7px);
+      overflow-y: auto;
+    }
+    #waInviteModal.active {
+      display: flex;
+      animation: fadeIn 0.22s ease-out;
+    }
+    .wa-studio-card {
+      position: relative;
+      background: var(--paper-cream);
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 26px,
+          rgba(148, 163, 184, 0.2) 27px
+        );
+      color: var(--ink-dark);
+      border: 4px solid #ffffff;
+      border-radius: 22px;
+      padding: 18px 16px;
+      max-width: 460px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 26px 65px rgba(0, 0, 0, 0.75), 0 7px 0 #d6cbb5;
+      animation: stickerPopup 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .wa-preview-ticket {
+      position: relative;
+      border-radius: 18px;
+      padding: 18px 16px;
+      margin: 10px 0 12px;
+      color: #ffffff;
+      text-align: center;
+      border: 3px solid #fde047;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.38);
+      overflow: hidden;
+      transition: background 0.25s ease, transform 0.2s ease;
+    }
+    .wa-preview-ticket.theme-royal {
+      background: radial-gradient(circle at top right, #78350f, #1e1b4b 65%, #090d16 100%);
+      border-color: #fbbf24;
+    }
+    .wa-preview-ticket.theme-emerald {
+      background: radial-gradient(circle at top right, #065f46, #022c22 70%, #064e3b 100%);
+      border-color: #34d399;
+    }
+    .wa-preview-ticket.theme-crimson {
+      background: radial-gradient(circle at top right, #991b1b, #450a0a 70%, #1c1917 100%);
+      border-color: #fca5a5;
+    }
+    .wa-preview-ticket::before,
+    .wa-preview-ticket::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 22px;
+      height: 22px;
+      background: var(--paper-cream);
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+    .wa-preview-ticket::before { left: -12px; }
+    .wa-preview-ticket::after { right: -12px; }
+
+    .wa-invite-crown {
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+    }
+    .wa-invite-heading {
+      font-family: 'Pirata One', 'Noto Sans Telugu', 'Noto Sans Devanagari', serif;
+      font-size: 1.65rem;
+      color: #fde047;
+      letter-spacing: 1px;
+      line-height: 1.15;
+      margin: 2px 0 6px;
+    }
+    .wa-invite-host-line {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+    }
+    .wa-invite-note-preview {
+      font-family: 'Caveat', 'Noto Sans Telugu', 'Noto Sans Devanagari', cursive;
+      font-size: 1.25rem;
+      color: #fef08a;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px dashed rgba(253, 224, 71, 0.5);
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin: 8px auto;
+      max-width: 92%;
+    }
+    .wa-room-pill {
+      display: inline-block;
+      background: #ffffff;
+      color: #0f172a;
+      font-weight: 900;
+      font-size: 1.15rem;
+      letter-spacing: 1.5px;
+      padding: 6px 18px;
+      border-radius: 999px;
+      border: 2.5px solid #f59e0b;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      margin-top: 4px;
+    }
+    .wa-theme-pills {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 8px 0;
+      flex-wrap: wrap;
+    }
+    .wa-theme-chip {
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .wa-theme-chip.active {
+      border-color: #d97706;
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .wa-controls-box {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .wa-controls-box input {
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 12px;
+      font-size: 0.92rem;
+    }
+    .wa-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .wa-actions-grid .whatsapp-btn {
+      grid-column: 1 / -1;
+      min-height: 48px;
+      font-size: 0.98rem;
+    }
+
+
+    /* ============================================================
+       RANDOM TICKET SELECTION MODAL (PLAYER PICKS FROM 4 TICKETS)
+       ============================================================ */
+    #ticketSelectModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 19, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10004;
+      padding: 12px;
+      backdrop-filter: blur(7px);
+      overflow-y: auto;
+    }
+    #ticketSelectModal.active {
+      display: flex;
+      animation: fadeIn 0.22s ease-out;
+    }
+    .ticket-picker-card {
+      position: relative;
+      background: var(--paper-cream);
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 26px,
+          rgba(148, 163, 184, 0.2) 27px
+        );
+      color: var(--ink-dark);
+      border: 4px solid #ffffff;
+      border-radius: 22px;
+      padding: 18px 14px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 26px 65px rgba(0, 0, 0, 0.8), 0 7px 0 #d6cbb5;
+      animation: stickerPopup 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .candidate-tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .candidate-ticket-box {
+      background: #ffffff;
+      border: 3px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 8px;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .candidate-ticket-box:hover {
+      transform: translateY(-2px);
+      border-color: #f59e0b;
+    }
+    .candidate-ticket-box.selected {
+      border-color: #10b981;
+      background: #ecfdf5;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35), 0 8px 18px rgba(16, 185, 129, 0.22);
+      transform: scale(1.015);
+    }
+    .candidate-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+      margin-bottom: 5px;
+      color: #1e293b;
+    }
+    .mini-ticket-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 2px;
+      background: #f3ead3;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1.5px dashed #b45309;
+    }
+    .mini-cell {
+      aspect-ratio: 1 / 1.05;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border-radius: 4px;
+      font-family: 'Kalam', cursive;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: #1e293b;
+    }
+    .mini-cell.empty {
+      background: rgba(214, 203, 181, 0.35);
+    }
 
     /* Confetti Celebration Canvas */
     #confettiCanvas {
@@ -1036,17 +1395,118 @@
       box-shadow: 0 3px 0 #94a3b8, 0 5px 10px rgba(0,0,0,0.15);
     }
 
-    @media (max-width: 560px) {
-      body { padding: 10px 8px 42px; }
-      .paper-panel { padding: 14px 10px; border-radius: 12px; }
-      .lobby-row { flex-direction: column; align-items: stretch; }
-      .lobby-row input, .lobby-row button { width: 100%; }
-      .host-controls-row { flex-direction: column; align-items: stretch; }
-      .host-controls-row .row { width: 100%; }
-      .host-controls-row button { flex: 1; }
-      .ticket { gap: 3px; padding: 5px; }
-      .board { gap: 3px; }
-      .claims-grid { grid-template-columns: repeat(2, 1fr); gap: 7px; }
+    /* Mobile-First Responsive & Touch-Friendly Interface */
+    @media (max-width: 600px) {
+      body {
+        padding: 8px 8px calc(44px + env(safe-area-inset-bottom, 0px));
+      }
+      h1 {
+        font-size: clamp(1.55rem, 6.8vw, 2.1rem);
+        margin: 2px 0 4px;
+      }
+      .top-action-bar {
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .paper-panel {
+        padding: 13px 10px;
+        border-radius: 12px;
+      }
+      .paper-panel::before, .paper-panel::after {
+        width: 44px;
+        height: 12px;
+        top: -6px;
+      }
+      input {
+        font-size: 16px; /* Prevents mobile Safari/Chrome auto-zoom on focus */
+        min-height: 48px;
+      }
+      .lobby-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .lobby-row input, .lobby-row button {
+        width: 100%;
+      }
+      .status-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .status-bar > .row {
+        justify-content: space-between;
+        width: 100%;
+      }
+      .status-bar > div:nth-child(2) {
+        text-align: center;
+        background: rgba(254, 243, 199, 0.7);
+        padding: 4px 8px;
+        border-radius: 8px;
+        border: 1px dashed #d97706;
+      }
+      .host-controls-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .host-controls-row .row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+      .host-controls-row #drawBtn {
+        grid-column: 1 / -1;
+        min-height: 48px;
+        font-size: 1rem;
+      }
+      .host-controls-row #resetBtn {
+        grid-column: 1 / -1;
+      }
+      .speed-select {
+        width: 100%;
+        min-height: 42px;
+        text-align: center;
+      }
+      .ticket {
+        gap: 3px;
+        padding: 5px;
+      }
+      .cell {
+        aspect-ratio: 1 / 1.15;
+        font-size: clamp(0.92rem, 4.2vw, 1.2rem);
+        border-radius: 6px;
+      }
+      .board {
+        gap: 3px;
+      }
+      .b-num {
+        padding: 5px 0;
+        font-size: 0.72rem;
+      }
+      .claims-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
+      }
+      .sticker-btn.claim-btn {
+        min-height: 44px;
+        font-size: 0.8rem;
+        padding: 8px 6px;
+      }
+      .last5-strip {
+        justify-content: center;
+        gap: 8px;
+      }
+      .l5-ball {
+        width: 30px;
+        height: 30px;
+        font-size: 0.88rem;
+      }
+      .popup-card {
+        padding: 20px 18px;
+      }
+      .popup-number {
+        font-size: 4.5rem;
+      }
     }
   </style>
 </head>
@@ -1113,6 +1573,7 @@
           <div class="row">
             <span><span id="lblRoom">Room</span>: <span class="paper-sticker-badge" id="displayRoomId" style="user-select: all;">-</span></span>
             <button class="sticker-btn secondary compact-btn" id="copyIdBtn" onclick="copyRoomCode()">📋 Copy ID</button>
+            <button class="sticker-btn whatsapp-btn compact-btn" id="waInviteBtn" onclick="openWhatsAppInviteModal()">💬 WhatsApp Invite</button>
             <button class="sticker-btn success compact-btn" id="shareLinkBtn" onclick="shareInviteLink()">📤 Share Link</button>
             <button class="sticker-btn secondary compact-btn" id="reconnectBtn" style="display: none;" onclick="reconnectClient()">🔄 Reconnect</button>
           </div>
@@ -1131,13 +1592,6 @@
         </div>
         <div class="players-strip" id="playersStrip"></div>
 
-        <!-- Last 5 Called Numbers Strip -->
-        <div class="last5-strip">
-          <span class="last5-label" id="last5Label">🎱 Last 5 Numbers:</span>
-          <div class="last5-balls" id="last5Balls">
-            <span class="l5-ball">-</span>
-          </div>
-        </div>
 
         <!-- Top 3 Players Leaderboard (Revealed after Full House is won) -->
         <div class="top3-podium-panel" id="top3PodiumPanel">
@@ -1155,7 +1609,7 @@
       <div class="paper-panel" id="hostControls" style="display: none;">
         <div class="row host-controls-row" style="justify-content: space-between;">
           <div class="row">
-            <button class="sticker-btn" id="drawBtn" onclick="drawNextNumber()">🎲 Draw Number</button>
+                        <button class="sticker-btn success" id="drawBtn" onclick="drawNextNumber(false)">🎲 Draw Number</button>
             <button class="sticker-btn secondary" id="autoBtn" onclick="toggleAutoDraw()">▶ Auto Draw</button>
             <select id="drawSpeedSelect" class="speed-select" onchange="changeDrawSpeed()" title="Auto Draw Speed">
               <option value="2500">⚡ 2.5s</option>
@@ -1178,11 +1632,29 @@
         <div class="row" style="justify-content: space-between;">
           <strong style="font-size: 1rem;" id="yourTicketHeading">🎟️ Your Unique Tambola Ticket</strong>
           <div class="row" style="gap: 6px;">
+            <button class="sticker-btn compact-btn" id="changeTicketBtn" onclick="openRandomTicketSelector()">🔀 Change Ticket</button>
             <button class="sticker-btn automark-off" id="autoMarkBtn" onclick="toggleAutoMark()">🪄 Auto-Mark: OFF</button>
             <span class="paper-sticker-badge" id="tapNumbersHint">✒️ Tap called numbers</span>
           </div>
         </div>
+                <div class="ticket-meta-bar" id="ticketMetaBar">
+          <span id="ticketProgressLabel">🎯 Marked: <strong id="ticketMarkedCount">0</strong>/15</span>
+          <div class="ticket-progress-wrap">
+            <div class="ticket-progress-track">
+              <div class="ticket-progress-fill" id="ticketProgressFill"></div>
+            </div>
+          </div>
+          <span id="ticketPercentLabel" style="color:#047857;">0%</span>
+        </div>
         <div class="ticket" id="ticketGrid"></div>
+
+        <!-- Last 5 Called Numbers Strip right below Ticket -->
+        <div class="last5-strip" id="ticketLast5Strip">
+          <span class="last5-label" id="last5Label">🎱 Last 5 Numbers:</span>
+          <div class="last5-balls" id="last5Balls">
+            <span class="l5-ball">-</span>
+          </div>
+        </div>
 
         <div style="margin-top: 14px; font-weight: 800; font-size: 0.92rem;" id="claimPrizesHeading">🏆 Claim Prize Stickers:</div>
         <div class="claims-grid" id="claimButtons">
@@ -1201,6 +1673,68 @@
         <strong style="font-size: 1rem;" id="masterBoardHeading">📋 Master Board (1–90)</strong>
         <div class="board" id="masterBoard"></div>
         <span class="panel-watermark">Digital Swami</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Random Ticket Selection Modal -->
+  <div id="ticketSelectModal">
+    <div class="ticket-picker-card" onclick="event.stopPropagation()">
+      <div style="text-align: center;">
+        <h2 style="margin: 0 0 4px; font-size: 1.2rem; color: #92400e;" id="pickTicketModalTitle">🎟️ Choose Your Random Ticket</h2>
+        <div style="font-size: 0.82rem; font-weight: 600; color: #475569;" id="pickTicketModalSub">
+          Tap any shuffled ticket card below or Shuffle for new random tickets!
+        </div>
+      </div>
+
+      <div class="candidate-tickets-grid" id="candidateTicketsGrid"></div>
+
+      <div class="row" style="justify-content: center; gap: 10px; margin-top: 8px;">
+        <button type="button" class="sticker-btn secondary" id="shuffleTicketsBtn" onclick="generateCandidateTickets()">🔀 Shuffle New Tickets</button>
+        <button type="button" class="sticker-btn success" id="confirmTicketBtn" onclick="confirmSelectedRandomTicket()">✅ Confirm & Play This Ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive WhatsApp Invitation Studio Modal -->
+  <div id="waInviteModal" onclick="closeWhatsAppInviteModal()">
+    <div class="wa-studio-card" onclick="event.stopPropagation()">
+      <div class="row" style="justify-content: space-between;">
+        <strong style="font-size: 1.05rem; color: #065f46;" id="waStudioTitle">💬 Interactive WhatsApp Invitation</strong>
+        <button class="sticker-btn secondary compact-btn" onclick="closeWhatsAppInviteModal()">✕</button>
+      </div>
+
+      <!-- Theme Switcher for Live Preview Card -->
+      <div class="wa-theme-pills">
+        <button type="button" class="wa-theme-chip active" id="wa-theme-royal" onclick="setWaInviteTheme('royal')">👑 Royal Gold</button>
+        <button type="button" class="wa-theme-chip" id="wa-theme-emerald" onclick="setWaInviteTheme('emerald')">💚 WhatsApp Emerald</button>
+        <button type="button" class="wa-theme-chip" id="wa-theme-crimson" onclick="setWaInviteTheme('crimson')">🔥 Festive Crimson</button>
+      </div>
+
+      <!-- Live Interactive VIP Invitation Preview -->
+      <div class="wa-preview-ticket theme-royal" id="waPreviewTicket">
+        <div class="wa-invite-crown">👑</div>
+        <div class="wa-invite-heading" id="waCardHeading">DIGITAL TAMBOLA VIP INVITE</div>
+        <div class="wa-invite-host-line" id="waCardHostLine">Hosted by Host • Round 1</div>
+        <div class="wa-invite-note-preview" id="waCardNotePreview">"Join our live Tambola game & win exciting prizes!"</div>
+        <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #cbd5e1;">Room Code</div>
+        <div class="wa-room-pill" id="waCardRoomCode">VSA-0000</div>
+        <div style="font-size: 0.7rem; color: #fde68a; margin-top: 8px; font-weight: 700;">
+          ✨ Tap link to auto-join with your unique 15-number ticket • Digital Swami
+        </div>
+      </div>
+
+      <!-- Custom Event Title & Message Inputs -->
+      <div class="wa-controls-box">
+        <input type="text" id="waEventTitleInput" maxlength="36" placeholder="Event Title (e.g., Family Tambola Night)" oninput="updateWaInvitePreview()" />
+        <input type="text" id="waCustomMsgInput" maxlength="90" placeholder="Custom Invite Note (e.g., Join fast! First 5 & Full House prizes!)" oninput="updateWaInvitePreview()" />
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="wa-actions-grid">
+        <button type="button" class="sticker-btn whatsapp-btn" id="waSendDirectBtn" onclick="sendWhatsAppInvitation()">📲 Send Invitation on WhatsApp</button>
+        <button type="button" class="sticker-btn" id="waDownloadCardBtn" onclick="downloadWhatsAppInviteCard()">🖼️ Save Invite Card</button>
+        <button type="button" class="sticker-btn secondary" id="waCopyInviteBtn" onclick="copyWhatsAppInviteText()">📋 Copy Invite Text</button>
       </div>
     </div>
   </div>
@@ -1276,7 +1810,15 @@
         quickJoin: "⚡ Quick Join Now",
         resumeRoom: "♻️ Resume Room",
         roomLabel: "Room",
+        lblRoundShort: "R",
         copyId: "📋 Copy ID",
+        waInviteBtn: "💬 WhatsApp Invite",
+        waStudioTitle: "💬 Interactive WhatsApp Invitation",
+        waSendDirect: "📲 Send Invitation on WhatsApp",
+        waSaveCard: "🖼️ Save Invite Card",
+        waCopyText: "📋 Copy Invite Text",
+        waDefaultEvent: "DIGITAL TAMBOLA LIVE PARTY",
+        waDefaultNote: "Join our live Tambola game & win exciting prizes!",
         shareLink: "📤 Share Link",
         reconnect: "🔄 Reconnect",
         playersLabel: "Players",
@@ -1285,6 +1827,11 @@
         onlineSuffix: "online",
         connectedLobby: "👥 Connected Lobby",
         drawNumber: "🎲 Draw Number",
+        pickTicketTitle: "🎟️ Choose Your Random Ticket",
+        pickTicketSub: "Tap any shuffled ticket card below or Shuffle for new random tickets!",
+        shuffleTicketsBtn: "🔀 Shuffle New Tickets",
+        confirmTicketBtn: "✅ Confirm & Play This Ticket",
+        changeTicketBtn: "🔀 Change Ticket",
         autoDrawStart: "▶ Auto Draw",
         autoDrawStop: "⏸ Stop Auto",
         last5Label: "🎱 Last 5 Numbers:",
@@ -1298,6 +1845,7 @@
         hintReadyNewRound: "✅ Full House complete! Ready for New Round.",
         yourTicketHeading: "🎟️ Your Unique Tambola Ticket",
         tapNumbersHint: "✒️ Tap called numbers",
+        ticketProgressPrefix: "🎯 Marked:",
         claimPrizesHeading: "🏆 Claim Prize Stickers:",
         masterBoardHeading: "📋 Master Board (1–90)",
         numberDrawnLabel: "Number Drawn",
@@ -1371,7 +1919,15 @@
         quickJoin: "⚡ వెంటనే జాయిన్ అవ్వండి",
         resumeRoom: "♻️ రూమ్ కొనసాగించండి",
         roomLabel: "రూమ్",
+        lblRoundShort: "రౌండ్ ",
         copyId: "📋 ID కాపీ",
+        waInviteBtn: "💬 వాట్సాప్ ఆహ్వానం",
+        waStudioTitle: "💬 ఇంటరాక్టివ్ వాట్సాప్ ఆహ్వానం",
+        waSendDirect: "📲 వాట్సాప్‌లో ఆహ్వానం పంపండి",
+        waSaveCard: "🖼️ ఇన్వైట్ కార్డ్ సేవ్ చేయండి",
+        waCopyText: "📋 ఇన్వైట్ మెసేజ్ కాపీ",
+        waDefaultEvent: "డిజిటల్ తంబోలా లైవ్ గేమ్",
+        waDefaultNote: "మా లైవ్ తంబోలా ఆటలో చేరండి, బహుమతులు గెలుచుకోండి!",
         shareLink: "📤 లింక్ షేర్",
         reconnect: "🔄 రీకనెక్ట్",
         playersLabel: "ప్లేయర్స్",
@@ -1380,6 +1936,11 @@
         onlineSuffix: "ఆన్‌లైన్",
         connectedLobby: "👥 జాయిన్ అయిన ప్లేయర్స్",
         drawNumber: "🎲 నంబర్ తీయండి",
+        pickTicketTitle: "🎟️ మీ రాండమ్ టికెట్ ఎంచుకోండి",
+        pickTicketSub: "కింది టికెట్లలో ఒకదానిపై నొక్కండి లేదా కొత్త టికెట్ల కోసం షఫుల్ చేయండి!",
+        shuffleTicketsBtn: "🔀 కొత్త టికెట్లు షఫుల్ చేయండి",
+        confirmTicketBtn: "✅ ఈ టికెట్‌తో ఆడండి",
+        changeTicketBtn: "🔀 టికెట్ మార్చండి",
         autoDrawStart: "▶ ఆటో డ్రా",
         autoDrawStop: "⏸ ఆటో ఆపండి",
         last5Label: "🎱 చివరి 5 నంబర్లు:",
@@ -1393,6 +1954,7 @@
         hintReadyNewRound: "✅ ఫుల్ హౌస్ పూర్తయింది! కొత్త రౌండ్ సిద్ధంగా ఉంది.",
         yourTicketHeading: "🎟️ మీ ప్రత్యేక తంబోలా టికెట్",
         tapNumbersHint: "✒️ పిలిచిన నంబర్లపై నొక్కండి",
+        ticketProgressPrefix: "🎯 మార్క్ చేసినవి:",
         claimPrizesHeading: "🏆 బహుమతులు క్లెయిమ్ చేయండి:",
         masterBoardHeading: "📋 మాస్టర్ బోర్డ్ (1–90)",
         numberDrawnLabel: "వచ్చిన నంబర్",
@@ -1466,7 +2028,15 @@
         quickJoin: "⚡ अभी जॉइन करें",
         resumeRoom: "♻️ रूम फिर से खोलें",
         roomLabel: "रूम",
+        lblRoundShort: "राउंड ",
         copyId: "📋 ID कॉपी",
+        waInviteBtn: "💬 व्हाट्सएप निमंत्रण",
+        waStudioTitle: "💬 इंटरैक्टिव व्हाट्सएप निमंत्रण",
+        waSendDirect: "📲 व्हाट्सएप पर निमंत्रण भेजें",
+        waSaveCard: "🖼️ इनवाइट कार्ड सेव करें",
+        waCopyText: "📋 निमंत्रण टेक्स्ट कॉपी करें",
+        waDefaultEvent: "डिजिटल तंबोला लाइव पार्टी",
+        waDefaultNote: "हमारे लाइव तंबोला गेम में शामिल हों और इनाम जीतें!",
         shareLink: "📤 लिंक शेयर",
         reconnect: "🔄 रीकनेक्ट",
         playersLabel: "खिलाड़ी",
@@ -1475,6 +2045,11 @@
         onlineSuffix: "ऑनलाइन",
         connectedLobby: "👥 जुड़े हुए खिलाड़ी",
         drawNumber: "🎲 नंबर निकालें",
+        pickTicketTitle: "🎟️ अपना रैंडम टिकट चुनें",
+        pickTicketSub: "नीचे दिए गए किसी भी टिकट को चुनें या नए टिकट के लिए शफ़ल करें!",
+        shuffleTicketsBtn: "🔀 नए टिकट शफ़ल करें",
+        confirmTicketBtn: "✅ यही टिकट चुनें और खेलें",
+        changeTicketBtn: "🔀 टिकट बदलें",
         autoDrawStart: "▶ ऑटो ड्रॉ",
         autoDrawStop: "⏸ ऑटो रोकें",
         last5Label: "🎱 पिछले 5 नंबर:",
@@ -1488,6 +2063,7 @@
         hintReadyNewRound: "✅ फुल हाउस पूरा हुआ! नया राउंड शुरू करने के लिए तैयार।",
         yourTicketHeading: "🎟️ आपका यूनिक तंबोला टिकट",
         tapNumbersHint: "✒️ बोले गए नंबरों पर टैप करें",
+        ticketProgressPrefix: "🎯 मार्क किए गए:",
         claimPrizesHeading: "🏆 इनाम क्लेम करें:",
         masterBoardHeading: "📋 मास्टर बोर्ड (1–90)",
         numberDrawnLabel: "निकला हुआ नंबर",
@@ -1685,13 +2261,24 @@
       document.getElementById("quickJoinBtn").textContent = tr.quickJoin;
       document.getElementById("resumeRoomBtn").textContent = tr.resumeRoom;
       document.getElementById("lblRoom").textContent = tr.roomLabel;
+      if (document.getElementById("lblRoundShort")) document.getElementById("lblRoundShort").textContent = tr.lblRoundShort;
       document.getElementById("copyIdBtn").textContent = tr.copyId;
+      if (document.getElementById("waInviteBtn")) document.getElementById("waInviteBtn").textContent = tr.waInviteBtn;
+      if (document.getElementById("waStudioTitle")) document.getElementById("waStudioTitle").textContent = tr.waStudioTitle;
+      if (document.getElementById("waSendDirectBtn")) document.getElementById("waSendDirectBtn").textContent = tr.waSendDirect;
+      if (document.getElementById("waDownloadCardBtn")) document.getElementById("waDownloadCardBtn").textContent = tr.waSaveCard;
+      if (document.getElementById("waCopyInviteBtn")) document.getElementById("waCopyInviteBtn").textContent = tr.waCopyText;
       document.getElementById("shareLinkBtn").textContent = tr.shareLink;
       document.getElementById("reconnectBtn").textContent = tr.reconnect;
       document.getElementById("lblPlayers").textContent = tr.playersLabel;
       document.getElementById("lblCalled").textContent = tr.calledLabel;
       document.getElementById("lblTicket").textContent = tr.ticketLabel;
       document.getElementById("drawBtn").textContent = tr.drawNumber;
+      if (document.getElementById("pickTicketModalTitle")) document.getElementById("pickTicketModalTitle").textContent = tr.pickTicketTitle;
+      if (document.getElementById("pickTicketModalSub")) document.getElementById("pickTicketModalSub").textContent = tr.pickTicketSub;
+      if (document.getElementById("shuffleTicketsBtn")) document.getElementById("shuffleTicketsBtn").textContent = tr.shuffleTicketsBtn;
+      if (document.getElementById("confirmTicketBtn")) document.getElementById("confirmTicketBtn").textContent = tr.confirmTicketBtn;
+      if (document.getElementById("changeTicketBtn")) document.getElementById("changeTicketBtn").textContent = tr.changeTicketBtn;
       document.getElementById("autoBtn").textContent = autoTimer ? tr.autoDrawStop : tr.autoDrawStart;
       document.getElementById("last5Label").textContent = tr.last5Label;
       document.getElementById("yourTicketHeading").textContent = tr.yourTicketHeading;
@@ -1916,13 +2503,18 @@
       drawIntervalMs = parseInt(sel.value, 10) || 5000;
       if (autoTimer) {
         clearInterval(autoTimer);
-        autoTimer = setInterval(drawNextNumber, drawIntervalMs);
+        autoTimer = setInterval(autoDrawStep, drawIntervalMs);
       }
       showToast(`⏱️ ${sel.options[sel.selectedIndex].text}`);
     }
 
     /* Confetti Celebration Burst on Prize Wins */
+    let activeConfettiAnimId = null;
     function launchConfettiBurst(isGrand = false) {
+      if (activeConfettiAnimId) {
+        cancelAnimationFrame(activeConfettiAnimId);
+        activeConfettiAnimId = null;
+      }
       const canvas = document.getElementById("confettiCanvas");
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -1968,10 +2560,10 @@
           ctx.restore();
         }
         if (alive > 0) {
-          animId = requestAnimationFrame(step);
+          activeConfettiAnimId = requestAnimationFrame(step);
         } else {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          cancelAnimationFrame(animId);
+          cancelAnimationFrame(activeConfettiAnimId); activeConfettiAnimId = null;
         }
       }
       requestAnimationFrame(step);
@@ -2137,6 +2729,8 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
+        closeRandomTicketSelector();
+        closeWhatsAppInviteModal();
         closeRulesPopup();
         closeDrawPopup();
         closeWinnerReveal();
@@ -2247,6 +2841,200 @@
         copyTextSafe(shareUrl, `🔗 ${shareUrl}`);
       }
     }
+
+    /* ==========================================================================
+       INTERACTIVE WHATSAPP INVITATION STUDIO (LIVE PREVIEW, WA.ME, PNG CARD)
+       ========================================================================== */
+    let currentWaTheme = "royal";
+
+    function openWhatsAppInviteModal() {
+      if (!currentRoomId) return;
+      const tr = t();
+      const titleInput = document.getElementById("waEventTitleInput");
+      const msgInput = document.getElementById("waCustomMsgInput");
+      if (titleInput && !titleInput.value.trim()) {
+        titleInput.value = tr.waDefaultEvent;
+      }
+      if (msgInput && !msgInput.value.trim()) {
+        msgInput.value = tr.waDefaultNote;
+      }
+      updateWaInvitePreview();
+      document.getElementById("waInviteModal").classList.add("active");
+    }
+
+    function closeWhatsAppInviteModal() {
+      document.getElementById("waInviteModal")?.classList.remove("active");
+    }
+
+    function setWaInviteTheme(theme) {
+      currentWaTheme = theme;
+      const card = document.getElementById("waPreviewTicket");
+      if (card) {
+        card.classList.remove("theme-royal", "theme-emerald", "theme-crimson");
+        card.classList.add(`theme-${theme}`);
+      }
+      ["royal", "emerald", "crimson"].forEach((k) => {
+        document.getElementById(`wa-theme-${k}`)?.classList.toggle("active", k === theme);
+      });
+    }
+
+    function updateWaInvitePreview() {
+      const tr = t();
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      const onlineCount = getOnlinePlayerCount() || 1;
+      const eventTitle = (document.getElementById("waEventTitleInput")?.value || "").trim() || tr.waDefaultEvent;
+      const customNote = (document.getElementById("waCustomMsgInput")?.value || "").trim() || tr.waDefaultNote;
+
+      document.getElementById("waCardHeading").textContent = eventTitle;
+      document.getElementById("waCardHostLine").textContent =
+        `👑 ${effectiveHost} • ${tr.lblRoundShort}${roundNumber} • ${onlineCount} ${tr.onlineSuffix}`;
+      document.getElementById("waCardNotePreview").textContent = `"${customNote}"`;
+      document.getElementById("waCardRoomCode").textContent = currentRoomId || "VSA-0000";
+    }
+
+    function buildWhatsAppInviteMessage() {
+      const tr = t();
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      const eventTitle = (document.getElementById("waEventTitleInput")?.value || "").trim() || tr.waDefaultEvent;
+      const customNote = (document.getElementById("waCustomMsgInput")?.value || "").trim() || tr.waDefaultNote;
+      const base = `${window.location.origin}${window.location.pathname}`;
+      const joinUrl = window.location.protocol === "file:"
+        ? ""
+        : `${base}?room=${encodeURIComponent(currentRoomId)}&host=${encodeURIComponent(effectiveHost)}&lang=${encodeURIComponent(currentLang)}`;
+
+      const lines = [
+        `👑 *${eventTitle}* 👑`,
+        `━━━━━━━━━━━━━━━━━━`,
+        `🎙️ *Host:* ${effectiveHost}`,
+        `🔑 *Room ID:* \`${currentRoomId}\``,
+        `🎯 *Round:* ${roundNumber}`,
+        `💬 _"${customNote}"_`,
+        ``,
+        `🏆 *Prizes:* ${tr.prizes.jaldi5} • ${tr.prizes.topLine} • ${tr.prizes.midLine} • ${tr.prizes.botLine} • ${tr.prizes.corners} • ${tr.prizes.fullHouse}`,
+        joinUrl ? `\n📲 *Tap to Join Instantly:*\n${joinUrl}` : `\n📲 Open Digital Tambola & enter Room ID: *${currentRoomId}*`,
+        `\n✨ _Powered by Digital Swami_`
+      ];
+      return lines.join("\n");
+    }
+
+    function sendWhatsAppInvitation() {
+      if (!currentRoomId) return;
+      const msg = buildWhatsAppInviteMessage();
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, "_blank", "noopener,noreferrer");
+    }
+
+    function copyWhatsAppInviteText() {
+      if (!currentRoomId) return;
+      const msg = buildWhatsAppInviteMessage();
+      copyTextSafe(msg, "💬 WhatsApp Invite copied!");
+    }
+
+    function downloadWhatsAppInviteCard() {
+      if (!currentRoomId) return;
+      const tr = t();
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      const eventTitle = (document.getElementById("waEventTitleInput")?.value || "").trim() || tr.waDefaultEvent;
+      const customNote = (document.getElementById("waCustomMsgInput")?.value || "").trim() || tr.waDefaultNote;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 720;
+      canvas.height = 1080;
+      const ctx = canvas.getContext("2d");
+
+      // Background gradient by selected theme
+      const bgGrad = ctx.createLinearGradient(0, 0, 720, 1080);
+      if (currentWaTheme === "emerald") {
+        bgGrad.addColorStop(0, "#065f46");
+        bgGrad.addColorStop(0.55, "#022c22");
+        bgGrad.addColorStop(1, "#064e3b");
+      } else if (currentWaTheme === "crimson") {
+        bgGrad.addColorStop(0, "#991b1b");
+        bgGrad.addColorStop(0.55, "#450a0a");
+        bgGrad.addColorStop(1, "#1c1917");
+      } else {
+        bgGrad.addColorStop(0, "#451a03");
+        bgGrad.addColorStop(0.5, "#1e1b4b");
+        bgGrad.addColorStop(1, "#090d16");
+      }
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 720, 1080);
+
+      // Gold outer border frame
+      ctx.strokeStyle = "#fbbf24";
+      ctx.lineWidth = 10;
+      ctx.strokeRect(28, 28, 664, 1024);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.28)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(44, 44, 632, 992);
+
+      // Crown & Header
+      ctx.textAlign = "center";
+      ctx.font = "72px sans-serif";
+      ctx.fillText("👑", 360, 145);
+
+      ctx.fillStyle = "#fde047";
+      ctx.font = "900 40px Poppins, sans-serif";
+      ctx.fillText(eventTitle.slice(0, 28), 360, 225);
+
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "700 28px Poppins, sans-serif";
+      ctx.fillText(`Hosted by ${effectiveHost}  •  Round ${roundNumber}`, 360, 285);
+
+      // Custom Note Box
+      ctx.fillStyle = "rgba(255,255,255,0.1)";
+      ctx.fillRect(75, 330, 570, 136);
+      ctx.fillStyle = "#fef08a";
+      ctx.font = "italic 700 24px Poppins, sans-serif";
+      const line1 = customNote.slice(0, 42);
+      const line2 = customNote.length > 42 ? customNote.slice(42, 84) : "";
+      if (line2) {
+        ctx.fillText(`"${line1}`, 360, 388);
+        ctx.fillText(`${line2}"`, 360, 428);
+      } else {
+        ctx.fillText(`"${line1}"`, 360, 408);
+      }
+
+      // Room ID Pill (compatible with all browsers/WebViews)
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "800 24px Poppins, sans-serif";
+      ctx.fillText("ROOM CODE", 360, 535);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      if (typeof ctx.roundRect === "function") {
+        ctx.roundRect(170, 560, 380, 96, 48);
+      } else {
+        ctx.rect(170, 560, 380, 96);
+      }
+      ctx.fill();
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 6;
+      ctx.stroke();
+
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "900 50px Poppins, sans-serif";
+      ctx.fillText(currentRoomId, 360, 625);
+
+      // Prizes List
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "700 24px Poppins, sans-serif";
+      ctx.fillText("✨ Jaldi 5  •  Top / Mid / Bottom Lines ✨", 360, 745);
+      ctx.fillText("✨ Four Corners  •  Full House ✨", 360, 790);
+
+      // Watermark
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "900 26px Poppins, sans-serif";
+      ctx.fillText("👑 DIGITAL SWAMI • LIVE TAMBOLA", 360, 975);
+
+      const link = document.createElement("a");
+      link.download = `Tambola-Invite-${currentRoomId}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      showToast("🖼️ Invite Card downloaded!");
+    }
+
 
     function copyTextSafe(text, successMsg) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -2431,6 +3219,8 @@
 
       const modalTop3El = document.getElementById("modalTop3List");
       const modalNewRoundBtn = document.getElementById("modalNewRoundBtn");
+      const modalContinueBtn = document.getElementById("modalContinueBtn");
+      if (modalContinueBtn) modalContinueBtn.textContent = tr.continueBtn;
 
       if (prizeKey === "fullHouse") {
         if (Array.isArray(top3List) && top3List.length > 0) {
@@ -2446,6 +3236,7 @@
           modalTop3El.classList.add("active");
         }
         if (modalNewRoundBtn) {
+          modalNewRoundBtn.textContent = tr.startNewRoundBtn;
           modalNewRoundBtn.style.display = isHost ? "inline-flex" : "none";
         }
       } else {
@@ -2566,6 +3357,109 @@
       numberUsageCounts = Array(91).fill(0);
     }
 
+
+    /* ==========================================================================
+       PLAYER RANDOM TICKET SELECTION (CHOOSE FROM 4 UNIQUE TICKETS OR SHUFFLE)
+       ========================================================================== */
+    let candidateTicketsList = [];
+    let selectedCandidateIdx = 0;
+
+    function openRandomTicketSelector() {
+      if (calledNumbers.length > 0) {
+        return showToast("⚠️ Game already started — ticket locked for this round!");
+      }
+      generateCandidateTickets();
+      document.getElementById("ticketSelectModal").classList.add("active");
+    }
+
+    function closeRandomTicketSelector() {
+      document.getElementById("ticketSelectModal")?.classList.remove("active");
+    }
+
+    function generateCandidateTickets() {
+      candidateTicketsList = [];
+      const localSigs = new Set(issuedNumberSetSignatures);
+      for (let i = 0; i < 4; i++) {
+        let cand = null;
+        let sig = "";
+        let tries = 0;
+        do {
+          cand = buildCandidateTicket();
+          sig = getTicketNumberSignature(cand);
+          tries++;
+        } while (localSigs.has(sig) && tries < 150);
+        localSigs.add(sig);
+        candidateTicketsList.push(cand);
+      }
+      selectedCandidateIdx = 0;
+      renderCandidateTickets();
+    }
+
+    function selectCandidateTicket(idx) {
+      selectedCandidateIdx = idx;
+      renderCandidateTickets();
+    }
+
+    function renderCandidateTickets() {
+      const gridEl = document.getElementById("candidateTicketsGrid");
+      if (!gridEl) return;
+      gridEl.innerHTML = candidateTicketsList.map((tGrid, idx) => {
+        const isSel = idx === selectedCandidateIdx;
+        let cellsHtml = "";
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 9; c++) {
+            const v = tGrid[r][c];
+            cellsHtml += v === 0
+              ? `<div class="mini-cell empty"></div>`
+              : `<div class="mini-cell">${v}</div>`;
+          }
+        }
+        return `
+          <div class="candidate-ticket-box ${isSel ? "selected" : ""}" onclick="selectCandidateTicket(${idx})">
+            <div class="candidate-header">
+              <span>🎟️ Ticket #${idx + 1}</span>
+              <span>${isSel ? "✅ Selected" : "Tap to Pick"}</span>
+            </div>
+            <div class="mini-ticket-grid">${cellsHtml}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function confirmSelectedRandomTicket() {
+      const chosen = candidateTicketsList[selectedCandidateIdx];
+      if (!chosen) return;
+      ticket = chosen;
+      markedSet.clear();
+
+      if (isHost) {
+        const oldRec = issuedTickets.get(myUid);
+        if (oldRec) {
+          issuedNumberSetSignatures.delete(getTicketNumberSignature(oldRec.ticket));
+        }
+        issuedNumberSetSignatures.add(getTicketNumberSignature(chosen));
+        issuedTickets.set(myUid, { ticket: chosen, serial: ticketSerial });
+        saveHostBackup();
+      } else if (hostConn && hostConn.open) {
+        hostConn.send({
+          type: "PLAYER_CHOSE_TICKET",
+          uid: myUid,
+          ticket: chosen
+        });
+      }
+
+      saveLocalSession();
+      renderTicket();
+      closeRandomTicketSelector();
+      showToast("🎟️ Ticket confirmed!");
+    }
+
+    function updateChangeTicketButtonVisibility() {
+      const btn = document.getElementById("changeTicketBtn");
+      if (!btn) return;
+      btn.style.display = calledNumbers.length === 0 ? "inline-flex" : "none";
+    }
+
     function createPenCrossSVG(animate = true) {
       const s1Class = animate ? 'class="pen-stroke-1"' : '';
       const s2Class = animate ? 'class="pen-stroke-2"' : '';
@@ -2579,11 +3473,27 @@
       `;
     }
 
+    function updateTicketProgressUI() {
+      const tr = t();
+      const count = markedSet.size;
+      const pct = Math.min(100, Math.round((count / 15) * 100));
+      const lbl = document.getElementById("ticketProgressLabel");
+      const fill = document.getElementById("ticketProgressFill");
+      const pctEl = document.getElementById("ticketPercentLabel");
+      if (lbl) {
+        lbl.innerHTML = `${tr.ticketProgressPrefix || "🎯 Marked:"} <strong>${count}</strong>/15`;
+      }
+      if (fill) fill.style.width = `${pct}%`;
+      if (pctEl) pctEl.textContent = `${pct}%`;
+    }
+
     function renderTicket(newlyMarkedNum = null) {
       const serialEl = document.getElementById("ticketSerialBadge");
       if (serialEl) {
         serialEl.textContent = `#T-${String(ticketSerial).padStart(2, "0")}`;
       }
+
+      updateTicketProgressUI();
 
       const el = document.getElementById("ticketGrid");
       el.innerHTML = "";
@@ -2597,7 +3507,8 @@
             cell.className = "cell empty";
           } else {
             const isMarked = markedSet.has(val);
-            cell.className = "cell" + (isMarked ? " marked" : "");
+            const isCalledUnmarked = !isMarked && calledNumbers.includes(val);
+            cell.className = "cell" + (isMarked ? " marked" : "") + (isCalledUnmarked ? " called-hint" : "");
             cell.innerHTML = `<span>${val}</span>` + (isMarked ? createPenCrossSVG(val === newlyMarkedNum) : "");
             cell.onclick = () => toggleMark(val);
           }
@@ -2715,6 +3626,9 @@
         renderTop3LeaderboardUI();
         renderPlayersStrip();
         startHeartbeat();
+        if (!resumeBackup && calledNumbers.length === 0) {
+          openRandomTicketSelector();
+        }
       });
 
       peer.on("disconnected", () => {
@@ -2872,22 +3786,30 @@
       });
     }
 
-    function drawNextNumber() {
+
+    /* ==========================================================================
+       DIRECT NUMBER DRAW & AUTO DRAW
+       ========================================================================== */
+    function drawNextNumber(fromAutoDraw = false) {
       if (!isHost || drawLock) return;
       if (claims.fullHouse || calledNumbers.length >= 90) {
         if (autoTimer) toggleAutoDraw();
         return;
       }
 
-      drawLock = true;
       const available = [];
       for (let i = 1; i <= 90; i++) {
         if (!calledNumbers.includes(i)) available.push(i);
       }
+      if (available.length === 0) return;
+
+      drawLock = true;
+      if (!fromAutoDraw && autoTimer) toggleAutoDraw();
+
       const next = available[Math.floor(Math.random() * available.length)];
       calledNumbers.push(next);
-
       saveLocalSession();
+
       applyNewNumber(next);
       broadcast({ type: "NUMBER_DRAWN", number: next, calledNumbers });
 
@@ -2897,19 +3819,38 @@
       setTimeout(() => { drawLock = false; }, 350);
     }
 
+    function autoDrawStep() {
+      if (!isHost) {
+        if (autoTimer) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+        }
+        return;
+      }
+      if (claims.fullHouse || calledNumbers.length >= 90) {
+        if (autoTimer) toggleAutoDraw();
+        return;
+      }
+      if (drawLock) return;
+      drawNextNumber(true);
+    }
+
     function toggleAutoDraw() {
       const tr = t();
       const btn = document.getElementById("autoBtn");
       if (autoTimer) {
         clearInterval(autoTimer);
         autoTimer = null;
-        btn.textContent = tr.autoDrawStart;
+        if (btn) btn.textContent = tr.autoDrawStart;
       } else {
-        if (claims.fullHouse) return;
-        drawNextNumber();
+        if (!isHost) return showToast("👑 Only Host can start Auto Draw");
+        if (claims.fullHouse) return showToast(tr.hintReadyNewRound);
+        if (calledNumbers.length >= 90) return;
+        if (btn) btn.textContent = tr.autoDrawStop;
+        autoDrawStep();
         if (calledNumbers.length < 90 && !claims.fullHouse) {
-          autoTimer = setInterval(drawNextNumber, drawIntervalMs);
-          btn.textContent = tr.autoDrawStop;
+          clearInterval(autoTimer);
+          autoTimer = setInterval(autoDrawStep, drawIntervalMs);
         }
       }
     }
@@ -2942,6 +3883,7 @@
       updateNewRoundButtonState();
       renderTop3LeaderboardUI();
       renderTicket();
+      openRandomTicketSelector();
       showToast(`🔁 ${t().lblRoundShort}${roundNumber}!`);
 
       connections.forEach((conn, uid) => {
@@ -2961,6 +3903,7 @@
       document.getElementById(`b-${num}`)?.classList.add("called");
       document.getElementById("calledCount").textContent = calledNumbers.length;
       renderLast5Strip();
+      updateChangeTicketButtonVisibility();
       autoMarkMatchingNumbers(num);
       showDrawPopup(num);
     }
@@ -2975,6 +3918,7 @@
       }
       document.getElementById("calledCount").textContent = calledNumbers.length;
       renderLast5Strip();
+      updateChangeTicketButtonVisibility();
       autoMarkMatchingNumbers(null);
       updateClaimsUI();
     }
@@ -3111,6 +4055,44 @@
           assignedSerial: assignedRec.serial
         });
         broadcast({ type: "ROSTER_UPDATE", playersRoster });
+      } else if (data.type === "PLAYER_CHOSE_TICKET") {
+        const uid = String(data.uid || "");
+        if (uid && Array.isArray(data.ticket) && data.ticket.length === 3 && calledNumbers.length === 0) {
+          const oldRec = issuedTickets.get(uid);
+          if (oldRec) {
+            issuedNumberSetSignatures.delete(getTicketNumberSignature(oldRec.ticket));
+            for (let r = 0; r < 3; r++) {
+              for (let c = 0; c < 9; c++) {
+                const v = oldRec.ticket[r][c];
+                if (v > 0 && numberUsageCounts[v] > 0) numberUsageCounts[v]--;
+              }
+            }
+          }
+          const newSig = getTicketNumberSignature(data.ticket);
+          let finalTicket = data.ticket;
+          if (issuedNumberSetSignatures.has(newSig)) {
+            // Collision fallback: generate guaranteed unique ticket
+            issuedTickets.delete(uid);
+            finalTicket = allocateUniqueTicketForPlayer(uid).ticket;
+          } else {
+            issuedNumberSetSignatures.add(newSig);
+            for (let r = 0; r < 3; r++) {
+              for (let c = 0; c < 9; c++) {
+                const v = finalTicket[r][c];
+                if (v > 0) numberUsageCounts[v]++;
+              }
+            }
+          }
+          const serial = oldRec ? oldRec.serial : (issuedTickets.size + 1);
+          issuedTickets.set(uid, { ticket: finalTicket, serial });
+          if (playersRoster[uid]) playersRoster[uid].serial = serial;
+          saveHostBackup();
+          conn.send({
+            type: "TICKET_CONFIRMED",
+            assignedTicket: finalTicket,
+            assignedSerial: serial
+          });
+        }
       } else if (data.type === "CLAIM_REQUEST") {
         const safeClaimant = String(data.playerName || "Player").trim().slice(0, 20) || "Player";
         const authoritativeRec = data.uid && issuedTickets.get(String(data.uid));
@@ -3178,6 +4160,17 @@
         renderTop3LeaderboardUI();
         renderPlayersStrip();
         renderTicket();
+        if (!restoredLocal && calledNumbers.length === 0) {
+          openRandomTicketSelector();
+        }
+      } else if (data.type === "TICKET_CONFIRMED") {
+        if (Array.isArray(data.assignedTicket) && data.assignedTicket.length === 3) {
+          ticket = data.assignedTicket;
+          if (data.assignedSerial) ticketSerial = data.assignedSerial;
+          markedSet.clear();
+          saveLocalSession();
+          renderTicket();
+        }
       } else if (data.type === "ROSTER_UPDATE") {
         playersRoster = data.playersRoster || playersRoster;
         renderPlayersStrip();
@@ -3212,6 +4205,7 @@
         syncBoardAndClaimsUI();
         renderTop3LeaderboardUI();
         renderTicket();
+        openRandomTicketSelector();
         showToast(`🔁 ${t().lblRoundShort}${roundNumber}!`);
       } else if (data.type === "TOAST") {
         showToast(data.msg);
