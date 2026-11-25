@@ -88,6 +88,35 @@
       user-select: none;
     }
 
+    /* Scene-Friendly AdSense Slot (Non-intrusive bottom placement, hidden during popups/modals) */
+    .scene-ad-container {
+      width: 100%;
+      max-width: 960px;
+      margin-top: 18px;
+      margin-bottom: 18px;
+      padding: 8px 12px 10px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.68);
+      border: 1px dashed rgba(245, 158, 11, 0.35);
+      text-align: center;
+      min-height: 76px;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .scene-ad-label {
+      display: inline-block;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(203, 213, 225, 0.75);
+      margin-bottom: 4px;
+    }
+    body.modal-scene-open .scene-ad-container {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
     .brand-stamp {
       position: fixed;
       bottom: 8px;
@@ -1788,6 +1817,17 @@
       </div>
     </div>
   </div>
+
+  <!-- Scene-Friendly Bottom Ad Slot (Away from Ticket, Board & Controls) -->
+  <aside class="scene-ad-container" id="sceneAdContainer" aria-label="Advertisement">
+    <div class="scene-ad-label" id="sceneAdLabel">Sponsored</div>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2736631684006337"
+         data-ad-slot="auto"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </aside>
 
   <div class="toast" id="toast"></div>
 
@@ -4213,6 +4253,29 @@
         showToast(data.msg);
       }
     }
+
+
+    function syncSceneAdVisibility() {
+      const anyModalOpen = Boolean(
+        document.getElementById("drawPopup")?.classList.contains("active") ||
+        document.getElementById("winnerFoldModal")?.classList.contains("active") ||
+        document.getElementById("ticketSelectModal")?.classList.contains("active") ||
+        document.getElementById("waInviteModal")?.classList.contains("active") ||
+        document.getElementById("rulesPopupModal")?.classList.contains("active")
+      );
+      document.body.classList.toggle("modal-scene-open", anyModalOpen);
+    }
+
+    (function initSceneFriendlyAds() {
+      const observer = new MutationObserver(syncSceneAdVisibility);
+      ["drawPopup", "winnerFoldModal", "ticketSelectModal", "waInviteModal", "rulesPopupModal"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+      });
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {}
+    })();
 
     // Initialize selected language on load
     setLanguage(currentLang);
