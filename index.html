@@ -89,6 +89,36 @@
     }
 
     /* Scene-Friendly AdSense Slot (Non-intrusive bottom placement, hidden during popups/modals) */
+    .publisher-guide-panel {
+      width: 100%;
+      max-width: 960px;
+      margin-top: 14px;
+    }
+    .publisher-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    .publisher-guide-box {
+      background: rgba(255, 255, 255, 0.84);
+      border: 1.5px solid #dfd3bc;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .publisher-guide-box h3 {
+      margin: 0 0 5px;
+      font-size: 0.9rem;
+      color: var(--ink-blue);
+    }
+    .publisher-guide-box p {
+      margin: 0;
+      color: var(--ink-dark);
+      font-weight: 500;
+    }
+
     .scene-ad-container {
       width: 100%;
       max-width: 960px;
@@ -115,6 +145,40 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+    }
+
+    .popup-close-x {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      font-weight: 900;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sticker-btn.popup-toggle-on {
+      background: #f59e0b;
+      color: #1e1b18;
+      font-size: 0.76rem;
+      padding: 5px 10px;
+      min-height: 34px;
+      box-shadow: 0 3px 0 #b45309, 0 5px 10px rgba(0,0,0,0.2);
+    }
+    .sticker-btn.popup-toggle-off {
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 0.76rem;
+      padding: 5px 10px;
+      min-height: 34px;
+      box-shadow: 0 3px 0 #94a3b8, 0 5px 10px rgba(0,0,0,0.15);
     }
 
     .brand-stamp {
@@ -1663,7 +1727,8 @@
         <div class="row" style="justify-content: space-between;">
           <strong style="font-size: 1rem;" id="yourTicketHeading">🎟️ Your Unique Tambola Ticket</strong>
           <div class="row" style="gap: 6px;">
-            <button class="sticker-btn compact-btn" id="changeTicketBtn" onclick="openRandomTicketSelector()">🔀 Change Ticket</button>
+            <button class="sticker-btn compact-btn" id="changeTicketBtn" onclick="openRandomTicketSelector(true)">🔀 Change Ticket</button>
+            <button class="sticker-btn popup-toggle-on" id="popupToggleBtn" onclick="toggleAllPopupsSetting()">💬 Popups: ON</button>
             <button class="sticker-btn automark-off" id="autoMarkBtn" onclick="toggleAutoMark()">🪄 Auto-Mark: OFF</button>
             <span class="paper-sticker-badge" id="tapNumbersHint">✒️ Tap called numbers</span>
           </div>
@@ -1709,8 +1774,9 @@
   </div>
 
   <!-- Random Ticket Selection Modal -->
-  <div id="ticketSelectModal">
+  <div id="ticketSelectModal" onclick="closeRandomTicketSelector()">
     <div class="ticket-picker-card" onclick="event.stopPropagation()">
+      <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeRandomTicketSelector();" aria-label="Close ticket picker">✕</button>
       <div style="text-align: center;">
         <h2 style="margin: 0 0 4px; font-size: 1.2rem; color: #92400e;" id="pickTicketModalTitle">🎟️ Choose Your Random Ticket</h2>
         <div style="font-size: 0.82rem; font-weight: 600; color: #475569;" id="pickTicketModalSub">
@@ -1757,8 +1823,8 @@
 
       <!-- Custom Event Title & Message Inputs -->
       <div class="wa-controls-box">
-        <input type="text" id="waEventTitleInput" maxlength="36" placeholder="Event Title (e.g., Family Tambola Night)" oninput="updateWaInvitePreview()" />
-        <input type="text" id="waCustomMsgInput" maxlength="90" placeholder="Custom Invite Note (e.g., Join fast! First 5 & Full House prizes!)" oninput="updateWaInvitePreview()" />
+        <input type="text" id="waEventTitleInput" maxlength="36" placeholder="Event Title (e.g., Family Tambola Night)" oninput="waTitleCustom=true; updateWaInvitePreview()" />
+        <input type="text" id="waCustomMsgInput" maxlength="90" placeholder="Custom Invite Note (e.g., Join fast! First 5 & Full House prizes!)" oninput="waNoteCustom=true; updateWaInvitePreview()" />
       </div>
 
       <!-- Action Buttons -->
@@ -1773,6 +1839,7 @@
   <!-- Game Rules & How to Play Popup -->
   <div id="rulesPopupModal" onclick="closeRulesPopup()">
     <div class="rules-paper-card" onclick="event.stopPropagation()">
+      <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeRulesPopup();" aria-label="Close rules">✕</button>
       <h2 class="rules-title" id="rulesModalTitle">📜 Digital Tambola — Rules & How to Play</h2>
       <div id="rulesBodyContainer"></div>
       <div style="text-align: center; margin-top: 12px;">
@@ -1784,6 +1851,7 @@
   <!-- Draw Number Popup -->
   <div id="drawPopup" onclick="closeDrawPopup()">
     <div class="popup-card" onclick="event.stopPropagation(); closeDrawPopup();">
+      <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeDrawPopup();" aria-label="Close popup">✕</button>
       <div class="popup-label" id="popupDrawnLabel">Number Drawn</div>
       <div class="popup-number" id="popupNumber">--</div>
       <div class="popup-lingo" id="popupLingo">Get ready!</div>
@@ -1795,6 +1863,7 @@
   <div id="winnerFoldModal" onclick="closeWinnerReveal()">
     <div class="folding-paper-wrapper" id="foldingPaperBox" onclick="event.stopPropagation()">
       <div class="paper-flap-top">
+        <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeWinnerReveal();" aria-label="Close winner announcement">✕</button>
         <div class="wax-seal">🏆</div>
         <div style="font-size: 0.78rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #92400e;" id="officialResultBanner">
           Official Winners Announcement
@@ -1818,13 +1887,36 @@
     </div>
   </div>
 
+  <!-- Publisher Content & Guide (Ensures rich editorial/gameplay content on every screen) -->
+  <section class="paper-panel publisher-guide-panel" id="publisherGuideSection" aria-label="About Digital Tambola and Game Guide">
+    <strong style="font-size: 1rem; color: #92400e;">📖 About Digital Tambola (Housie) &amp; Complete Guide</strong>
+    <div class="publisher-guide-grid">
+      <div class="publisher-guide-box">
+        <h3>🎟️ Unique 15-Number Tickets</h3>
+        <p>Each Tambola (Housie) ticket is a 3×9 grid containing 15 unique numbers from 1 to 90 arranged across nine columns. Players can shuffle and pick a ticket before a round starts and mark called numbers as the host draws.</p>
+      </div>
+      <div class="publisher-guide-box">
+        <h3>🏆 Standard Prize Patterns</h3>
+        <p>Players can claim <strong>Jaldi Five</strong> (first 5 called numbers), <strong>Top Line</strong>, <strong>Middle Line</strong>, <strong>Bottom Line</strong>, <strong>Four Corners</strong> (first and last numbers of top and bottom rows), and <strong>Full House</strong> (all 15 numbers).</p>
+      </div>
+      <div class="publisher-guide-box">
+        <h3>🌐 Multiplayer Rooms &amp; Languages</h3>
+        <p>Host a room to get a Room ID (such as <code>VSA-XXXX</code>), invite friends via link or WhatsApp, draw numbers manually or with Auto Draw, and switch between English, Telugu (తెలుగు), and Hindi (हिंदी).</p>
+      </div>
+      <div class="publisher-guide-box">
+        <h3>🛡️ Privacy &amp; Fair Play</h3>
+        <p>Room state and ticket selections are managed during live sessions with browser storage used only for local preferences (language, audio, and popup settings). Published by <strong>Digital Swami</strong>.</p>
+      </div>
+    </div>
+    <span class="panel-watermark">Digital Swami</span>
+  </section>
+
   <!-- Scene-Friendly Bottom Ad Slot (Away from Ticket, Board & Controls) -->
   <aside class="scene-ad-container" id="sceneAdContainer" aria-label="Advertisement">
     <div class="scene-ad-label" id="sceneAdLabel">Sponsored</div>
     <ins class="adsbygoogle"
          style="display:block"
          data-ad-client="ca-pub-2736631684006337"
-         data-ad-slot="auto"
          data-ad-format="auto"
          data-full-width-responsive="true"></ins>
   </aside>
@@ -2340,6 +2432,7 @@
       document.getElementById("rulesGotItBtn").textContent = tr.gotItBtn;
 
       updateAudioButtonsUI();
+      updatePopupToggleUI();
       updateAutoMarkButtonUI();
       updateClaimsUI();
       updateNewRoundButtonState();
@@ -2608,7 +2701,7 @@
           cancelAnimationFrame(activeConfettiAnimId); activeConfettiAnimId = null;
         }
       }
-      requestAnimationFrame(step);
+      activeConfettiAnimId = requestAnimationFrame(step);
     }
 
     function updateAudioButtonsUI() {
@@ -2853,7 +2946,7 @@
     function buildShareURL() {
       const base = `${window.location.origin}${window.location.pathname}`;
       const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
-      return `${base}?room=${encodeURIComponent(currentRoomId)}&host=${encodeURIComponent(effectiveHost)}`;
+      return `${base}?room=${encodeURIComponent(currentRoomId)}&host=${encodeURIComponent(effectiveHost)}&lang=${encodeURIComponent(currentLang)}`;
     }
 
     function copyRoomCode() {
@@ -2888,17 +2981,21 @@
        INTERACTIVE WHATSAPP INVITATION STUDIO (LIVE PREVIEW, WA.ME, PNG CARD)
        ========================================================================== */
     let currentWaTheme = "royal";
+    let waTitleCustom = false;
+    let waNoteCustom = false;
 
     function openWhatsAppInviteModal() {
       if (!currentRoomId) return;
       const tr = t();
       const titleInput = document.getElementById("waEventTitleInput");
       const msgInput = document.getElementById("waCustomMsgInput");
-      if (titleInput && !titleInput.value.trim()) {
+      if (titleInput && (!waTitleCustom || !titleInput.value.trim())) {
         titleInput.value = tr.waDefaultEvent;
+        waTitleCustom = false;
       }
-      if (msgInput && !msgInput.value.trim()) {
+      if (msgInput && (!waNoteCustom || !msgInput.value.trim())) {
         msgInput.value = tr.waDefaultNote;
+        waNoteCustom = false;
       }
       updateWaInvitePreview();
       document.getElementById("waInviteModal").classList.add("active");
@@ -3113,9 +3210,40 @@
       tEl._timer = setTimeout(() => tEl.style.display = "none", 3800);
     }
 
+    let allPopupsEnabled = localStorage.getItem("digital_tambola_popups") !== "off";
+
+    function updatePopupToggleUI() {
+      const btn = document.getElementById("popupToggleBtn");
+      if (!btn) return;
+      if (allPopupsEnabled) {
+        btn.textContent = "💬 Popups: ON";
+        btn.classList.remove("popup-toggle-off");
+        btn.classList.add("popup-toggle-on");
+      } else {
+        btn.textContent = "💬 Popups: OFF";
+        btn.classList.remove("popup-toggle-on");
+        btn.classList.add("popup-toggle-off");
+      }
+    }
+
+    function toggleAllPopupsSetting() {
+      allPopupsEnabled = !allPopupsEnabled;
+      localStorage.setItem("digital_tambola_popups", allPopupsEnabled ? "on" : "off");
+      updatePopupToggleUI();
+      if (!allPopupsEnabled) {
+        closeDrawPopup();
+        closeWinnerReveal();
+        closeRandomTicketSelector();
+      }
+      showToast(allPopupsEnabled ? "💬 Popups: ON" : "💬 Popups: OFF");
+    }
+
     function showDrawPopup(num) {
-      const popup = document.getElementById("drawPopup");
       const lingoText = getNumberLingo(num);
+      speakText(t().sayNumber(num, lingoText));
+      if (!allPopupsEnabled) return;
+
+      const popup = document.getElementById("drawPopup");
       document.getElementById("popupNumber").textContent = num;
       document.getElementById("popupLingo").textContent = lingoText;
       popup.classList.add("active");
@@ -3124,8 +3252,6 @@
       popupTimer = setTimeout(() => {
         closeDrawPopup();
       }, 2500);
-
-      speakText(t().sayNumber(num, lingoText));
     }
 
     function closeDrawPopup() {
@@ -3289,7 +3415,9 @@
         }
       }
 
-      modal.classList.add("active");
+      if (allPopupsEnabled) {
+        modal.classList.add("active");
+      }
       launchConfettiBurst(prizeKey === "fullHouse");
 
       speakText(tr.sayWinner(winnerName, prizeLabel));
@@ -3406,10 +3534,11 @@
     let candidateTicketsList = [];
     let selectedCandidateIdx = 0;
 
-    function openRandomTicketSelector() {
+    function openRandomTicketSelector(forceOpen = false) {
       if (calledNumbers.length > 0) {
         return showToast("⚠️ Game already started — ticket locked for this round!");
       }
+      if (!allPopupsEnabled && !forceOpen) return;
       generateCandidateTickets();
       document.getElementById("ticketSelectModal").classList.add("active");
     }
@@ -4099,8 +4228,17 @@
         broadcast({ type: "ROSTER_UPDATE", playersRoster });
       } else if (data.type === "PLAYER_CHOSE_TICKET") {
         const uid = String(data.uid || "");
-        if (uid && Array.isArray(data.ticket) && data.ticket.length === 3 && calledNumbers.length === 0) {
+        if (uid && Array.isArray(data.ticket) && data.ticket.length === 3) {
           const oldRec = issuedTickets.get(uid);
+          if (calledNumbers.length > 0 && oldRec) {
+            conn.send({
+              type: "TICKET_CONFIRMED",
+              assignedTicket: oldRec.ticket,
+              assignedSerial: oldRec.serial
+            });
+            conn.send({ type: "TOAST", msg: "⚠️ Round already started — keeping assigned ticket!" });
+            return;
+          }
           if (oldRec) {
             issuedNumberSetSignatures.delete(getTicketNumberSignature(oldRec.ticket));
             for (let r = 0; r < 3; r++) {
@@ -4113,7 +4251,6 @@
           const newSig = getTicketNumberSignature(data.ticket);
           let finalTicket = data.ticket;
           if (issuedNumberSetSignatures.has(newSig)) {
-            // Collision fallback: generate guaranteed unique ticket
             issuedTickets.delete(uid);
             finalTicket = allocateUniqueTicketForPlayer(uid).ticket;
           } else {
@@ -4272,9 +4409,11 @@
         const el = document.getElementById(id);
         if (el) observer.observe(el, { attributes: true, attributeFilter: ["class"] });
       });
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {}
+      setTimeout(() => {
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {}
+      }, 300);
     })();
 
     // Initialize selected language on load
