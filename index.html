@@ -511,4 +511,2617 @@
       background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 26px, rgba(148, 163, 184, 0.2) 27px);
       color: var(--ink-dark); border: 4px solid #ffffff; border-radius: 22px; padding: 18px 14px;
       max-width: 680px; width: 100%; max-height: 92vh; overflow-y: auto;
-      box-shadow: 0
+      box-shadow: 0 26px 65px rgba(0, 0, 0, 0.8), 0 7px 0 #d6cbb5; animation: stickerPopup 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .candidate-tickets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin: 12px 0; }
+    .candidate-ticket-box { background: #ffffff; border: 3px solid #cbd5e1; border-radius: 14px; padding: 8px; cursor: pointer; transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease; }
+    .candidate-ticket-box:hover { transform: translateY(-2px); border-color: #f59e0b; }
+    .candidate-ticket-box.selected { border-color: #10b981; background: #ecfdf5; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35), 0 8px 18px rgba(16, 185, 129, 0.22); transform: scale(1.015); }
+    .candidate-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 800; margin-bottom: 5px; color: #1e293b; }
+    .mini-ticket-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; background: #f3ead3; padding: 4px; border-radius: 8px; border: 1.5px dashed #b45309; }
+    .mini-cell { aspect-ratio: 1 / 1.05; display: flex; align-items: center; justify-content: center; background: #ffffff; border-radius: 4px; font-family: 'Kalam', cursive; font-weight: 700; font-size: 0.78rem; color: #1e293b; }
+    .mini-cell.empty { background: rgba(214, 203, 181, 0.35); }
+
+    #confettiCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 10002; pointer-events: none; }
+    .last5-strip { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding: 8px 10px; background: rgba(254, 243, 199, 0.72); border: 1.5px dashed #d97706; border-radius: 10px; }
+    .last5-label { font-size: 0.78rem; font-weight: 800; color: #92400e; }
+    .last5-balls { display: flex; align-items: center; gap: 6px; }
+    .l5-ball { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: 'Kalam', cursive; font-weight: 700; font-size: 0.95rem; background: #ffffff; color: #1e293b; border: 2px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.12); }
+    .l5-ball.latest { background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706); color: #ffffff; border-color: #ffffff; transform: scale(1.14); box-shadow: 0 3px 10px rgba(217, 119, 6, 0.45); animation: stickerSlap 0.3s ease-out; }
+
+    .speed-select { padding: 6px 10px; min-height: 36px; border-radius: 10px; border: 2px solid #ffffff; background: #1e293b; color: #fbbf24; font-weight: 800; font-size: 0.78rem; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.22); }
+    .sticker-btn.automark-on { background: #8b5cf6; color: #ffffff; font-size: 0.76rem; padding: 5px 10px; min-height: 34px; box-shadow: 0 3px 0 #5b21b6, 0 5px 10px rgba(0,0,0,0.2); }
+    .sticker-btn.automark-off { background: #e2e8f0; color: #475569; font-size: 0.76rem; padding: 5px 10px; min-height: 34px; box-shadow: 0 3px 0 #94a3b8, 0 5px 10px rgba(0,0,0,0.15); }
+
+    @media (max-width: 600px) {
+      body { padding: 8px 8px calc(44px + env(safe-area-inset-bottom, 0px)); }
+      h1 { font-size: clamp(1.55rem, 6.8vw, 2.1rem); margin: 2px 0 4px; }
+      .top-action-bar { gap: 6px; margin-bottom: 10px; }
+      .paper-panel { padding: 13px 10px; border-radius: 12px; }
+      .paper-panel::before, .paper-panel::after { width: 44px; height: 12px; top: -6px; }
+      input { font-size: 16px; min-height: 48px; }
+      .lobby-row { flex-direction: column; align-items: stretch; }
+      .lobby-row input, .lobby-row button { width: 100%; }
+      .status-bar { flex-direction: column; align-items: stretch; gap: 8px; }
+      .status-bar > .row { justify-content: space-between; width: 100%; }
+      .status-bar > div:nth-child(2) { text-align: center; background: rgba(254, 243, 199, 0.7); padding: 4px 8px; border-radius: 8px; border: 1px dashed #d97706; }
+      .host-controls-row { flex-direction: column; align-items: stretch; }
+      .host-controls-row .row { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+      .host-controls-row #drawBtn { grid-column: 1 / -1; min-height: 48px; font-size: 1rem; }
+      .host-controls-row #resetBtn { grid-column: 1 / -1; }
+      .speed-select { width: 100%; min-height: 42px; text-align: center; }
+      .ticket { gap: 3px; padding: 5px; }
+      .cell { aspect-ratio: 1 / 1.15; font-size: clamp(0.92rem, 4.2vw, 1.2rem); border-radius: 6px; }
+      .board { gap: 3px; }
+      .b-num { padding: 5px 0; font-size: 0.72rem; }
+      .claims-grid { grid-template-columns: repeat(2, 1fr); gap: 7px; }
+      .sticker-btn.claim-btn { min-height: 44px; font-size: 0.8rem; padding: 8px 6px; }
+      .last5-strip { justify-content: center; gap: 8px; }
+      .l5-ball { width: 30px; height: 30px; font-size: 0.88rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="bg3dCanvas" aria-hidden="true"></canvas>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+  <div class="ambient-3d-glow" aria-hidden="true"></div>
+
+  <div class="watermark-layer" aria-hidden="true">
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+    <span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span><span>DIGITAL SWAMI</span>
+  </div>
+  <div class="brand-stamp" aria-hidden="true">👑 Digital Swami</div>
+
+  <header class="page-header">
+    <h1 id="appMainTitle">👑 Digital Tambola (Housie)</h1>
+    <nav class="top-action-bar" aria-label="Game Preferences and Rules">
+      <div class="lang-switcher" role="group" aria-label="Language Switcher">
+        <button class="lang-btn active" id="lang-en" onclick="setLanguage('en')">English</button>
+        <button class="lang-btn" id="lang-te" onclick="setLanguage('te')">తెలుగు</button>
+        <button class="lang-btn" id="lang-hi" onclick="setLanguage('hi')">हिंदी</button>
+      </div>
+      <button class="sticker-btn audio-on" id="lobbyAudioBtn" onclick="togglePlayerAudio()">🔊 Audio: ON</button>
+      <button class="sticker-btn secondary compact-btn" id="voiceSpeedBtn" onclick="toggleVoiceSpeed()">🗣️ 1x</button>
+      <button class="sticker-btn popup-toggle-on" id="lobbyPopupBtn" onclick="toggleAllPopupsSetting()">💬 Popups: ON</button>
+      <button class="sticker-btn rules-btn" id="lobbyRulesBtn" onclick="openRulesPopup()">📜 Rules & Play</button>
+    </nav>
+  </header>
+
+  <main class="page-main">
+    <!-- Connection Setup -->
+    <section class="paper-panel" id="setupPanel" aria-label="Host or Join Tambola Room">
+      <div class="network-banner">
+        <span id="netBannerText">📡 Every Player Gets a Strictly Unique 15-Number Ticket</span>
+        <span class="paper-sticker-badge" style="background:#bbf7d0; color:#14532d;" id="relayBadge">● Any Network Ready</span>
+      </div>
+
+      <div class="resume-host-box" id="resumeHostBox">
+        <span id="resumeBannerText">👑 Resume Hosted Room <strong id="savedHostRoomCode">-</strong> (<span id="savedHostCalledCount">0</span>/90)</span>
+        <button class="sticker-btn compact-btn" id="resumeRoomBtn" onclick="resumeHostedRoom()">♻️ Resume Room</button>
+      </div>
+
+      <div class="invite-alert-box" id="inviteAlertBox">
+        <span id="inviteBannerText">🎟️ Invited to Room <strong id="invitedRoomCode">-</strong>!</span>
+        <button class="sticker-btn success compact-btn" id="quickJoinBtn" onclick="joinGame()">⚡ Quick Join Now</button>
+      </div>
+
+      <div class="row lobby-row">
+        <input type="text" id="playerName" placeholder="Your Name (e.g., Arjun)" maxlength="20" aria-label="Player Name" />
+        <button class="sticker-btn" id="hostBtn" onclick="hostGame()">✨ Host New Room</button>
+      </div>
+      <div class="row lobby-row" style="margin-top: 10px;">
+        <input type="text" id="joinRoomId" placeholder="Enter Host Room ID (e.g., VSA-4821)" style="text-transform: uppercase;" aria-label="Host Room ID" />
+        <button class="sticker-btn secondary" id="joinBtn" onclick="joinGame()">🚀 Join Room</button>
+      </div>
+      <div id="connStatus" style="margin-top: 10px; font-size: 0.86rem; font-weight: 700; color: var(--ink-blue);" role="status" aria-live="polite"></div>
+      <span class="panel-watermark" aria-hidden="true">Digital Swami</span>
+    </section>
+
+    <!-- Active Game Area -->
+    <div id="gameArea" style="display: none; gap: 14px;" class="container">
+      <section class="paper-panel" aria-label="Room Status and Connected Players">
+        <div class="status-bar">
+          <div class="row">
+            <span><span id="lblRoom">Room</span>: <span class="paper-sticker-badge" id="displayRoomId" style="user-select: all;">-</span></span>
+            <button class="sticker-btn secondary compact-btn" id="copyIdBtn" onclick="copyRoomCode()">📋 Copy ID</button>
+            <button class="sticker-btn whatsapp-btn compact-btn" id="waInviteBtn" onclick="openWhatsAppInviteModal()">💬 WhatsApp Invite</button>
+            <button class="sticker-btn success compact-btn" id="shareLinkBtn" onclick="shareInviteLink()">📤 Share Link</button>
+            <button class="sticker-btn secondary compact-btn" id="reconnectBtn" style="display: none;" onclick="reconnectClient()">🔄 Reconnect</button>
+            <button class="sticker-btn danger compact-btn" id="leaveRoomBtn" onclick="leaveRoom()">🚪 Leave</button>
+          </div>
+          <div><strong id="displayRole">-</strong> • <span id="lblRoundShort">R</span><strong id="roundNumberBadge">1</strong></div>
+          <div class="row">
+            <span><span id="lblPlayers">Players</span>: <span class="paper-sticker-badge" style="background:#dcfce7; color:#14532d;"><span id="playerCountBadge">1</span></span></span>
+            <span><span id="lblCalled">Called</span>: <span class="paper-sticker-badge" style="background:#dbeafe; color:#1e40af;"><span id="calledCount">0</span>/90</span></span>
+            <button class="sticker-btn audio-on" id="gameAudioBtn" onclick="togglePlayerAudio()">🔊 Audio: ON</button>
+            <button class="sticker-btn popup-toggle-on" id="gamePopupBtn" onclick="toggleAllPopupsSetting()">💬 Popups: ON</button>
+            <button class="sticker-btn rules-btn" id="gameRulesBtn" onclick="openRulesPopup()">📜 Rules</button>
+          </div>
+        </div>
+
+        <div class="players-header-row">
+          <span id="connectedLobbyLabel">👥 Connected Lobby (<span id="onlineCountText">1</span> online)</span>
+          <span style="font-size: 0.74rem; color: #64748b;"><span id="lblTicket">Ticket</span>: <strong id="ticketSerialBadge">#T-01</strong></span>
+        </div>
+        <div class="players-strip" id="playersStrip"></div>
+
+        <!-- Top 3 Players Leaderboard (Revealed after Full House is won) -->
+        <div class="top3-podium-panel" id="top3PodiumPanel">
+          <div class="top3-title">
+            <span id="top3PanelTitle">🏆 Round <span id="podiumRoundLabel">1</span> — Top 3 Players Leaderboard</span>
+            <span class="paper-sticker-badge" style="background:#bbf7d0; color:#14532d;" id="fhDoneBadge">Full House Completed!</span>
+          </div>
+          <div class="top3-grid" id="top3Grid"></div>
+        </div>
+
+        <span class="panel-watermark" aria-hidden="true">Digital Swami</span>
+      </section>
+
+      <!-- Host Controls + Custom Prize Builder -->
+      <section class="paper-panel" id="hostControls" style="display: none;" aria-label="Host Draw Controls">
+        <div class="row host-controls-row" style="justify-content: space-between;">
+          <div class="row">
+            <button class="sticker-btn success" id="drawBtn" onclick="drawNextNumber(false)">🎲 Draw Number</button>
+            <button class="sticker-btn secondary" id="autoBtn" onclick="toggleAutoDraw()">▶ Auto Draw</button>
+            <select id="drawSpeedSelect" class="speed-select" onchange="changeDrawSpeed()" title="Auto Draw Speed" aria-label="Auto Draw Speed">
+              <option value="2500">⚡ 2.5s</option>
+              <option value="4000">🚀 4s</option>
+              <option value="5000" selected>⏱️ 5s</option>
+              <option value="7000">🐢 7s</option>
+              <option value="10000">🧘 10s</option>
+            </select>
+            <button class="sticker-btn danger" id="resetBtn" onclick="resetGameRound()" disabled>🔒 New Round</button>
+          </div>
+          <span style="font-size: 0.8rem; font-weight: 700; color: #92400e;" id="newRoundHint">
+            ⏳ Complete Full House to unlock New Round
+          </span>
+        </div>
+        <div class="prize-config-panel" id="hostPrizeConfig"></div>
+        <span class="panel-watermark" aria-hidden="true">Digital Swami</span>
+      </section>
+
+      <!-- Player Ticket & Claims -->
+      <section class="paper-panel" aria-label="Player Tambola Ticket and Prize Claims">
+        <div class="row" style="justify-content: space-between;">
+          <strong style="font-size: 1rem;" id="yourTicketHeading">🎟️ Your Unique Tambola Ticket</strong>
+          <div class="row" style="gap: 6px;">
+            <select id="ticketThemeSelect" class="speed-select" onchange="setTicketTheme(this.value)" title="Ticket Theme" aria-label="Ticket Theme">
+              <option value="cream">📜 Cream</option>
+              <option value="gold">👑 Gold</option>
+              <option value="emerald">💚 Emerald</option>
+              <option value="neon">🌌 Neon</option>
+            </select>
+            <button class="sticker-btn compact-btn" id="changeTicketBtn" onclick="openRandomTicketSelector(true)">🔀 Change Ticket</button>
+            <button class="sticker-btn automark-off" id="autoMarkBtn" onclick="toggleAutoMark()">🪄 Auto-Mark: OFF</button>
+            <span class="paper-sticker-badge" id="tapNumbersHint">✒️ Tap called numbers</span>
+          </div>
+        </div>
+        <div class="ticket-meta-bar" id="ticketMetaBar">
+          <span id="ticketProgressLabel">🎯 Marked: <strong id="ticketMarkedCount">0</strong>/15</span>
+          <div class="ticket-progress-wrap">
+            <div class="ticket-progress-track">
+              <div class="ticket-progress-fill" id="ticketProgressFill"></div>
+            </div>
+          </div>
+          <span id="ticketWaitingBadge" class="paper-sticker-badge" style="display:none; background:#fee2e2; color:#b91c1c;">🔥 1 left!</span>
+          <span id="ticketPercentLabel" style="color:#047857;">0%</span>
+        </div>
+
+        <div class="tickets-stack" id="ticketGrid"></div>
+
+        <!-- Live Emoji Reactions Bar -->
+        <div class="reactions-bar" aria-label="Quick Reactions">
+          <button type="button" class="react-btn" onclick="sendReaction('🎉')">🎉</button>
+          <button type="button" class="react-btn" onclick="sendReaction('🔥')">🔥</button>
+          <button type="button" class="react-btn" onclick="sendReaction('👏')">👏</button>
+          <button type="button" class="react-btn" onclick="sendReaction('😂')">😂</button>
+          <button type="button" class="react-btn" onclick="sendReaction('1️⃣ To Go!')">1️⃣ To Go!</button>
+        </div>
+
+        <!-- Last 5 Called Numbers Strip right below Ticket -->
+        <div class="last5-strip" id="ticketLast5Strip">
+          <span class="last5-label" id="last5Label">🎱 Last 5 Numbers:</span>
+          <div class="last5-balls" id="last5Balls">
+            <span class="l5-ball">-</span>
+          </div>
+        </div>
+
+        <!-- Claim Prize Stickers + Inline Draw Number Popup Zone -->
+        <div class="claims-popup-zone" id="claimsPopupZone">
+          <div style="font-weight: 800; font-size: 0.92rem;" id="claimPrizesHeading">🏆 Claim Prize Stickers:</div>
+          <div class="claims-grid" id="claimButtons"></div>
+
+          <!-- Draw Number Popup (Appears right over Claim Prize Stickers) -->
+          <div id="drawPopup" onclick="closeDrawPopup()">
+            <div class="popup-card" onclick="event.stopPropagation(); closeDrawPopup();">
+              <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeDrawPopup();" aria-label="Close popup">✕</button>
+              <div class="popup-label" id="popupDrawnLabel">Number Drawn</div>
+              <div class="popup-number" id="popupNumber">--</div>
+              <div class="popup-lingo" id="popupLingo">Get ready!</div>
+              <div class="popup-hint" id="popupDismissHint">Digital Swami • Tap sticker to dismiss</div>
+            </div>
+          </div>
+        </div>
+        <span class="panel-watermark" aria-hidden="true">Digital Swami</span>
+      </section>
+
+      <!-- Master 1-90 Board -->
+      <section class="paper-panel" aria-label="Master Tambola Board 1 to 90">
+        <strong style="font-size: 1rem;" id="masterBoardHeading">📋 Master Board (1–90)</strong>
+        <div class="board" id="masterBoard"></div>
+        <span class="panel-watermark" aria-hidden="true">Digital Swami</span>
+      </section>
+    </div>
+
+    <!-- Publisher Content & Guide -->
+    <section class="paper-panel publisher-guide-panel" id="publisherGuideSection" aria-labelledby="guideHeading">
+      <h2 id="guideHeading" class="section-heading">📖 About Digital Tambola (Housie) &amp; Complete Guide</h2>
+      <div class="publisher-guide-grid">
+        <article class="publisher-guide-box">
+          <h3>🎟️ Unique 15-Number Tickets</h3>
+          <p>Each Tambola (Housie) ticket is a 3×9 grid containing 15 unique numbers from 1 to 90 arranged across nine columns. Play 1, 2, or 3 tickets per round and mark called numbers as the host draws.</p>
+        </article>
+        <article class="publisher-guide-box">
+          <h3>🏆 Standard &amp; Bonus Prize Patterns</h3>
+          <p>Hosts can enable <strong>Jaldi Five</strong>, <strong>Early Seven</strong>, <strong>Top/Middle/Bottom Lines</strong>, <strong>Four Corners</strong>, <strong>Breakfast/Lunch/Dinner</strong> columns, and <strong>Full House</strong>.</p>
+        </article>
+        <article class="publisher-guide-box">
+          <h3>🌐 Multiplayer Rooms &amp; Languages</h3>
+          <p>Host a room to get a Room ID (such as <code>VSA-XXXX</code>), share via QR code or WhatsApp, react live with emojis, and switch between English, Telugu (తెలుగు), and Hindi (हिंदी).</p>
+        </article>
+        <article class="publisher-guide-box">
+          <h3>🛡️ Privacy &amp; Fair Play</h3>
+          <p>Room state and ticket selections are managed during live sessions with browser storage used only for local preferences. Published by <strong>Digital Swami</strong>.</p>
+        </article>
+      </div>
+      <span class="panel-watermark" aria-hidden="true">Digital Swami</span>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="paper-panel publisher-guide-panel" id="faqSection" aria-labelledby="faqHeading">
+      <h2 id="faqHeading" class="section-heading">❓ Frequently Asked Questions (FAQ)</h2>
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary>What is Digital Tambola (Housie)?</summary>
+          <p>Digital Tambola (also known as Housie or Indian Bingo) is a free browser-based multiplayer number game where a host draws numbers from 1 to 90 and players mark matching numbers on 3×9 tickets containing 15 unique numbers.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Are all Tambola tickets unique for every player?</summary>
+          <p>Yes. The host tracks issued ticket signatures so every player in the room receives strictly distinct 15-number tickets with no duplicate number sets.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What are the winning patterns in Digital Tambola?</summary>
+          <p>Players can claim Jaldi Five, Early Seven, Top Line, Middle Line, Bottom Line, Four Corners, Breakfast, Lunch, Dinner, and Full House.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Which languages are supported?</summary>
+          <p>Digital Tambola supports <strong>English</strong>, <strong>Telugu (తెలుగు)</strong>, and <strong>Hindi (हिंदी)</strong> for both the interface and the built-in voice number caller.</p>
+        </details>
+      </div>
+      <span class="panel-watermark" aria-hidden="true">Digital Swami</span>
+    </section>
+  </main>
+
+  <!-- Scene-Friendly Bottom Ad Slot -->
+  <aside class="scene-ad-container" id="sceneAdContainer" aria-label="Advertisement">
+    <div class="scene-ad-label" id="sceneAdLabel">Sponsored</div>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2736631684006337"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </aside>
+
+  <footer class="page-footer">
+    👑 <strong>Digital Tambola (Housie)</strong> • Published by <strong>Digital Swami</strong> • V2 Multi-Language Online Edition
+  </footer>
+
+  <!-- Random Ticket Selection Modal -->
+  <div id="ticketSelectModal" onclick="closeRandomTicketSelector()">
+    <div class="ticket-picker-card" onclick="event.stopPropagation()">
+      <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeRandomTicketSelector();" aria-label="Close ticket picker">✕</button>
+      <div style="text-align: center;">
+        <h2 style="margin: 0 0 4px; font-size: 1.2rem; color: #92400e;" id="pickTicketModalTitle">🎟️ Choose Your Random Ticket</h2>
+        <div style="font-size: 0.82rem; font-weight: 600; color: #475569;" id="pickTicketModalSub">
+          Select 1, 2, or 3 tickets and tap your preferred cards below!
+        </div>
+        <div class="wa-theme-pills" style="margin-top: 8px;">
+          <button type="button" class="wa-theme-chip active" id="tcount-1" onclick="setTicketCountPreference(1)">1 🎟️</button>
+          <button type="button" class="wa-theme-chip" id="tcount-2" onclick="setTicketCountPreference(2)">2 🎟️🎟️</button>
+          <button type="button" class="wa-theme-chip" id="tcount-3" onclick="setTicketCountPreference(3)">3 🎟️🎟️🎟️</button>
+        </div>
+      </div>
+
+      <div class="candidate-tickets-grid" id="candidateTicketsGrid"></div>
+
+      <div class="row" style="justify-content: center; gap: 10px; margin-top: 8px;">
+        <button type="button" class="sticker-btn secondary" id="shuffleTicketsBtn" onclick="generateCandidateTickets()">🔀 Shuffle New Tickets</button>
+        <button type="button" class="sticker-btn success" id="confirmTicketBtn" onclick="confirmSelectedRandomTicket()">✅ Confirm & Play</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive WhatsApp Invitation Studio Modal -->
+  <div id="waInviteModal" onclick="closeWhatsAppInviteModal()">
+    <div class="wa-studio-card" onclick="event.stopPropagation()">
+      <div class="row" style="justify-content: space-between;">
+        <strong style="font-size: 1.05rem; color: #065f46;" id="waStudioTitle">💬 Interactive WhatsApp Invitation</strong>
+        <button class="sticker-btn secondary compact-btn" onclick="closeWhatsAppInviteModal()">✕</button>
+      </div>
+
+      <div class="wa-theme-pills">
+        <button type="button" class="wa-theme-chip active" id="wa-theme-royal" onclick="setWaInviteTheme('royal')">👑 Royal Gold</button>
+        <button type="button" class="wa-theme-chip" id="wa-theme-emerald" onclick="setWaInviteTheme('emerald')">💚 WhatsApp Emerald</button>
+        <button type="button" class="wa-theme-chip" id="wa-theme-crimson" onclick="setWaInviteTheme('crimson')">🔥 Festive Crimson</button>
+      </div>
+
+      <div class="wa-preview-ticket theme-royal" id="waPreviewTicket">
+        <div class="wa-invite-crown">👑</div>
+        <div class="wa-invite-heading" id="waCardHeading">DIGITAL TAMBOLA VIP INVITE</div>
+        <div class="wa-invite-host-line" id="waCardHostLine">Hosted by Host • Round 1</div>
+        <div class="wa-invite-note-preview" id="waCardNotePreview">"Join our live Tambola game & win exciting prizes!"</div>
+        <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #cbd5e1;">Room Code</div>
+        <div class="wa-room-pill" id="waCardRoomCode">VSA-0000</div>
+        <img id="waQrImage" class="wa-qr-img" alt="Room Join QR Code" style="display:none;" onerror="this.style.display='none'" />
+      </div>
+
+      <div class="wa-controls-box">
+        <input type="text" id="waEventTitleInput" maxlength="36" placeholder="Event Title (e.g., Family Tambola Night)" oninput="waTitleCustom=true; updateWaInvitePreview()" />
+        <input type="text" id="waCustomMsgInput" maxlength="90" placeholder="Custom Invite Note (e.g., Join fast!)" oninput="waNoteCustom=true; updateWaInvitePreview()" />
+      </div>
+
+      <div class="wa-actions-grid">
+        <button type="button" class="sticker-btn whatsapp-btn" id="waSendDirectBtn" onclick="sendWhatsAppInvitation()">📲 Send Invitation on WhatsApp</button>
+        <button type="button" class="sticker-btn" id="waDownloadCardBtn" onclick="downloadWhatsAppInviteCard()">🖼️ Save Invite Card</button>
+        <button type="button" class="sticker-btn secondary" id="waCopyInviteBtn" onclick="copyWhatsAppInviteText()">📋 Copy Invite Text</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Rules & How to Play Popup -->
+  <div id="rulesPopupModal" onclick="closeRulesPopup()">
+    <div class="rules-paper-card" onclick="event.stopPropagation()">
+      <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeRulesPopup();" aria-label="Close rules">✕</button>
+      <h2 class="rules-title" id="rulesModalTitle">📜 Digital Tambola — Rules & How to Play</h2>
+      <div id="rulesBodyContainer"></div>
+      <div style="text-align: center; margin-top: 12px;">
+        <button class="sticker-btn" id="rulesGotItBtn" onclick="closeRulesPopup()">✅ Got It, Let's Play!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winners Announcement Folding Paper Page -->
+  <div id="winnerFoldModal" onclick="closeWinnerReveal()">
+    <div class="folding-paper-wrapper" id="foldingPaperBox" onclick="event.stopPropagation()">
+      <div class="paper-flap-top">
+        <button type="button" class="popup-close-x" onclick="event.stopPropagation(); closeWinnerReveal();" aria-label="Close winner announcement">✕</button>
+        <div class="wax-seal">🏆</div>
+        <div style="font-size: 0.78rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #92400e;" id="officialResultBanner">
+          Official Winners Announcement
+        </div>
+      </div>
+      <div class="paper-center-sheet">
+        <div class="winner-prize-sticker" id="winnerPrizeLabel">JALDI FIVE</div>
+        <div class="winner-name-reveal" id="winnerNameText">Player Name</div>
+        <div class="winner-sub-note" id="winnerVerifiedNote">Verified & Approved! 🎉</div>
+        <div class="modal-top3-list" id="modalTop3List"></div>
+        <div class="modal-winner-actions" id="modalWinnerActions">
+          <button class="sticker-btn danger compact-btn" id="modalNewRoundBtn" style="display: none;" onclick="startNewRoundFromWinnerModal()">🔁 Start New Round</button>
+          <button class="sticker-btn secondary compact-btn" id="modalContinueBtn" onclick="closeWinnerReveal()">👍 Continue</button>
+        </div>
+      </div>
+      <div class="paper-flap-bottom">
+        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;" id="winnerFooterText">
+          Digital Swami • Official Result Card
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* ==========================================================================
+       0. DYNAMIC PWA MANIFEST
+       ========================================================================== */
+    (function setupPWAManifest() {
+      try {
+        const manifest = {
+          name: "Digital Tambola (Housie) • Digital Swami",
+          short_name: "Digital Tambola",
+          start_url: window.location.pathname || "/",
+          display: "standalone",
+          background_color: "#090d16",
+          theme_color: "#090d16",
+          icons: [{
+            src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>",
+            sizes: "192x192",
+            type: "image/svg+xml"
+          }]
+        };
+        const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+        document.getElementById("pwaManifest").href = URL.createObjectURL(blob);
+      } catch (e) {}
+    })();
+
+    /* ==========================================================================
+       1. MULTI-LANGUAGE DICTIONARY (ENGLISH / TELUGU / HINDI)
+       ========================================================================== */
+    const ALL_PRIZE_KEYS = ["jaldi5", "early7", "topLine", "midLine", "botLine", "corners", "breakfast", "lunch", "dinner", "fullHouse"];
+    const DEFAULT_ENABLED_PRIZES = {
+      jaldi5: true, early7: false, topLine: true, midLine: true, botLine: true,
+      corners: true, breakfast: false, lunch: false, dinner: false, fullHouse: true
+    };
+
+    const I18N = {
+      en: {
+        speechLang: "en-IN",
+        appTitle: "👑 Digital Tambola (Housie)",
+        rulesBtn: "📜 Rules & Play",
+        rulesShortBtn: "📜 Rules",
+        audioOn: "🔊 Audio: ON",
+        audioOff: "🔇 Audio: OFF",
+        popupsOn: "💬 Popups: ON",
+        popupsOff: "💬 Popups: OFF",
+        leaveBtn: "🚪 Leave",
+        leaveConfirm: "Leave this Tambola room and return to lobby?",
+        connectingSync: "🔗 Connected! Syncing room...",
+        notCalledYet: (n) => `⚠️ Number ${n} has not been called yet!`,
+        ticketCardLabel: "🎟️ Ticket #",
+        tapToPick: "Tap to Pick",
+        selectedLabel: "✅ Selected",
+        ticketConfirmed: "🎟️ Tickets confirmed!",
+        ticketLocked: "⚠️ Game already started — tickets locked for this round!",
+        netBanner: "📡 Every Player Gets Strictly Unique 15-Number Tickets",
+        relayReady: "● Any Network Ready",
+        namePlaceholder: "Your Name (e.g., Arjun)",
+        roomPlaceholder: "Enter Host Room ID (e.g., VSA-4821)",
+        hostNewRoom: "✨ Host New Room",
+        joinRoom: "🚀 Join Room",
+        quickJoin: "⚡ Quick Join Now",
+        resumeRoom: "♻️ Resume Room",
+        roomLabel: "Room",
+        lblRoundShort: "R",
+        copyId: "📋 Copy ID",
+        waInviteBtn: "💬 WhatsApp Invite",
+        waStudioTitle: "💬 Interactive WhatsApp Invitation",
+        waSendDirect: "📲 Send Invitation on WhatsApp",
+        waSaveCard: "🖼️ Save Invite Card",
+        waCopyText: "📋 Copy Invite Text",
+        waDefaultEvent: "DIGITAL TAMBOLA LIVE PARTY",
+        waDefaultNote: "Join our live Tambola game & win exciting prizes!",
+        shareLink: "📤 Share Link",
+        reconnect: "🔄 Reconnect",
+        playersLabel: "Players",
+        calledLabel: "Called",
+        ticketLabel: "Ticket",
+        onlineSuffix: "online",
+        connectedLobby: "👥 Connected Lobby",
+        drawNumber: "🎲 Draw Number",
+        pickTicketTitle: "🎟️ Choose Your Random Tickets",
+        pickTicketSub: "Select 1, 2, or 3 tickets and tap your preferred cards below!",
+        shuffleTicketsBtn: "🔀 Shuffle New Tickets",
+        confirmTicketBtn: "✅ Confirm & Play",
+        changeTicketBtn: "🔀 Change Ticket",
+        autoDrawStart: "▶ Auto Draw",
+        autoDrawStop: "⏸ Stop Auto",
+        last5Label: "🎱 Last 5 Numbers:",
+        autoMarkOn: "🪄 Auto-Mark: ON",
+        autoMarkOff: "🪄 Auto-Mark: OFF",
+        newRoundLocked: "🔒 New Round",
+        newRoundUnlocked: "🔁 New Round",
+        startNewRoundBtn: "🔁 Start New Round",
+        continueBtn: "👍 Continue",
+        hintCompleteFH: "⏳ Complete Full House to unlock New Round",
+        hintReadyNewRound: "✅ Full House complete! Ready for New Round.",
+        yourTicketHeading: "🎟️ Your Unique Tambola Ticket",
+        tapNumbersHint: "✒️ Tap called numbers",
+        ticketProgressPrefix: "🎯 Best Ticket:",
+        waitingOneLeft: "🔥 1 left for Full House!",
+        claimPrizesHeading: "🏆 Claim Prize Stickers:",
+        masterBoardHeading: "📋 Master Board (1–90)",
+        numberDrawnLabel: "Number Drawn",
+        dismissHint: "Digital Swami • Tap sticker to dismiss",
+        officialResult: "Official Winners Announcement",
+        verifiedApproved: "Verified & Approved! 🎉",
+        winnerFooter: "Digital Swami • Official Result Card",
+        top3Heading: "🏆 Top 3 Players",
+        top3PanelHeading: "Top 3 Players Leaderboard",
+        fhCompleted: "Full House Completed!",
+        medals: ["🥇 #1 Champion", "🥈 #2 Runner-Up", "🥉 #3 Third Place"],
+        hitsLabel: "Hits",
+        wonLabel: "Won",
+        prizes: {
+          jaldi5: "Jaldi Five", early7: "Early Seven", topLine: "Top Line", midLine: "Middle Line",
+          botLine: "Bottom Line", corners: "Four Corners", breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", fullHouse: "Full House"
+        },
+        rulesTitle: "📜 Digital Tambola — Rules & How to Play",
+        gotItBtn: "✅ Got It, Let's Play!",
+        rulesHTML: `
+          <div class="rules-section">
+            <h3>🎟️ V2 Features: Multi-Ticket, Smart Glow & Live Reactions</h3>
+            <ul>
+              <li><strong>1–3 Unique Tickets:</strong> Pick 1, 2, or 3 unique 15-number tickets before the round starts.</li>
+              <li><strong>Smart Claim Glow:</strong> Prize buttons automatically glow gold when your ticket completes a pattern!</li>
+              <li><strong>Bonus Prizes:</strong> Hosts can toggle <b>Early Seven</b>, <b>Breakfast</b> (Cols 1–3), <b>Lunch</b> (Cols 4–6), and <b>Dinner</b> (Cols 7–9).</li>
+            </ul>
+          </div>
+          <div class="rules-section">
+            <h3>🏆 Winning Prize Patterns</h3>
+            <div class="rules-grid">
+              <div class="rule-chip"><strong>⚡ Jaldi 5 / Early 7</strong>First <b>5</b> or <b>7</b> numbers on a ticket.</div>
+              <div class="rule-chip"><strong>⬆️➡️⬇️ Lines</strong>All <b>5 numbers</b> in Top, Middle, or Bottom row.</div>
+              <div class="rule-chip"><strong>📐 Four Corners</strong>First & last numbers of Top and Bottom rows.</div>
+              <div class="rule-chip"><strong>🍳🍱🍽️ Meal Lines</strong>All numbers in Cols 1–3 (Breakfast), 4–6 (Lunch), or 7–9 (Dinner).</div>
+              <div class="rule-chip"><strong>👑 Full House</strong>All <b>15 numbers</b> on a ticket crossed off.</div>
+            </div>
+          </div>
+        `,
+        sayNumber: (n, lingo) => lingo ? `${lingo}` : `Number ${n}`,
+        sayWinner: (name, prize) => `Congratulations ${name} for winning ${prize}`
+      },
+
+      te: {
+        speechLang: "te-IN",
+        appTitle: "👑 డిజిటల్ తంబోలా (హౌసీ)",
+        rulesBtn: "📜 నియమాలు & ఆడే విధానం",
+        rulesShortBtn: "📜 నియమాలు",
+        audioOn: "🔊 ఆడియో: ON",
+        audioOff: "🔇 ఆడియో: OFF",
+        popupsOn: "💬 పాప్-అప్స్: ON",
+        popupsOff: "💬 పాప్-అప్స్: OFF",
+        leaveBtn: "🚪 బయటకు",
+        leaveConfirm: "ఈ రూమ్ నుండి బయటకు వెళ్లి లాబీకి తిరిగి వెళ్లాలా?",
+        connectingSync: "🔗 కనెక్ట్ అయింది! రూమ్ సింక్ అవుతోంది...",
+        notCalledYet: (n) => `⚠️ నంబర్ ${n} ఇంకా పిలవబడలేదు!`,
+        ticketCardLabel: "🎟️ టికెట్ #",
+        tapToPick: "ఎంచుకోవడానికి నొక్కండి",
+        selectedLabel: "✅ ఎంచుకున్నారు",
+        ticketConfirmed: "🎟️ టికెట్లు ఖరారయ్యాయి!",
+        ticketLocked: "⚠️ ఆట ప్రారంభమైంది — ఈ రౌండ్‌కు టికెట్లు లాక్ చేయబడ్డాయి!",
+        netBanner: "📡 ప్రతి ప్లేయర్కు పూర్తిగా వేర్వేరు 15 నంబర్ల టికెట్లు లభిస్తాయి",
+        relayReady: "● ఏ నెట్వర్క్ అయినా సిద్ధం",
+        namePlaceholder: "మీ పేరు (ఉదా: అర్జున్)",
+        roomPlaceholder: "రూమ్ ID నమోదు చేయండి (ఉదా: VSA-4821)",
+        hostNewRoom: "✨ కొత్త రూమ్ క్రియేట్ చేయండి",
+        joinRoom: "🚀 రూమ్లో చేరండి",
+        quickJoin: "⚡ వెంటనే జాయిన్ అవ్వండి",
+        resumeRoom: "♻️ రూమ్ కొనసాగించండి",
+        roomLabel: "రూమ్",
+        lblRoundShort: "రౌండ్ ",
+        copyId: "📋 ID కాపీ",
+        waInviteBtn: "💬 వాట్సాప్ ఆహ్వానం",
+        waStudioTitle: "💬 ఇంటరాక్టివ్ వాట్సాప్ ఆహ్వానం",
+        waSendDirect: "📲 వాట్సాప్లో ఆహ్వానం పంపండి",
+        waSaveCard: "🖼️ ఇన్వైట్ కార్డ్ సేవ్ చేయండి",
+        waCopyText: "📋 ఇన్వైట్ మెసేజ్ కాపీ",
+        waDefaultEvent: "డిజిటల్ తంబోలా లైవ్ గేమ్",
+        waDefaultNote: "మా లైవ్ తంబోలా ఆటలో చేరండి, బహుమతులు గెలుచుకోండి!",
+        shareLink: "📤 లింక్ షేర్",
+        reconnect: "🔄 రీకనెక్ట్",
+        playersLabel: "ప్లేయర్స్",
+        calledLabel: "పిలిచినవి",
+        ticketLabel: "టికెట్",
+        onlineSuffix: "ఆన్లైన్",
+        connectedLobby: "👥 జాయిన్ అయిన ప్లేయర్స్",
+        drawNumber: "🎲 నంబర్ తీయండి",
+        pickTicketTitle: "🎟️ మీ రాండమ్ టికెట్లు ఎంచుకోండి",
+        pickTicketSub: "1, 2 లేదా 3 టికెట్లు ఎంచుకుని కింది కార్డులపై నొక్కండి!",
+        shuffleTicketsBtn: "🔀 కొత్త టికెట్లు షఫుల్ చేయండి",
+        confirmTicketBtn: "✅ నిర్ధారించి ఆడండి",
+        changeTicketBtn: "🔀 టికెట్ మార్చండి",
+        autoDrawStart: "▶ ఆటో డ్రా",
+        autoDrawStop: "⏸ ఆటో ఆపండి",
+        last5Label: "🎱 చివరి 5 నంబర్లు:",
+        autoMarkOn: "🪄 ఆటో-మార్క్: ON",
+        autoMarkOff: "🪄 ఆటో-మార్క్: OFF",
+        newRoundLocked: "🔒 కొత్త రౌండ్",
+        newRoundUnlocked: "🔁 కొత్త రౌండ్",
+        startNewRoundBtn: "🔁 కొత్త రౌండ్ ప్రారంభించండి",
+        continueBtn: "👍 కొనసాగండి",
+        hintCompleteFH: "⏳ ఫుల్ హౌస్ పూర్తయ్యాక కొత్త రౌండ్ అన్లాక్ అవుతుంది",
+        hintReadyNewRound: "✅ ఫుల్ హౌస్ పూర్తయింది! కొత్త రౌండ్ సిద్ధంగా ఉంది.",
+        yourTicketHeading: "🎟️ మీ ప్రత్యేక తంబోలా టికెట్",
+        tapNumbersHint: "✒️ పిలిచిన నంబర్లపై నొక్కండి",
+        ticketProgressPrefix: "🎯 బెస్ట్ టికెట్:",
+        waitingOneLeft: "🔥 ఫుల్ హౌస్‌కు 1 నంబర్ మాత్రమే ఉంది!",
+        claimPrizesHeading: "🏆 బహుమతులు క్లెయిమ్ చేయండి:",
+        masterBoardHeading: "📋 మాస్టర్ బోర్డ్ (1–90)",
+        numberDrawnLabel: "వచ్చిన నంబర్",
+        dismissHint: "డిజిటల్ స్వామి • మూసివేయడానికి నొక్కండి",
+        officialResult: "అధికారిక విజేతల ప్రకటన",
+        verifiedApproved: "ధృవీకరించబడింది! 🎉",
+        winnerFooter: "డిజిటల్ స్వామి • అధికారిక ఫలిత పత్రం",
+        top3Heading: "🏆 టాప్ 3 విజేతలు",
+        top3PanelHeading: "టాప్ 3 ప్లేయర్స్ లీడర్బోర్డ్",
+        fhCompleted: "ఫుల్ హౌస్ పూర్తయింది!",
+        medals: ["🥇 #1 విజేత", "🥈 #2 రన్నర్-అప్", "🥉 #3 మూడవ స్థానం"],
+        hitsLabel: "మ్యాచ్",
+        wonLabel: "గెలిచినవి",
+        prizes: {
+          jaldi5: "జల్దీ ఫైవ్", early7: "ఎర్లీ సెవెన్", topLine: "టాప్ లైన్", midLine: "మిడిల్ లైన్",
+          botLine: "బాటమ్ లైన్", corners: "ఫోర్ కార్నర్స్", breakfast: "బ్రేక్‌ఫాస్ట్", lunch: "లంచ్", dinner: "డిన్నర్", fullHouse: "ఫుల్ హౌస్"
+        },
+        rulesTitle: "📜 డిజిటల్ తంబోలా — నియమాలు & ఆడే విధానం",
+        gotItBtn: "✅ అర్థమైంది, ఆట ప్రారంభిద్దాం!",
+        rulesHTML: `
+          <div class="rules-section">
+            <h3>🎟️ కొత్త V2 ఫీచర్లు</h3>
+            <ul>
+              <li><strong>1–3 టికెట్లు:</strong> ఆట ప్రారంభానికి ముందు 1, 2 లేదా 3 వేర్వేరు టికెట్లు ఎంచుకోండి.</li>
+              <li><strong>స్మార్ట్ క్లెయిమ్ గ్లో:</strong> బహుమతి పూర్తయిన వెంటనే బటన్ బంగారు రంగులో మెరుస్తుంది!</li>
+              <li><strong>అదనపు బహుమతులు:</strong> ఎర్లీ సెవెన్, బ్రేక్‌ఫాస్ట్, లంచ్, డిన్నర్ ఆప్షన్లు ఉన్నాయి.</li>
+            </ul>
+          </div>
+        `,
+        sayNumber: (n) => `నంబర్ ${n}`,
+        sayWinner: (name, prize) => `అభినందనలు ${name}, ${prize} గెలుచుకున్నారు`
+      },
+
+      hi: {
+        speechLang: "hi-IN",
+        appTitle: "👑 डिजिटल तंबोला (हाउज़ी)",
+        rulesBtn: "📜 नियम और खेलें",
+        rulesShortBtn: "📜 नियम",
+        audioOn: "🔊 ऑडियो: ON",
+        audioOff: "🔇 ऑडियो: OFF",
+        popupsOn: "💬 पॉप-अप: ON",
+        popupsOff: "💬 पॉप-अप: OFF",
+        leaveBtn: "🚪 बाहर निकलें",
+        leaveConfirm: "क्या आप इस रूम को छोड़कर लॉबी में वापस जाना चाहते हैं?",
+        connectingSync: "🔗 कनेक्ट हो गया! रूम सिंक हो रहा है...",
+        notCalledYet: (n) => `⚠️ नंबर ${n} अभी तक नहीं बोला गया है!`,
+        ticketCardLabel: "🎟️ टिकट #",
+        tapToPick: "चुनने के लिए टैप करें",
+        selectedLabel: "✅ चुना गया",
+        ticketConfirmed: "🎟️ टिकट कन्फर्म हो गए!",
+        ticketLocked: "⚠️ खेल शुरू हो चुका है — इस राउंड के लिए टिकट लॉक हैं!",
+        netBanner: "📡 हर खिलाड़ी को बिल्कुल अलग 15 नंबरों के टिकट मिलते हैं",
+        relayReady: "● किसी भी नेटवर्क पर तैयार",
+        namePlaceholder: "आपका नाम (जैसे: अर्जुन)",
+        roomPlaceholder: "रूम ID दर्ज करें (जैसे: VSA-4821)",
+        hostNewRoom: "✨ नया रूम बनाएं",
+        joinRoom: "🚀 रूम जॉइन करें",
+        quickJoin: "⚡ अभी जॉइन करें",
+        resumeRoom: "♻️ रूम फिर से खोलें",
+        roomLabel: "रूम",
+        lblRoundShort: "राउंड ",
+        copyId: "📋 ID कॉपी",
+        waInviteBtn: "💬 व्हाट्सएप निमंत्रण",
+        waStudioTitle: "💬 इंटरैक्टिव व्हाट्सएप निमंत्रण",
+        waSendDirect: "📲 व्हाट्सएप पर निमंत्रण भेजें",
+        waSaveCard: "🖼️ इनवाइट कार्ड सेव करें",
+        waCopyText: "📋 निमंत्रण टेक्स्ट कॉपी करें",
+        waDefaultEvent: "डिजिटल तंबोला लाइव पार्टी",
+        waDefaultNote: "हमारे लाइव तंबोला गेम में शामिल हों और इनाम जीतें!",
+        shareLink: "📤 लिंक शेयर",
+        reconnect: "🔄 रीकनेक्ट",
+        playersLabel: "खिलाड़ी",
+        calledLabel: "बोले गए",
+        ticketLabel: "टिकट",
+        onlineSuffix: "ऑनलाइन",
+        connectedLobby: "👥 जुड़े हुए खिलाड़ी",
+        drawNumber: "🎲 नंबर निकालें",
+        pickTicketTitle: "🎟️ अपने रैंडम टिकट चुनें",
+        pickTicketSub: "1, 2 या 3 टिकट चुनें और नीचे दिए गए कार्ड पर टैप करें!",
+        shuffleTicketsBtn: "🔀 नए टिकट शफ़ल करें",
+        confirmTicketBtn: "✅ कन्फर्म करें और खेलें",
+        changeTicketBtn: "🔀 टिकट बदलें",
+        autoDrawStart: "▶ ऑटो ड्रॉ",
+        autoDrawStop: "⏸ ऑटो रोकें",
+        last5Label: "🎱 पिछले 5 नंबर:",
+        autoMarkOn: "🪄 ऑटो-मार्क: ON",
+        autoMarkOff: "🪄 ऑटो-मार्क: OFF",
+        newRoundLocked: "🔒 नया राउंड",
+        newRoundUnlocked: "🔁 नया राउंड",
+        startNewRoundBtn: "🔁 नया राउंड शुरू करें",
+        continueBtn: "👍 आगे बढ़ें",
+        hintCompleteFH: "⏳ फुल हाउस पूरा होने पर नया राउंड खुलेगा",
+        hintReadyNewRound: "✅ फुल हाउस पूरा हुआ! नया राउंड शुरू करने के लिए तैयार।",
+        yourTicketHeading: "🎟️ आपका यूनिक तंबोला टिकट",
+        tapNumbersHint: "✒️ बोले गए नंबरों पर टैप करें",
+        ticketProgressPrefix: "🎯 बेस्ट टिकट:",
+        waitingOneLeft: "🔥 फुल हाउस के लिए सिर्फ 1 नंबर बाकी!",
+        claimPrizesHeading: "🏆 इनाम क्लेम करें:",
+        masterBoardHeading: "📋 मास्टर बोर्ड (1–90)",
+        numberDrawnLabel: "निकला हुआ नंबर",
+        dismissHint: "डिजिटल स्वामी • बंद करने के लिए टैप करें",
+        officialResult: "आधिकारिक विजेता घोषणा",
+        verifiedApproved: "सत्यापित और स्वीकृत! 🎉",
+        winnerFooter: "डिजिटल स्वामी • आधिकारिक परिणाम कार्ड",
+        top3Heading: "🏆 टॉप 3 खिलाड़ी",
+        top3PanelHeading: "टॉप 3 खिलाड़ी लीडरबोर्ड",
+        fhCompleted: "फुल हाउस पूरा हुआ!",
+        medals: ["🥇 #1 विजेता", "🥈 #2 उपविजेता", "🥉 #3 तीसरा स्थान"],
+        hitsLabel: "हिट्स",
+        wonLabel: "जीता",
+        prizes: {
+          jaldi5: "जल्दी फाइव", early7: "अर्ली सेवन", topLine: "टॉप लाइन", midLine: "मिडिल लाइन",
+          botLine: "बॉटम लाइन", corners: "फोर कॉर्नर्स", breakfast: "ब्रेकफास्ट", lunch: "लंच", dinner: "डिनर", fullHouse: "फुल हाउस"
+        },
+        rulesTitle: "📜 डिजिटल तंबोला — नियम और खेलने का तरीका",
+        gotItBtn: "✅ समझ गया, खेल शुरू करें!",
+        rulesHTML: `
+          <div class="rules-section">
+            <h3>🎟️ नए V2 फीचर्स</h3>
+            <ul>
+              <li><strong>1–3 टिकट:</strong> राउंड शुरू होने से पहले 1, 2 या 3 अलग-अलग टिकट चुनें।</li>
+              <li><strong>स्मार्ट क्लेम ग्लो:</strong> पैटर्न पूरा होते ही इनाम बटन सुनहरे रंग में चमकने लगता है!</li>
+              <li><strong>बोनस इनाम:</strong> होस्ट अर्ली सेवन, ब्रेकफास्ट, लंच और डिनर भी चालू कर सकते हैं।</li>
+            </ul>
+          </div>
+        `,
+        sayNumber: (n) => `नंबर ${n}`,
+        sayWinner: (name, prize) => `बधाई हो ${name}, आपने ${prize} जीता है`
+      }
+    };
+
+    const LINGO_EN = {
+      1: "Kelly's Eye, Number 1", 2: "One Little Duck, Number 2", 3: "Cup of Tea, Number 3",
+      4: "Knock at the Door, Number 4", 5: "Man Alive, Number 5", 6: "Tom Mix, Number 6",
+      7: "Lucky Seven, Number 7", 8: "Garden Gate, Number 8", 9: "Doctor's Orders, Number 9",
+      10: "Prime Minister's Den, 10", 11: "Legs Eleven, 11", 12: "One Dozen, 12",
+      13: "Unlucky for Some, 13", 14: "Valentine's Day, 14", 15: "Young and Keen, 15",
+      16: "Sweet Sixteen, 16", 17: "Dancing Queen, 17", 18: "Coming of Age, 18",
+      19: "Goodbye Teens, 19", 20: "One Score, 20", 21: "Key of the Door, 21",
+      22: "Two Little Ducks, 22", 23: "Thee and Me, 23", 24: "Two Dozen, 24",
+      25: "Duck and Dive, 25", 26: "Pick and Mix, 26", 27: "Gateway to Heaven, 27",
+      28: "In a State, 28", 29: "Rise and Shine, 29", 30: "Dirty Gertie, 30",
+      31: "Get Up and Run, 31", 32: "Buckle My Shoe, 32", 33: "All the Threes, 33",
+      34: "Ask for More, 34", 35: "Jump and Jive, 35", 36: "Three Dozen, 36",
+      37: "More than Eleven, 37", 38: "Christmas Cake, 38", 39: "Steps, 39",
+      40: "Life Begins at 40", 41: "Time for Fun, 41", 42: "Winnie the Pooh, 42",
+      43: "Down on Your Knees, 43", 44: "Droopy Drawers, 44", 45: "Halfway There, 45",
+      46: "Up to Tricks, 46", 47: "Four and Seven, 47", 48: "Four Dozen, 48",
+      49: "PC, 49", 50: "Half a Century, 50", 51: "Tweak of the Thumb, 51",
+      52: "Danny La Rue, 52", 53: "Stuck in the Tree, 53", 54: "Clean the Floor, 54",
+      55: "Snakes Alive, 55", 56: "Was She Worth It, 56", 57: "Heinz Varieties, 57",
+      58: "Make Them Wait, 58", 59: "Brighton Line, 59", 60: "Five Dozen, 60",
+      61: "Bakers Bun, 61", 62: "Turn the Screw, 62", 63: "Tickle Me, 63",
+      64: "Red Raw, 64", 65: "Old Age Pension, 65", 66: "Clickety Click, 66",
+      67: "Stairway to Heaven, 67", 68: "Saving Grace, 68", 69: "Either Way Up, 69",
+      70: "Three Score and Ten, 70", 71: "Bang on the Drum, 71", 72: "Six Dozen, 72",
+      73: "Queen Bee, 73", 74: "Hit the Floor, 74", 75: "Strive and Strive, 75",
+      76: "Trombones, 76", 77: "Sunset Strip, 77", 78: "Heaven's Gate, 78",
+      79: "One More Time, 79", 80: "Eight and Blank, 80", 81: "Stop and Run, 81",
+      82: "Straight On Through, 82", 83: "Time for Tea, 83", 84: "Seven Dozen, 84",
+      85: "Staying Alive, 85", 86: "Between the Sticks, 86", 87: "Torquay in Devon, 87",
+      88: "Two Fat Ladies, 88", 89: "Nearly There, 89", 90: "Top of the Shop, 90"
+    };
+
+    const LINGO_TE = {
+      1: "మొదటి అడుగు — నంబర్ 1", 2: "ఒక చిన్న బాతు — నంబర్ 2", 3: "వేడి టీ కప్పు — నంబర్ 3",
+      4: "తలుపు తట్టండి — నంబర్ 4", 5: "పంచ పాండవులు — నంబర్ 5", 6: "సిక్సర్ కొట్టండి — నంబర్ 6",
+      7: "లక్కీ సెవెన్ — నంబర్ 7", 8: "అష్ట దిక్కులు — నంబర్ 8", 9: "నవరత్నాలు — నంబర్ 9",
+      10: "దశావతారాలు — నంబర్ 10", 11: "రెండు ఒకట్లు — నంబర్ 11", 12: "ఒక డజను — నంబర్ 12",
+      13: "పదమూడు — నంబర్ 13", 14: "పద్నాలుగు లోకాలు — నంబర్ 14", 15: "పంద్రాగస్టు — నంబర్ 15",
+      16: "పదహారణాల తెలుగు — నంబర్ 16", 17: "పదిహేడు — నంబర్ 17", 18: "ఓటు హక్కు వయసు — నంబర్ 18",
+      19: "పందొమ్మిది — నంబర్ 19", 20: "ట్వంటీ ట్వంటీ మ్యాచ్ — నంబర్ 20", 21: "ఇరవై ఒక్కటి — నంబర్ 21",
+      22: "రెండు చిన్న బాతులు — నంబర్ 22", 23: "ఇరవై మూడు — నంబర్ 23", 24: "రెండు డజన్లు — నంబర్ 24",
+      25: "సిల్వర్ జూబ్లీ — నంబర్ 25", 26: "రిపబ్లిక్ డే — నంబర్ 26", 27: "ఇరవై ఏడు — నంబర్ 27",
+      28: "ఇరవై ఎనిమిది — నంబర్ 28", 29: "ఇరవై తొమ్మిది — నంబర్ 29", 30: "ముప్పై రోజులు — నంబర్ 30",
+      31: "నెల చివరి రోజు — నంబర్ 31", 32: "ముప్పై రెండు — నంబర్ 32", 33: "మూడు మూడులు — నంబర్ 33",
+      34: "ముప్పై నాలుగు — నంబర్ 34", 35: "ముప్పై ఐదు — నంబర్ 35", 36: "మూడు డజన్లు — నంబర్ 36",
+      37: "ముప్పై ఏడు — నంబర్ 37", 38: "ముప్పై ఎనిమిది — నంబర్ 38", 39: "ముప్పై తొమ్మిది — నంబర్ 39",
+      40: "నలభై — నంబర్ 40", 41: "నలభై ఒక్కటి — నంబర్ 41", 42: "నలభై రెండు — నంబర్ 42",
+      43: "నలభై మూడు — నంబర్ 43", 44: "రెండు నాలుగులు — నంబర్ 44", 45: "సగం ఆట పూర్తయింది — నంబర్ 45",
+      46: "నలభై ఆరు — నంబర్ 46", 47: "స్వాతంత్ర్య సంవత్సరం — నంబర్ 47", 48: "నాలుగు డజన్లు — నంబర్ 48",
+      49: "నలభై తొమ్మిది — నంబర్ 49", 50: "హాఫ్ సెంచరీ — నంబర్ 50", 51: "యాభై ఒక్కటి — నంబర్ 51",
+      52: "పేకాట ముక్కలు — నంబర్ 52", 53: "యాభై మూడు — నంబర్ 53", 54: "యాభై నాలుగు — నంబర్ 54",
+      55: "రెండు ఐదులు — నంబర్ 55", 56: "యాభై ఆరు — నంబర్ 56", 57: "యాభై ఏడు — నంబర్ 57",
+      58: "యాభై ఎనిమిది — నంబర్ 58", 59: "యాభై తొమ్మిది — నంబర్ 59", 60: "అరవై — షష్టిపూర్తి — నంబర్ 60",
+      61: "అరవై ఒక్కటి — నంబర్ 61", 62: "అరవై రెండు — నంబర్ 62", 63: "అరవై మూడు — నంబర్ 63",
+      64: "చదరంగం గళ్ళు — నంబర్ 64", 65: "అరవై ఐదు — నంబర్ 65", 66: "రెండు ఆరులు — నంబర్ 66",
+      67: "అరవై ఏడు — నంబర్ 67", 68: "అరవై ఎనిమిది — నంబర్ 68", 69: "అరవై తొమ్మిది — నంబర్ 69",
+      70: "డెబ్బై — నంబర్ 70", 71: "డెబ్బై ఒక్కటి — నంబర్ 71", 72: "ఆరు డజన్లు — నంబర్ 72",
+      73: "డెబ్బై మూడు — నంబర్ 73", 74: "డెబ్బై నాలుగు — నంబర్ 74", 75: "డైమండ్ జూబ్లీ — నంబర్ 75",
+      76: "డెబ్బై ఆరు — నంబర్ 76", 77: "రెండు ఏడులు — నంబర్ 77", 78: "డెబ్బై ఎనిమిది — నంబర్ 78",
+      79: "డెబ్బై తొమ్మిది — నంబర్ 79", 80: "ఎనభై — నంబర్ 80", 81: "ఎనభై ఒక్కటి — నంబర్ 81",
+      82: "ఎనభై రెండు — నంబర్ 82", 83: "ఎనభై మూడు — నంబర్ 83", 84: "ఏడు డజన్లు — నంబర్ 84",
+      85: "ఎనభై ఐదు — నంబర్ 85", 86: "ఎనభై ఆరు — నంబర్ 86", 87: "ఎనభై ఏడు — నంబర్ 87",
+      88: "రెండు ఎనిమిదులు — నంబర్ 88", 89: "చివరికి దగ్గరలో — నంబర్ 89", 90: "ఆఖరి నంబర్ — నంబర్ 90"
+    };
+
+    const LINGO_HI = {
+      1: "सबसे पहला कदम — नंबर 1", 2: "एक छोटी बत्तख — नंबर 2", 3: "गरम चाय की प्याली — नंबर 3",
+      4: "दरवाज़े पर दस्तक — नंबर 4", 5: "पांच पांडव — नंबर 5", 6: "छक्का लगाओ — नंबर 6",
+      7: "लकी सेवन — नंबर 7", 8: "आठ ठाठ — नंबर 8", 9: "नवरत्न — नंबर 9",
+      10: "दस का दम — नंबर 10", 11: "एक और एक ग्यारह — नंबर 11", 12: "एक दर्जन — नंबर 12",
+      13: "तेरा मेरा साथ — नंबर 13", 14: "चौदह भुवन — नंबर 14", 15: "पंद्रह अगस्त — नंबर 15",
+      16: "सोलह श्रृंगार — नंबर 16", 17: "सत्रह पे खतरा — नंबर 17", 18: "जवानी की दहलीज — नंबर 18",
+      19: "उन्नीस — नंबर 19", 20: "ट्वेंटी-ट्वेंटी — नंबर 20", 21: "इक्कीस — नंबर 21",
+      22: "दो छोटी बत्तखें — नंबर 22", 23: "तेईस — नंबर 23", 24: "दो दर्जन — नंबर 24",
+      25: "सिल्वर जुबली — नंबर 25", 26: "छब्बीस जनवरी — नंबर 26", 27: "सत्ताईस — नंबर 27",
+      28: "अट्ठाईस — नंबर 28", 29: "उनतीस — नंबर 29", 30: "तीस मार खां — नंबर 30",
+      31: "इकतीस — नंबर 31", 32: "बत्तीस दांत — नंबर 32", 33: "दो तिग्गी — नंबर 33",
+      34: "चौंतीस — नंबर 34", 35: "पैंतीस — नंबर 35", 36: "तीन दर्जन — नंबर 36",
+      37: "सैंतीस — नंबर 37", 38: "अड़तीस — नंबर 38", 39: "उनतालीस — नंबर 39",
+      40: "चालीस चोर — नंबर 40", 41: "इकतालीस — नंबर 41", 42: "बयालीस — नंबर 42",
+      43: "तैंतालीस — नंबर 43", 44: "दो चौके — नंबर 44", 45: "आधा सफर पूरा — नंबर 45",
+      46: "छियालीस — नंबर 46", 47: "आज़ादी का साल — नंबर 47", 48: "चार दर्जन — नंबर 48",
+      49: "उनचास — नंबर 49", 50: "अर्धशतक — नंबर 50", 51: "शुभ इक्यावन — नंबर 51",
+      52: "ताश के पत्ते — नंबर 52", 53: "तिरपन — नंबर 53", 54: "चौवन — नंबर 54",
+      55: "पचपन का बचपन — नंबर 55", 56: "छप्पन भोग — नंबर 56", 57: "सत्तावन — नंबर 57",
+      58: "अट्ठावन — नंबर 58", 59: "उनसठ — नंबर 59", 60: "पांच दर्जन — नंबर 60",
+      61: "इकसठ — नंबर 61", 62: "बासठ — नंबर 62", 63: "तिरसठ — नंबर 63",
+      64: "शतरंज के खाने — नंबर 64", 65: "पैंसठ — नंबर 65", 66: "दो छक्के — नंबर 66",
+      67: "सड़सठ — नंबर 67", 68: "अड़सठ — नंबर 68", 69: "उनहत्तर — नंबर 69",
+      70: "सत्तर — नंबर 70", 71: "इकहत्तर — नंबर 71", 72: "छह दर्जन — नंबर 72",
+      73: "तिहत्तर — नंबर 73", 74: "चौहत्तर — नंबर 74", 75: "डायमंड जुबली — नंबर 75",
+      76: "छिहत्तर — नंबर 76", 77: "दो सत्ते — नंबर 77", 78: "अठहत्तर — नंबर 78",
+      79: "उनासी — नंबर 79", 80: "अस्सी — नंबर 80", 81: "इक्यासी — नंबर 81",
+      82: "बयासी — नंबर 82", 83: "तिरासी — नंबर 83", 84: "सात दर्जन — नंबर 84",
+      85: "पचासी — नंबर 85", 86: "छियासी — नंबर 86", 87: "सत्तासी — नंबर 87",
+      88: "दो अट्ठे — नंबर 88", 89: "मंज़िल के करीब — नंबर 89", 90: "सबसे आखिरी नंबर — नंबर 90"
+    };
+
+    let currentLang = localStorage.getItem("digital_tambola_lang") || "en";
+    if (!I18N[currentLang]) currentLang = "en";
+
+    function t() { return I18N[currentLang] || I18N.en; }
+    function getNumberLingo(num) {
+      if (currentLang === "te") return LINGO_TE[num] || `నంబర్ ${num}`;
+      if (currentLang === "hi") return LINGO_HI[num] || `नंबर ${num}`;
+      return LINGO_EN[num] || `Single number ${num}`;
+    }
+
+    function setLanguage(lang) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      localStorage.setItem("digital_tambola_lang", lang);
+      ["en", "te", "hi"].forEach((code) => {
+        document.getElementById(`lang-${code}`)?.classList.toggle("active", code === lang);
+      });
+      applyTranslations();
+    }
+
+    function applyTranslations() {
+      const tr = t();
+      document.documentElement.lang = currentLang;
+      document.getElementById("appMainTitle").textContent = tr.appTitle;
+      document.getElementById("lobbyRulesBtn").textContent = tr.rulesBtn;
+      document.getElementById("gameRulesBtn").textContent = tr.rulesShortBtn;
+      document.getElementById("netBannerText").textContent = tr.netBanner;
+      document.getElementById("relayBadge").textContent = tr.relayReady;
+      document.getElementById("playerName").placeholder = tr.namePlaceholder;
+      document.getElementById("joinRoomId").placeholder = tr.roomPlaceholder;
+      document.getElementById("hostBtn").textContent = tr.hostNewRoom;
+      document.getElementById("joinBtn").textContent = tr.joinRoom;
+      document.getElementById("quickJoinBtn").textContent = tr.quickJoin;
+      document.getElementById("resumeRoomBtn").textContent = tr.resumeRoom;
+      document.getElementById("lblRoom").textContent = tr.roomLabel;
+      if (document.getElementById("lblRoundShort")) document.getElementById("lblRoundShort").textContent = tr.lblRoundShort;
+      document.getElementById("copyIdBtn").textContent = tr.copyId;
+      if (document.getElementById("waInviteBtn")) document.getElementById("waInviteBtn").textContent = tr.waInviteBtn;
+      if (document.getElementById("waStudioTitle")) document.getElementById("waStudioTitle").textContent = tr.waStudioTitle;
+      if (document.getElementById("waSendDirectBtn")) document.getElementById("waSendDirectBtn").textContent = tr.waSendDirect;
+      if (document.getElementById("waDownloadCardBtn")) document.getElementById("waDownloadCardBtn").textContent = tr.waSaveCard;
+      if (document.getElementById("waCopyInviteBtn")) document.getElementById("waCopyInviteBtn").textContent = tr.waCopyText;
+      document.getElementById("shareLinkBtn").textContent = tr.shareLink;
+      document.getElementById("reconnectBtn").textContent = tr.reconnect;
+      if (document.getElementById("leaveRoomBtn")) document.getElementById("leaveRoomBtn").textContent = tr.leaveBtn;
+      document.getElementById("lblPlayers").textContent = tr.playersLabel;
+      document.getElementById("lblCalled").textContent = tr.calledLabel;
+      document.getElementById("lblTicket").textContent = tr.ticketLabel;
+      document.getElementById("drawBtn").textContent = tr.drawNumber;
+      if (document.getElementById("pickTicketModalTitle")) document.getElementById("pickTicketModalTitle").textContent = tr.pickTicketTitle;
+      if (document.getElementById("pickTicketModalSub")) document.getElementById("pickTicketModalSub").textContent = tr.pickTicketSub;
+      if (document.getElementById("shuffleTicketsBtn")) document.getElementById("shuffleTicketsBtn").textContent = tr.shuffleTicketsBtn;
+      if (document.getElementById("confirmTicketBtn")) document.getElementById("confirmTicketBtn").textContent = tr.confirmTicketBtn;
+      if (document.getElementById("changeTicketBtn")) document.getElementById("changeTicketBtn").textContent = tr.changeTicketBtn;
+      document.getElementById("autoBtn").textContent = autoTimer ? tr.autoDrawStop : tr.autoDrawStart;
+      document.getElementById("last5Label").textContent = tr.last5Label;
+      document.getElementById("yourTicketHeading").textContent = tr.yourTicketHeading;
+      document.getElementById("tapNumbersHint").textContent = tr.tapNumbersHint;
+      document.getElementById("claimPrizesHeading").textContent = tr.claimPrizesHeading;
+      document.getElementById("masterBoardHeading").textContent = tr.masterBoardHeading;
+      document.getElementById("popupDrawnLabel").textContent = tr.numberDrawnLabel;
+      document.getElementById("popupDismissHint").textContent = tr.dismissHint;
+      document.getElementById("officialResultBanner").textContent = tr.officialResult;
+      document.getElementById("winnerVerifiedNote").textContent = tr.verifiedApproved;
+      document.getElementById("winnerFooterText").textContent = tr.winnerFooter;
+      document.getElementById("fhDoneBadge").textContent = tr.fhCompleted;
+      document.getElementById("modalNewRoundBtn").textContent = tr.startNewRoundBtn;
+      document.getElementById("modalContinueBtn").textContent = tr.continueBtn;
+      document.getElementById("rulesModalTitle").textContent = tr.rulesTitle;
+      document.getElementById("rulesBodyContainer").innerHTML = tr.rulesHTML;
+      document.getElementById("rulesGotItBtn").textContent = tr.gotItBtn;
+      if (document.getElementById("ticketWaitingBadge")) document.getElementById("ticketWaitingBadge").textContent = tr.waitingOneLeft;
+
+      updateAudioButtonsUI();
+      updatePopupToggleUI();
+      updateAutoMarkButtonUI();
+      renderHostPrizeConfig();
+      renderClaimButtonsGrid();
+      updateClaimsUI();
+      updateNewRoundButtonState();
+      renderPlayersStrip();
+      renderTop3LeaderboardUI();
+      if (document.getElementById("ticketSelectModal")?.classList.contains("active")) {
+        renderCandidateTickets();
+      }
+    }
+
+    /* ==========================================================================
+       2. 3D FLOATING TAMBOLA BALLS BACKGROUND
+       ========================================================================== */
+    (function init3DBackground() {
+      const canvas = document.getElementById("bg3dCanvas");
+      const ctx = canvas.getContext("2d");
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+      window.addEventListener("resize", () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+      const colors = [
+        { main: "#f59e0b", dark: "#92400e" }, { main: "#ef4444", dark: "#991b1b" },
+        { main: "#3b82f6", dark: "#1e40af" }, { main: "#10b981", dark: "#065f46" },
+        { main: "#a855f7", dark: "#581c87" }
+      ];
+      const balls = Array.from({ length: 20 }, (_, idx) => ({
+        num: Math.floor(Math.random() * 90) + 1,
+        x: (Math.random() - 0.5) * 1400, y: (Math.random() - 0.5) * 900, z: Math.random() * 900 + 150,
+        vz: -(Math.random() * 0.85 + 0.35), rot: Math.random() * Math.PI * 2, vrot: (Math.random() - 0.5) * 0.02,
+        color: colors[idx % colors.length]
+      }));
+      function render3D() {
+        ctx.clearRect(0, 0, width, height);
+        const focalLength = 420, cx = width / 2, cy = height / 2;
+        ctx.strokeStyle = "rgba(245, 158, 11, 0.07)";
+        ctx.lineWidth = 1;
+        for (let gx = -800; gx <= 800; gx += 160) {
+          ctx.beginPath(); ctx.moveTo(cx + gx * 0.25, cy * 0.6); ctx.lineTo(cx + gx * 1.6, height); ctx.stroke();
+        }
+        balls.sort((a, b) => b.z - a.z);
+        for (const b of balls) {
+          b.z += b.vz; b.rot += b.vrot;
+          if (b.z < 80) { b.z = 1050; b.x = (Math.random() - 0.5) * 1400; b.y = (Math.random() - 0.5) * 900; b.num = Math.floor(Math.random() * 90) + 1; }
+          const scale = focalLength / b.z, sx = cx + b.x * scale, sy = cy + b.y * scale, radius = Math.max(8, 32 * scale);
+          ctx.save(); ctx.translate(sx, sy); ctx.rotate(b.rot);
+          const grad = ctx.createRadialGradient(-radius * 0.32, -radius * 0.32, radius * 0.1, 0, 0, radius);
+          grad.addColorStop(0, "#ffffff"); grad.addColorStop(0.28, b.color.main); grad.addColorStop(1, b.color.dark);
+          ctx.globalAlpha = Math.min(0.82, scale * 1.15);
+          ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+          ctx.beginPath(); ctx.arc(0, 0, radius * 0.54, 0, Math.PI * 2); ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; ctx.fill();
+          ctx.fillStyle = "#0f172a"; ctx.font = `800 ${Math.max(7, Math.floor(radius * 0.52))}px Poppins, sans-serif`;
+          ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(b.num, 0, 1);
+          ctx.restore();
+        }
+        requestAnimationFrame(render3D);
+      }
+      render3D();
+    })();
+
+    /* ==========================================================================
+       3. MULTIPLAYER TAMBOLA V2 ENGINE
+       ========================================================================== */
+    const ANY_NETWORK_ICE = {
+      iceCandidatePoolSize: 4,
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:global.stun.twilio.com:3478" },
+        { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
+        { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" }
+      ]
+    };
+
+    const MAX_PLAYERS_CAP = 100;
+    const HOST_BACKUP_KEY = "digital_tambola_host_backup_v4";
+
+    let playerAudioEnabled = localStorage.getItem("digital_tambola_audio") !== "off";
+    let voiceRate = parseFloat(localStorage.getItem("digital_tambola_voice_rate") || "0.98");
+    let autoMarkEnabled = localStorage.getItem("digital_tambola_automark") === "on";
+    let ticketTheme = localStorage.getItem("digital_tambola_ticket_theme") || "cream";
+    let drawIntervalMs = 5000;
+    let audioCtx = null;
+    let lastClaimAttemptAt = 0;
+    let lastReactionAt = 0;
+
+    function createEmptyClaims() {
+      const obj = {};
+      ALL_PRIZE_KEYS.forEach((k) => { obj[k] = null; });
+      return obj;
+    }
+
+    let peer = null;
+    let isHost = false;
+    let currentRoomId = "";
+    let hostDisplayName = "";
+    let roundNumber = 1;
+    let myUid = localStorage.getItem("tambola_uid") || ("P-" + Math.random().toString(36).slice(2, 9));
+    localStorage.setItem("tambola_uid", myUid);
+
+    let hostConn = null;
+    let connections = new Map();
+    let playersRoster = {};
+    let myName = "Player";
+
+    let issuedTickets = new Map();
+    let issuedNumberSetSignatures = new Set();
+    let numberUsageCounts = Array(91).fill(0);
+
+    let calledNumbers = [];
+    let enabledPrizes = { ...DEFAULT_ENABLED_PRIZES };
+    let claims = createEmptyClaims();
+    let claimUids = createEmptyClaims();
+    let top3Leaderboard = [];
+
+    let myTickets = [];
+    let desiredTicketCount = 1;
+    let ticketSerial = 1;
+    let markedSet = new Set();
+    let autoTimer = null;
+    let heartbeatTimer = null;
+    let drawLock = false;
+    let popupTimer = null;
+    let winnerTimer = null;
+    let gameStarted = false;
+    let connectTimeout = null;
+    let wakeLock = null;
+
+    function toggleVoiceSpeed() {
+      voiceRate = voiceRate > 1.1 ? 0.98 : 1.32;
+      localStorage.setItem("digital_tambola_voice_rate", String(voiceRate));
+      const btn = document.getElementById("voiceSpeedBtn");
+      if (btn) btn.textContent = voiceRate > 1.1 ? "🗣️ 1.3x" : "🗣️ 1x";
+    }
+    if (document.getElementById("voiceSpeedBtn")) {
+      document.getElementById("voiceSpeedBtn").textContent = voiceRate > 1.1 ? "🗣️ 1.3x" : "🗣️ 1x";
+    }
+
+    function setTicketTheme(theme) {
+      ticketTheme = theme;
+      localStorage.setItem("digital_tambola_ticket_theme", theme);
+      const sel = document.getElementById("ticketThemeSelect");
+      if (sel) sel.value = theme;
+      renderTicket();
+    }
+    if (document.getElementById("ticketThemeSelect")) {
+      document.getElementById("ticketThemeSelect").value = ticketTheme;
+    }
+
+    function playTone(kind) {
+      if (!playerAudioEnabled) return;
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        if (!audioCtx) audioCtx = new Ctx();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const scheduleNote = (freq, startOffset, duration, type = "sine", gainVal = 0.08) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now + startOffset);
+          gain.gain.setValueAtTime(gainVal, now + startOffset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + startOffset + duration);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now + startOffset); osc.stop(now + startOffset + duration);
+        };
+        if (kind === "draw") { scheduleNote(587.33, 0, 0.11, "triangle", 0.08); scheduleNote(880, 0.08, 0.16, "triangle", 0.08); }
+        else if (kind === "mark") { scheduleNote(660, 0, 0.08, "sine", 0.06); }
+        else if (kind === "win") { scheduleNote(523.25, 0, 0.14, "triangle", 0.1); scheduleNote(659.25, 0.1, 0.14, "triangle", 0.1); scheduleNote(783.99, 0.2, 0.16, "triangle", 0.1); scheduleNote(1046.5, 0.3, 0.28, "triangle", 0.12); }
+        else if (kind === "bogey") { scheduleNote(200, 0, 0.14, "sawtooth", 0.05); }
+      } catch (e) {}
+    }
+
+    function updateAutoMarkButtonUI() {
+      const tr = t();
+      const btn = document.getElementById("autoMarkBtn");
+      if (!btn) return;
+      btn.textContent = autoMarkEnabled ? tr.autoMarkOn : tr.autoMarkOff;
+      btn.classList.toggle("automark-on", autoMarkEnabled);
+      btn.classList.toggle("automark-off", !autoMarkEnabled);
+    }
+
+    function toggleAutoMark() {
+      autoMarkEnabled = !autoMarkEnabled;
+      localStorage.setItem("digital_tambola_automark", autoMarkEnabled ? "on" : "off");
+      updateAutoMarkButtonUI();
+      if (autoMarkEnabled) autoMarkMatchingNumbers(null);
+      showToast(autoMarkEnabled ? t().autoMarkOn : t().autoMarkOff);
+    }
+
+    function autoMarkMatchingNumbers(latestNum = null) {
+      if (!autoMarkEnabled || !myTickets.length) return;
+      let changed = false;
+      let newlyMarked = null;
+      for (const grid of myTickets) {
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 9; c++) {
+            const val = grid[r][c];
+            if (val > 0 && calledNumbers.includes(val) && !markedSet.has(val)) {
+              markedSet.add(val);
+              changed = true;
+              if (val === latestNum) newlyMarked = val;
+            }
+          }
+        }
+      }
+      if (changed) {
+        saveLocalSession();
+        renderTicket(newlyMarked);
+      }
+    }
+
+    function renderLast5Strip() {
+      const container = document.getElementById("last5Balls");
+      if (!container) return;
+      if (!Array.isArray(calledNumbers) || calledNumbers.length === 0) {
+        container.innerHTML = '<span class="l5-ball">-</span>';
+        return;
+      }
+      const recent = calledNumbers.slice(-5).reverse();
+      container.innerHTML = recent.map((num, idx) =>
+        `<span class="l5-ball ${idx === 0 ? "latest" : ""}">${num}</span>`
+      ).join("");
+    }
+
+    function changeDrawSpeed() {
+      const sel = document.getElementById("drawSpeedSelect");
+      if (!sel) return;
+      drawIntervalMs = parseInt(sel.value, 10) || 5000;
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = setInterval(autoDrawStep, drawIntervalMs);
+      }
+      showToast(`⏱️ ${sel.options[sel.selectedIndex].text}`);
+    }
+
+    let activeConfettiAnimId = null;
+    function launchConfettiBurst(isGrand = false) {
+      if (activeConfettiAnimId) { cancelAnimationFrame(activeConfettiAnimId); activeConfettiAnimId = null; }
+      const canvas = document.getElementById("confettiCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      const palette = ["#f59e0b", "#ef4444", "#10b981", "#3b82f6", "#ec4899", "#fde047"];
+      const count = isGrand ? 160 : 85;
+      const pieces = Array.from({ length: count }, () => ({
+        x: canvas.width * (0.2 + Math.random() * 0.6), y: canvas.height * 0.35,
+        vx: (Math.random() - 0.5) * 14, vy: -(Math.random() * 11 + 4),
+        w: Math.random() * 9 + 5, h: Math.random() * 5 + 3,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        rot: Math.random() * Math.PI * 2, vrot: (Math.random() - 0.5) * 0.25,
+        life: 0, maxLife: isGrand ? 150 : 105
+      }));
+      function step() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = 0;
+        for (const p of pieces) {
+          p.life++; if (p.life > p.maxLife) continue;
+          alive++; p.vy += 0.34; p.vx *= 0.985; p.x += p.vx; p.y += p.vy; p.rot += p.vrot;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+          ctx.globalAlpha = Math.max(0, 1 - p.life / p.maxLife);
+          ctx.fillStyle = p.color; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        }
+        if (alive > 0) activeConfettiAnimId = requestAnimationFrame(step);
+        else { ctx.clearRect(0, 0, canvas.width, canvas.height); activeConfettiAnimId = null; }
+      }
+      activeConfettiAnimId = requestAnimationFrame(step);
+    }
+
+    function updateAudioButtonsUI() {
+      const tr = t();
+      ["lobbyAudioBtn", "gameAudioBtn"].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.textContent = playerAudioEnabled ? tr.audioOn : tr.audioOff;
+        btn.classList.toggle("audio-on", playerAudioEnabled);
+        btn.classList.toggle("audio-off", !playerAudioEnabled);
+        if (!playerAudioEnabled) {
+          try { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); } catch (e) {}
+        }
+      });
+    }
+
+    function togglePlayerAudio() {
+      playerAudioEnabled = !playerAudioEnabled;
+      localStorage.setItem("digital_tambola_audio", playerAudioEnabled ? "on" : "off");
+      updateAudioButtonsUI();
+      showToast(playerAudioEnabled ? t().audioOn : t().audioOff);
+    }
+
+    function speakText(text) {
+      if (!playerAudioEnabled) return;
+      try {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = t().speechLang;
+          utter.rate = voiceRate;
+          window.speechSynthesis.speak(utter);
+        }
+      } catch (e) {}
+    }
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[ch]));
+    }
+
+    async function requestScreenWakeLock() {
+      try { if ("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen"); } catch (e) {}
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && gameStarted) {
+        requestScreenWakeLock();
+        if (peer && peer.disconnected) { try { peer.reconnect(); } catch (e) {} }
+      }
+    });
+
+    function getInviteParamsFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      let room = (params.get("room") || "").trim().toUpperCase();
+      const host = (params.get("host") || "").trim().slice(0, 20);
+      const langParam = (params.get("lang") || "").trim().toLowerCase();
+      if (I18N[langParam]) { currentLang = langParam; localStorage.setItem("digital_tambola_lang", langParam); }
+      if (!room && window.location.hash && window.location.hash.length > 1) {
+        const hashVal = window.location.hash.replace("#", "").trim().toUpperCase();
+        if (hashVal.startsWith("VSA-")) room = hashVal;
+      }
+      return { room, host };
+    }
+
+    const inviteData = getInviteParamsFromURL();
+    if (inviteData.room) {
+      document.getElementById("joinRoomId").value = inviteData.room;
+      document.getElementById("invitedRoomCode").textContent = inviteData.room;
+      if (inviteData.host) {
+        hostDisplayName = inviteData.host;
+        document.getElementById("inviteBannerText").innerHTML =
+          `🎟️ <strong>${escapeHTML(inviteData.host)}</strong> → Room <strong>${escapeHTML(inviteData.room)}</strong>`;
+      }
+      document.getElementById("inviteAlertBox").style.display = "flex";
+    }
+
+    (function checkHostBackupBanner() {
+      if (inviteData.room) return;
+      try {
+        const raw = localStorage.getItem(HOST_BACKUP_KEY);
+        if (!raw) return;
+        const backup = JSON.parse(raw);
+        if (backup && backup.roomId && (Date.now() - (backup.updatedAt || 0) < 6 * 3600 * 1000)) {
+          document.getElementById("savedHostRoomCode").textContent = backup.roomId;
+          document.getElementById("savedHostCalledCount").textContent = (backup.calledNumbers || []).length;
+          document.getElementById("resumeHostBox").style.display = "flex";
+          if (backup.hostName && !document.getElementById("playerName").value) {
+            document.getElementById("playerName").value = backup.hostName;
+          }
+        }
+      } catch (e) {}
+    })();
+
+    if (typeof Peer === "undefined") {
+      document.getElementById("relayBadge").textContent = "● Offline / CDN Blocked";
+      document.getElementById("connStatus").textContent =
+        "⚠️ Multiplayer signaling library could not load. Check internet connection and refresh.";
+    }
+
+    const boardEl = document.getElementById("masterBoard");
+    for (let i = 1; i <= 90; i++) {
+      const div = document.createElement("div");
+      div.className = "b-num"; div.id = `b-${i}`; div.textContent = i;
+      boardEl.appendChild(div);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeRandomTicketSelector(); closeWhatsAppInviteModal(); closeRulesPopup(); closeDrawPopup(); closeWinnerReveal();
+      }
+    });
+    document.getElementById("joinRoomId").addEventListener("keydown", (e) => { if (e.key === "Enter") joinGame(); });
+    document.getElementById("playerName").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { if (document.getElementById("joinRoomId").value.trim()) joinGame(); else hostGame(); }
+    });
+
+    function saveHostBackup() {
+      if (!isHost || !currentRoomId) return;
+      try {
+        const issuedObj = {};
+        issuedTickets.forEach((rec, uid) => { issuedObj[uid] = rec; });
+        localStorage.setItem(HOST_BACKUP_KEY, JSON.stringify({
+          roomId: currentRoomId, hostName: myName, roundNumber, calledNumbers, enabledPrizes,
+          claims, claimUids, top3Leaderboard, playersRoster, issuedTickets: issuedObj,
+          issuedSignatures: Array.from(issuedNumberSetSignatures), numberUsageCounts, updatedAt: Date.now()
+        }));
+      } catch (e) {}
+    }
+
+    function saveLocalSession() {
+      if (!currentRoomId || !myTickets.length) return;
+      try {
+        localStorage.setItem(`tambola_state_${currentRoomId}`, JSON.stringify({
+          roundNumber, tickets: myTickets, ticketSerial, marked: Array.from(markedSet)
+        }));
+      } catch (e) {}
+      if (isHost) saveHostBackup();
+    }
+
+    function loadLocalSession(roomId, expectedRound = null) {
+      try {
+        const raw = localStorage.getItem(`tambola_state_${roomId}`);
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        if (expectedRound !== null && saved.roundNumber !== expectedRound) return false;
+        const loadedTickets = Array.isArray(saved.tickets) ? saved.tickets : (Array.isArray(saved.ticket) ? [saved.ticket] : null);
+        if (loadedTickets && loadedTickets.length > 0 && Array.isArray(loadedTickets[0]) && loadedTickets[0].length === 3) {
+          myTickets = loadedTickets;
+          desiredTicketCount = loadedTickets.length;
+          if (saved.ticketSerial) ticketSerial = saved.ticketSerial;
+          if (saved.roundNumber) roundNumber = saved.roundNumber;
+          markedSet = new Set(saved.marked || []);
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function openRulesPopup() { document.getElementById("rulesPopupModal").classList.add("active"); }
+    function closeRulesPopup() { document.getElementById("rulesPopupModal").classList.remove("active"); }
+
+    function buildShareURL() {
+      const base = `${window.location.origin}${window.location.pathname}`;
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      return `${base}?room=${encodeURIComponent(currentRoomId)}&host=${encodeURIComponent(effectiveHost)}&lang=${encodeURIComponent(currentLang)}`;
+    }
+
+    function copyRoomCode() {
+      if (!currentRoomId) return;
+      copyTextSafe(currentRoomId, `📋 ${currentRoomId} copied!`);
+    }
+
+    function shareInviteLink() {
+      if (!currentRoomId) return;
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      if (window.location.protocol === "file:") { copyTextSafe(currentRoomId, `📋 Room ID ${currentRoomId} copied!`); return; }
+      const shareUrl = buildShareURL();
+      const shareText = `👑 ${effectiveHost} invited you to Digital Tambola! Room ID: ${currentRoomId}`;
+      if (navigator.share) {
+        navigator.share({ title: `Digital Tambola • ${effectiveHost}`, text: shareText, url: shareUrl })
+          .catch(() => copyTextSafe(shareUrl, `🔗 ${shareUrl}`));
+      } else {
+        copyTextSafe(shareUrl, `🔗 ${shareUrl}`);
+      }
+    }
+
+    /* ==========================================================================
+       LIVE EMOJI REACTIONS
+       ========================================================================== */
+    function showFloatingReaction(senderName, emoji) {
+      const el = document.createElement("div");
+      el.className = "floating-reaction";
+      el.textContent = `${senderName}: ${emoji}`;
+      document.body.appendChild(el);
+      setTimeout(() => { el.remove(); }, 2500);
+    }
+
+    function sendReaction(emoji) {
+      const now = Date.now();
+      if (now - lastReactionAt < 1200) return;
+      lastReactionAt = now;
+      showFloatingReaction(myName, emoji);
+      if (isHost) {
+        broadcast({ type: "REACTION", name: myName, emoji });
+      } else if (hostConn && hostConn.open) {
+        hostConn.send({ type: "REACTION", name: myName, emoji });
+      }
+    }
+
+    /* ==========================================================================
+       HOST CUSTOM PRIZE BUILDER
+       ========================================================================== */
+    function renderHostPrizeConfig() {
+      const el = document.getElementById("hostPrizeConfig");
+      if (!el || !isHost) return;
+      const tr = t();
+      const locked = calledNumbers.length > 0;
+      el.innerHTML = ALL_PRIZE_KEYS.filter(k => k !== "fullHouse").map((k) => {
+        const active = Boolean(enabledPrizes[k]);
+        return `<button type="button" class="prize-toggle-chip ${active ? "active" : ""}" ${locked ? "disabled" : ""} onclick="toggleHostPrize('${k}')">${active ? "✅" : "➕"} ${escapeHTML(tr.prizes[k] || k)}</button>`;
+      }).join("");
+    }
+
+    function toggleHostPrize(key) {
+      if (!isHost || calledNumbers.length > 0 || key === "fullHouse") return;
+      enabledPrizes[key] = !enabledPrizes[key];
+      saveHostBackup();
+      renderHostPrizeConfig();
+      renderClaimButtonsGrid();
+      updateClaimsUI();
+      broadcast({ type: "PRIZES_CONFIG", enabledPrizes });
+    }
+
+    function renderClaimButtonsGrid() {
+      const grid = document.getElementById("claimButtons");
+      if (!grid) return;
+      const tr = t();
+      grid.innerHTML = ALL_PRIZE_KEYS.filter(k => enabledPrizes[k]).map((k) =>
+        `<button class="sticker-btn claim-btn" id="btn-${k}" onclick="requestClaim('${k}')">${escapeHTML(tr.prizes[k] || k)}</button>`
+      ).join("");
+    }
+
+    /* ==========================================================================
+       INTERACTIVE WHATSAPP INVITATION STUDIO + QR CODE
+       ========================================================================== */
+    let currentWaTheme = "royal";
+    let waTitleCustom = false;
+    let waNoteCustom = false;
+
+    function openWhatsAppInviteModal() {
+      if (!currentRoomId) return;
+      const tr = t();
+      const titleInput = document.getElementById("waEventTitleInput");
+      const msgInput = document.getElementById("waCustomMsgInput");
+      if (titleInput && (!waTitleCustom || !titleInput.value.trim())) { titleInput.value = tr.waDefaultEvent; waTitleCustom = false; }
+      if (msgInput && (!waNoteCustom || !msgInput.value.trim())) { msgInput.value = tr.waDefaultNote; waNoteCustom = false; }
+      updateWaInvitePreview();
+      document.getElementById("waInviteModal").classList.add("active");
+    }
+
+    function closeWhatsAppInviteModal() { document.getElementById("waInviteModal")?.classList.remove("active"); }
+
+    function setWaInviteTheme(theme) {
+      currentWaTheme = theme;
+      const card = document.getElementById("waPreviewTicket");
+      if (card) { card.classList.remove("theme-royal", "theme-emerald", "theme-crimson"); card.classList.add(`theme-${theme}`); }
+      ["royal", "emerald", "crimson"].forEach((k) => { document.getElementById(`wa-theme-${k}`)?.classList.toggle("active", k === theme); });
+    }
+
+    function updateWaInvitePreview() {
+      const tr = t();
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      const onlineCount = getOnlinePlayerCount() || 1;
+      const eventTitle = (document.getElementById("waEventTitleInput")?.value || "").trim() || tr.waDefaultEvent;
+      const customNote = (document.getElementById("waCustomMsgInput")?.value || "").trim() || tr.waDefaultNote;
+
+      document.getElementById("waCardHeading").textContent = eventTitle;
+      document.getElementById("waCardHostLine").textContent = `👑 ${effectiveHost} • ${tr.lblRoundShort}${roundNumber} • ${onlineCount} ${tr.onlineSuffix}`;
+      document.getElementById("waCardNotePreview").textContent = `"${customNote}"`;
+      document.getElementById("waCardRoomCode").textContent = currentRoomId || "VSA-0000";
+
+      const qrImg = document.getElementById("waQrImage");
+      if (qrImg && currentRoomId && window.location.protocol !== "file:") {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(buildShareURL())}`;
+        qrImg.style.display = "block";
+      } else if (qrImg) {
+        qrImg.style.display = "none";
+      }
+    }
+
+    function buildWhatsAppInviteMessage() {
+      const tr = t();
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      const eventTitle = (document.getElementById("waEventTitleInput")?.value || "").trim() || tr.waDefaultEvent;
+      const customNote = (document.getElementById("waCustomMsgInput")?.value || "").trim() || tr.waDefaultNote;
+      const joinUrl = window.location.protocol === "file:" ? "" : buildShareURL();
+      const activePrizeNames = ALL_PRIZE_KEYS.filter(k => enabledPrizes[k]).map(k => tr.prizes[k] || k).join(" • ");
+      return [
+        `👑 *${eventTitle}* 👑`,
+        `━━━━━━━━━━━━━━━━━━`,
+        `🎙️ *Host:* ${effectiveHost}`,
+        `🔑 *Room ID:* \`${currentRoomId}\``,
+        `🎯 *Round:* ${roundNumber}`,
+        `💬 _"${customNote}"_`,
+        ``,
+        `🏆 *Prizes:* ${activePrizeNames}`,
+        joinUrl ? `\n📲 *Tap to Join Instantly:*\n${joinUrl}` : `\n📲 Open Digital Tambola & enter Room ID: *${currentRoomId}*`,
+        `\n✨ _Powered by Digital Swami_`
+      ].join("\n");
+    }
+
+    function sendWhatsAppInvitation() {
+      if (!currentRoomId) return;
+      window.open(`https://wa.me/?text=${encodeURIComponent(buildWhatsAppInviteMessage())}`, "_blank", "noopener,noreferrer");
+    }
+
+    function copyWhatsAppInviteText() {
+      if (!currentRoomId) return;
+      copyTextSafe(buildWhatsAppInviteMessage(), "💬 WhatsApp Invite copied!");
+    }
+
+    function downloadWhatsAppInviteCard() {
+      if (!currentRoomId) return;
+      const effectiveHost = isHost ? myName : (hostDisplayName || "Host");
+      const eventTitle = (document.getElementById("waEventTitleInput")?.value || "").trim() || t().waDefaultEvent;
+      const customNote = (document.getElementById("waCustomMsgInput")?.value || "").trim() || t().waDefaultNote;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 720; canvas.height = 1080;
+      const ctx = canvas.getContext("2d");
+
+      const bgGrad = ctx.createLinearGradient(0, 0, 720, 1080);
+      if (currentWaTheme === "emerald") { bgGrad.addColorStop(0, "#065f46"); bgGrad.addColorStop(0.55, "#022c22"); bgGrad.addColorStop(1, "#064e3b"); }
+      else if (currentWaTheme === "crimson") { bgGrad.addColorStop(0, "#991b1b"); bgGrad.addColorStop(0.55, "#450a0a"); bgGrad.addColorStop(1, "#1c1917"); }
+      else { bgGrad.addColorStop(0, "#451a03"); bgGrad.addColorStop(0.5, "#1e1b4b"); bgGrad.addColorStop(1, "#090d16"); }
+      ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, 720, 1080);
+
+      ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 10; ctx.strokeRect(28, 28, 664, 1024);
+      ctx.strokeStyle = "rgba(255,255,255,0.28)"; ctx.lineWidth = 2; ctx.strokeRect(44, 44, 632, 992);
+
+      ctx.textAlign = "center"; ctx.font = "72px sans-serif"; ctx.fillText("👑", 360, 145);
+      ctx.fillStyle = "#fde047"; ctx.font = "900 40px Poppins, sans-serif"; ctx.fillText(eventTitle.slice(0, 28), 360, 225);
+      ctx.fillStyle = "#e2e8f0"; ctx.font = "700 28px Poppins, sans-serif"; ctx.fillText(`Hosted by ${effectiveHost}  •  Round ${roundNumber}`, 360, 285);
+
+      ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(75, 330, 570, 136);
+      ctx.fillStyle = "#fef08a"; ctx.font = "italic 700 24px Poppins, sans-serif";
+      const line1 = customNote.slice(0, 42), line2 = customNote.length > 42 ? customNote.slice(42, 90) : "";
+      if (line2) { ctx.fillText(`"${line1}`, 360, 388); ctx.fillText(`${line2}"`, 360, 428); }
+      else { ctx.fillText(`"${line1}"`, 360, 408); }
+
+      ctx.fillStyle = "#fbbf24"; ctx.font = "800 24px Poppins, sans-serif"; ctx.fillText("ROOM CODE", 360, 535);
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      if (typeof ctx.roundRect === "function") ctx.roundRect(170, 560, 380, 96, 48);
+      else ctx.rect(170, 560, 380, 96);
+      ctx.fill(); ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 6; ctx.stroke();
+
+      ctx.fillStyle = "#0f172a"; ctx.font = "900 50px Poppins, sans-serif"; ctx.fillText(currentRoomId, 360, 625);
+      ctx.fillStyle = "#cbd5e1"; ctx.font = "700 24px Poppins, sans-serif";
+      ctx.fillText("✨ Unique 15-Number Tickets • Live Multiplayer ✨", 360, 745);
+      ctx.fillStyle = "#fbbf24"; ctx.font = "900 26px Poppins, sans-serif"; ctx.fillText("👑 DIGITAL SWAMI • LIVE TAMBOLA", 360, 975);
+
+      const link = document.createElement("a");
+      link.download = `Tambola-Invite-${currentRoomId}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      showToast("🖼️ Invite Card downloaded!");
+    }
+
+    function copyTextSafe(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(successMsg)).catch(() => fallbackCopy(text, successMsg));
+      } else fallbackCopy(text, successMsg);
+    }
+
+    function fallbackCopy(text, successMsg) {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand("copy"); showToast(successMsg); } catch (e) { showToast(`Room ID: ${currentRoomId}`); }
+      document.body.removeChild(ta);
+    }
+
+    function showToast(msg) {
+      const tEl = document.getElementById("toast");
+      tEl.textContent = msg; tEl.style.display = "block";
+      clearTimeout(tEl._timer);
+      tEl._timer = setTimeout(() => tEl.style.display = "none", 3800);
+    }
+
+    let allPopupsEnabled = localStorage.getItem("digital_tambola_popups") !== "off";
+
+    function updatePopupToggleUI() {
+      const tr = t();
+      ["lobbyPopupBtn", "gamePopupBtn"].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.textContent = allPopupsEnabled ? tr.popupsOn : tr.popupsOff;
+        btn.classList.toggle("popup-toggle-on", allPopupsEnabled);
+        btn.classList.toggle("popup-toggle-off", !allPopupsEnabled);
+      });
+    }
+
+    function toggleAllPopupsSetting() {
+      allPopupsEnabled = !allPopupsEnabled;
+      localStorage.setItem("digital_tambola_popups", allPopupsEnabled ? "on" : "off");
+      updatePopupToggleUI();
+      if (!allPopupsEnabled) { closeDrawPopup(); closeWinnerReveal(); closeRandomTicketSelector(); }
+      showToast(allPopupsEnabled ? t().popupsOn : t().popupsOff);
+    }
+
+    function showDrawPopup(num) {
+      const lingoText = getNumberLingo(num);
+      playTone("draw");
+      speakText(t().sayNumber(num, lingoText));
+      if (!allPopupsEnabled) return;
+
+      const popup = document.getElementById("drawPopup");
+      document.getElementById("popupNumber").textContent = num;
+      document.getElementById("popupLingo").textContent = lingoText;
+      popup.classList.add("active");
+      clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => closeDrawPopup(), 2500);
+    }
+
+    function closeDrawPopup() { document.getElementById("drawPopup").classList.remove("active"); }
+
+    function computeTop3Players() {
+      const prizeWeights = {
+        fullHouse: 100, corners: 25, topLine: 20, midLine: 20, botLine: 20,
+        breakfast: 18, lunch: 18, dinner: 18, early7: 16, jaldi5: 15
+      };
+      const entries = [];
+      for (const [uid, info] of Object.entries(playersRoster)) {
+        if (!info) continue;
+        const playerName = info.name || "Player";
+        const rec = issuedTickets.get(uid);
+        const recTickets = rec ? (Array.isArray(rec.tickets) ? rec.tickets : [rec.ticket]) : [];
+        let bestMatched = 0;
+        for (const grid of recTickets) {
+          if (!Array.isArray(grid)) continue;
+          let m = 0;
+          for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (grid[r][c] > 0 && calledNumbers.includes(grid[r][c])) m++;
+          if (m > bestMatched) bestMatched = m;
+        }
+        const wonPrizeKeys = [];
+        let prizeScore = 0;
+        for (const [pKey, winnerName] of Object.entries(claims)) {
+          const winnerUid = claimUids[pKey];
+          const isWinner = winnerUid ? (winnerUid === uid) : (winnerName && winnerName === playerName);
+          if (isWinner) { wonPrizeKeys.push(pKey); prizeScore += (prizeWeights[pKey] || 10); }
+        }
+        const isFullHouseWinner = claimUids.fullHouse ? (claimUids.fullHouse === uid) : (claims.fullHouse && claims.fullHouse === playerName);
+        entries.push({ uid, name: playerName, matchedCount: bestMatched, wonPrizeKeys, totalScore: (isFullHouseWinner ? 10000 : 0) + prizeScore * 20 + bestMatched });
+      }
+      entries.sort((a, b) => b.totalScore - a.totalScore || b.matchedCount - a.matchedCount);
+      return entries.slice(0, 3);
+    }
+
+    function renderTop3LeaderboardUI() {
+      const tr = t();
+      const panel = document.getElementById("top3PodiumPanel");
+      const grid = document.getElementById("top3Grid");
+      const titleEl = document.getElementById("top3PanelTitle");
+      if (!claims.fullHouse || !Array.isArray(top3Leaderboard) || top3Leaderboard.length === 0) {
+        panel.classList.remove("active"); grid.innerHTML = ""; return;
+      }
+      if (titleEl) titleEl.innerHTML = `🏆 ${tr.lblRoundShort}${roundNumber} — ${tr.top3PanelHeading}`;
+      grid.innerHTML = top3Leaderboard.map((p, idx) => {
+        const localizedPrizes = Array.isArray(p.wonPrizeKeys) && p.wonPrizeKeys.length > 0
+          ? `${tr.wonLabel}: ${p.wonPrizeKeys.map(k => tr.prizes[k] || k).join(", ")}`
+          : `${p.matchedCount}/15 ${tr.hitsLabel}`;
+        return `
+          <div class="podium-card rank-${idx + 1}">
+            <div class="podium-medal">${tr.medals[idx] || `#${idx + 1}`}</div>
+            <div class="podium-name">${escapeHTML(p.name)}</div>
+            <div class="podium-detail">${escapeHTML(localizedPrizes)}</div>
+            <div class="podium-detail" style="color:#92400e; margin-top:2px;">${tr.hitsLabel}: ${p.matchedCount}/15</div>
+          </div>
+        `;
+      }).join("");
+      panel.classList.add("active");
+    }
+
+    function updateNewRoundButtonState() {
+      const tr = t();
+      const resetBtn = document.getElementById("resetBtn"), hintEl = document.getElementById("newRoundHint");
+      const drawBtn = document.getElementById("drawBtn"), autoBtn = document.getElementById("autoBtn");
+      if (!resetBtn) return;
+      const isFullHouseDone = Boolean(claims.fullHouse);
+      resetBtn.disabled = !isFullHouseDone;
+      resetBtn.textContent = isFullHouseDone ? tr.newRoundUnlocked : tr.newRoundLocked;
+      if (hintEl) hintEl.textContent = isFullHouseDone ? tr.hintReadyNewRound : tr.hintCompleteFH;
+      if (drawBtn) drawBtn.disabled = isFullHouseDone;
+      if (autoBtn) autoBtn.disabled = isFullHouseDone;
+    }
+
+    function startNewRoundFromWinnerModal() { closeWinnerReveal(); resetGameRound(); }
+
+    function showWinnerReveal(prizeKey, winnerName, top3List = null) {
+      const tr = t();
+      closeDrawPopup();
+      const modal = document.getElementById("winnerFoldModal");
+      const oldBox = document.getElementById("foldingPaperBox");
+      const newBox = oldBox.cloneNode(true);
+      oldBox.parentNode.replaceChild(newBox, oldBox);
+
+      const prizeLabel = tr.prizes[prizeKey] || prizeKey;
+      document.getElementById("winnerPrizeLabel").textContent = `🏅 ${prizeLabel.toUpperCase()}`;
+      document.getElementById("winnerNameText").textContent = winnerName;
+
+      const modalTop3El = document.getElementById("modalTop3List");
+      const modalNewRoundBtn = document.getElementById("modalNewRoundBtn");
+      const modalContinueBtn = document.getElementById("modalContinueBtn");
+      if (modalContinueBtn) modalContinueBtn.textContent = tr.continueBtn;
+
+      if (prizeKey === "fullHouse") {
+        if (Array.isArray(top3List) && top3List.length > 0) {
+          const medals = ["🥇", "🥈", "🥉"];
+          modalTop3El.innerHTML = `<div style="font-weight:900; color:#92400e; margin-bottom:4px; text-align:center;">${tr.top3Heading}</div>` +
+            top3List.map((p, i) => `<div class="modal-top3-item"><span>${medals[i] || ""} ${escapeHTML(p.name)}</span><span>${p.matchedCount}/15 ${tr.hitsLabel}</span></div>`).join("");
+          modalTop3El.classList.add("active");
+        }
+        if (modalNewRoundBtn) { modalNewRoundBtn.textContent = tr.startNewRoundBtn; modalNewRoundBtn.style.display = isHost ? "inline-flex" : "none"; }
+      } else {
+        modalTop3El.classList.remove("active"); modalTop3El.innerHTML = "";
+        if (modalNewRoundBtn) modalNewRoundBtn.style.display = "none";
+      }
+
+      if (allPopupsEnabled) modal.classList.add("active");
+      launchConfettiBurst(prizeKey === "fullHouse");
+      playTone("win");
+      speakText(tr.sayWinner(winnerName, prizeLabel));
+
+      clearTimeout(winnerTimer);
+      winnerTimer = setTimeout(() => closeWinnerReveal(), prizeKey === "fullHouse" ? 12000 : 4500);
+    }
+
+    function closeWinnerReveal() { document.getElementById("winnerFoldModal").classList.remove("active"); }
+
+    function isValidTambolaTicket(grid) {
+      if (!Array.isArray(grid) || grid.length !== 3) return false;
+      const colRanges = [[1,9],[10,19],[20,29],[30,39],[40,49],[50,59],[60,69],[70,79],[80,90]];
+      const seen = new Set();
+      for (let r = 0; r < 3; r++) {
+        if (!Array.isArray(grid[r]) || grid[r].length !== 9) return false;
+        if (grid[r].filter((v) => v !== 0).length !== 5) return false;
+      }
+      for (let c = 0; c < 9; c++) {
+        const [min, max] = colRanges[c];
+        let colCount = 0, prev = 0;
+        for (let r = 0; r < 3; r++) {
+          const val = grid[r][c];
+          if (!Number.isInteger(val)) return false;
+          if (val === 0) continue;
+          if (val < min || val > max || seen.has(val) || val <= prev) return false;
+          seen.add(val); prev = val; colCount++;
+        }
+        if (colCount < 1 || colCount > 3) return false;
+      }
+      return seen.size === 15;
+    }
+
+    function getTicketNumberSignature(grid) {
+      const nums = [];
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (grid[r][c] > 0) nums.push(grid[r][c]);
+      nums.sort((a, b) => a - b);
+      return nums.join(",");
+    }
+
+    function buildCandidateTicket() {
+      const colRanges = [[1,9],[10,19],[20,29],[30,39],[40,49],[50,59],[60,69],[70,79],[80,90]];
+      let mask;
+      while (true) {
+        mask = Array.from({ length: 3 }, () => Array(9).fill(0));
+        const colTotals = Array(9).fill(0);
+        let ok = true;
+        for (let r = 0; r < 3; r++) {
+          const cols = [0,1,2,3,4,5,6,7,8].sort(() => Math.random() - 0.5);
+          if (r === 2) cols.sort((a, b) => colTotals[a] - colTotals[b]);
+          let picked = 0;
+          for (const c of cols) {
+            if (picked === 5) break;
+            if (colTotals[c] < 3) { mask[r][c] = 1; colTotals[c]++; picked++; }
+          }
+          if (picked < 5) { ok = false; break; }
+        }
+        if (ok && colTotals.every(cnt => cnt >= 1 && cnt <= 3)) break;
+      }
+      const grid = Array.from({ length: 3 }, () => Array(9).fill(0));
+      for (let c = 0; c < 9; c++) {
+        const rowsWithNum = [0, 1, 2].filter(r => mask[r][c] === 1);
+        const [min, max] = colRanges[c], pool = [];
+        for (let n = min; n <= max; n++) pool.push(n);
+        pool.sort(() => Math.random() - 0.5);
+        pool.sort((a, b) => numberUsageCounts[a] - numberUsageCounts[b]);
+        const chosen = pool.slice(0, rowsWithNum.length).sort((a, b) => a - b);
+        rowsWithNum.forEach((r, idx) => { grid[r][c] = chosen[idx]; });
+      }
+      return grid;
+    }
+
+    function allocateUniqueTicketForPlayer(uid, count = 1) {
+      if (issuedTickets.has(uid)) return issuedTickets.get(uid);
+      const tickets = [];
+      for (let i = 0; i < count; i++) {
+        let candidate = null, signature = "", attempts = 0;
+        do {
+          candidate = buildCandidateTicket();
+          signature = getTicketNumberSignature(candidate);
+          attempts++;
+        } while (issuedNumberSetSignatures.has(signature) && attempts < 200);
+        issuedNumberSetSignatures.add(signature);
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (candidate[r][c] > 0) numberUsageCounts[candidate[r][c]]++;
+        tickets.push(candidate);
+      }
+      const serial = issuedTickets.size + 1;
+      const record = { tickets, serial };
+      issuedTickets.set(uid, record);
+      return record;
+    }
+
+    function resetUniqueTicketRegistry() {
+      issuedTickets.clear(); issuedNumberSetSignatures.clear(); numberUsageCounts = Array(91).fill(0);
+    }
+
+    /* ==========================================================================
+       MULTI-TICKET SELECTOR (1, 2, OR 3 TICKETS)
+       ========================================================================== */
+    let candidateTicketsList = [];
+    let selectedCandidateIndices = [0];
+
+    function setTicketCountPreference(cnt) {
+      desiredTicketCount = cnt;
+      [1, 2, 3].forEach((n) => document.getElementById(`tcount-${n}`)?.classList.toggle("active", n === cnt));
+      selectedCandidateIndices = selectedCandidateIndices.slice(0, cnt);
+      while (selectedCandidateIndices.length < cnt) {
+        const nextIdx = [0, 1, 2, 3].find(i => !selectedCandidateIndices.includes(i));
+        if (nextIdx !== undefined) selectedCandidateIndices.push(nextIdx); else break;
+      }
+      renderCandidateTickets();
+    }
+
+    function openRandomTicketSelector(forceOpen = false) {
+      if (calledNumbers.length > 0) return showToast(t().ticketLocked);
+      if (!allPopupsEnabled && !forceOpen) return;
+      [1, 2, 3].forEach((n) => document.getElementById(`tcount-${n}`)?.classList.toggle("active", n === desiredTicketCount));
+      generateCandidateTickets();
+      document.getElementById("ticketSelectModal").classList.add("active");
+    }
+
+    function closeRandomTicketSelector() { document.getElementById("ticketSelectModal")?.classList.remove("active"); }
+
+    function generateCandidateTickets() {
+      candidateTicketsList = [];
+      const localSigs = new Set(issuedNumberSetSignatures);
+      for (let i = 0; i < 4; i++) {
+        let cand = null, sig = "", tries = 0;
+        do { cand = buildCandidateTicket(); sig = getTicketNumberSignature(cand); tries++; }
+        while (localSigs.has(sig) && tries < 150);
+        localSigs.add(sig);
+        candidateTicketsList.push(cand);
+      }
+      selectedCandidateIndices = Array.from({ length: desiredTicketCount }, (_, i) => i);
+      renderCandidateTickets();
+    }
+
+    function selectCandidateTicket(idx) {
+      if (desiredTicketCount === 1) {
+        selectedCandidateIndices = [idx];
+      } else {
+        if (selectedCandidateIndices.includes(idx)) {
+          if (selectedCandidateIndices.length > 1) selectedCandidateIndices = selectedCandidateIndices.filter(i => i !== idx);
+        } else {
+          if (selectedCandidateIndices.length >= desiredTicketCount) selectedCandidateIndices.shift();
+          selectedCandidateIndices.push(idx);
+        }
+      }
+      renderCandidateTickets();
+    }
+
+    function renderCandidateTickets() {
+      const tr = t();
+      const gridEl = document.getElementById("candidateTicketsGrid");
+      if (!gridEl) return;
+      gridEl.innerHTML = candidateTicketsList.map((tGrid, idx) => {
+        const isSel = selectedCandidateIndices.includes(idx);
+        let cellsHtml = "";
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) {
+          const v = tGrid[r][c];
+          cellsHtml += v === 0 ? `<div class="mini-cell empty"></div>` : `<div class="mini-cell">${v}</div>`;
+        }
+        return `
+          <div class="candidate-ticket-box ${isSel ? "selected" : ""}" onclick="selectCandidateTicket(${idx})">
+            <div class="candidate-header">
+              <span>${tr.ticketCardLabel}${idx + 1}</span>
+              <span>${isSel ? tr.selectedLabel : tr.tapToPick}</span>
+            </div>
+            <div class="mini-ticket-grid">${cellsHtml}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function confirmSelectedRandomTicket() {
+      const tr = t();
+      if (calledNumbers.length > 0) { closeRandomTicketSelector(); return showToast(tr.ticketLocked); }
+      const chosenList = selectedCandidateIndices.map(i => candidateTicketsList[i]).filter(Boolean);
+      if (!chosenList.length) return;
+      myTickets = chosenList;
+      markedSet.clear();
+
+      if (isHost) {
+        const oldRec = issuedTickets.get(myUid);
+        if (oldRec) {
+          const oldList = Array.isArray(oldRec.tickets) ? oldRec.tickets : [oldRec.ticket];
+          for (const g of oldList) {
+            issuedNumberSetSignatures.delete(getTicketNumberSignature(g));
+            for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (g[r][c] > 0 && numberUsageCounts[g[r][c]] > 0) numberUsageCounts[g[r][c]]--;
+          }
+        }
+        for (const g of chosenList) {
+          issuedNumberSetSignatures.add(getTicketNumberSignature(g));
+          for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (g[r][c] > 0) numberUsageCounts[g[r][c]]++;
+        }
+        issuedTickets.set(myUid, { tickets: chosenList, serial: ticketSerial });
+        saveHostBackup();
+      } else if (hostConn && hostConn.open) {
+        hostConn.send({ type: "PLAYER_CHOSE_TICKET", uid: myUid, tickets: chosenList });
+      }
+
+      saveLocalSession();
+      renderTicket();
+      updateClaimsUI();
+      closeRandomTicketSelector();
+      showToast(tr.ticketConfirmed);
+    }
+
+    function updateChangeTicketButtonVisibility() {
+      const btn = document.getElementById("changeTicketBtn");
+      if (btn) btn.style.display = calledNumbers.length === 0 ? "inline-flex" : "none";
+    }
+
+    function createPenCrossSVG(animate = true) {
+      return `
+        <svg class="pen-mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path ${animate ? 'class="pen-stroke-1"' : ''} d="M18 22 C40 42, 62 60, 84 82" stroke="#dc2626" stroke-width="7.5" stroke-linecap="round"/>
+          <path ${animate ? 'class="pen-stroke-2"' : ''} d="M82 18 C60 42, 38 62, 16 84" stroke="#dc2626" stroke-width="7.5" stroke-linecap="round"/>
+          <path ${animate ? 'class="pen-circle"' : ''} d="M50 10 C76 8, 92 28, 90 52 C88 76, 68 92, 46 90 C22 88, 8 68, 11 45 C14 24, 32 11, 54 11" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+      `;
+    }
+
+    function updateTicketProgressUI() {
+      const tr = t();
+      let bestMarked = 0;
+      for (const grid of myTickets) {
+        let m = 0;
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (grid[r][c] > 0 && markedSet.has(grid[r][c])) m++;
+        if (m > bestMarked) bestMarked = m;
+      }
+      const pct = Math.min(100, Math.round((bestMarked / 15) * 100));
+      const lbl = document.getElementById("ticketProgressLabel");
+      const fill = document.getElementById("ticketProgressFill");
+      const pctEl = document.getElementById("ticketPercentLabel");
+      const waitEl = document.getElementById("ticketWaitingBadge");
+      if (lbl) lbl.innerHTML = `${tr.ticketProgressPrefix} <strong>${bestMarked}</strong>/15`;
+      if (fill) fill.style.width = `${pct}%`;
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      if (waitEl) {
+        waitEl.style.display = (bestMarked === 14 && !claims.fullHouse) ? "inline-block" : "none";
+      }
+    }
+
+    function renderTicket(newlyMarkedNum = null) {
+      const serialEl = document.getElementById("ticketSerialBadge");
+      if (serialEl) serialEl.textContent = `#T-${String(ticketSerial).padStart(2, "0")}`;
+      updateTicketProgressUI();
+
+      const container = document.getElementById("ticketGrid");
+      container.innerHTML = "";
+      if (!myTickets.length) return;
+
+      myTickets.forEach((grid, idx) => {
+        if (!Array.isArray(grid) || grid.length !== 3) return;
+        const wrap = document.createElement("div");
+        if (myTickets.length > 1) {
+          const lbl = document.createElement("div");
+          lbl.className = "ticket-card-label";
+          lbl.textContent = `${t().ticketCardLabel}${idx + 1}`;
+          wrap.appendChild(lbl);
+        }
+        const tDiv = document.createElement("div");
+        tDiv.className = `ticket ${ticketTheme !== "cream" ? "theme-" + ticketTheme : ""}`;
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 9; c++) {
+            const val = grid[r][c];
+            const cell = document.createElement("div");
+            if (val === 0) cell.className = "cell empty";
+            else {
+              const isMarked = markedSet.has(val);
+              const isCalledUnmarked = !isMarked && calledNumbers.includes(val);
+              cell.className = "cell" + (isMarked ? " marked" : "") + (isCalledUnmarked ? " called-hint" : "");
+              cell.innerHTML = `<span>${val}</span>` + (isMarked ? createPenCrossSVG(val === newlyMarkedNum) : "");
+              cell.onclick = () => toggleMark(val);
+            }
+            tDiv.appendChild(cell);
+          }
+        }
+        wrap.appendChild(tDiv);
+        container.appendChild(wrap);
+      });
+    }
+
+    function toggleMark(num) {
+      if (!calledNumbers.includes(num)) {
+        playTone("bogey");
+        showToast(t().notCalledYet(num));
+        return;
+      }
+      if (markedSet.has(num)) {
+        markedSet.delete(num);
+        saveLocalSession();
+        renderTicket(null);
+      } else {
+        markedSet.add(num);
+        playTone("mark");
+        saveLocalSession();
+        renderTicket(num);
+      }
+    }
+
+    function setLobbyButtonsDisabled(disabled) {
+      document.getElementById("hostBtn").disabled = disabled;
+      document.getElementById("joinBtn").disabled = disabled;
+    }
+
+    function startHeartbeat() {
+      clearInterval(heartbeatTimer);
+      heartbeatTimer = setInterval(() => {
+        if (isHost) {
+          broadcast({ type: "PING", calledCount: calledNumbers.length, roundNumber });
+        } else if (hostConn && hostConn.open) {
+          hostConn.send({ type: "PING" });
+        }
+      }, 4000);
+    }
+
+    function getOnlinePlayerCount() { return Object.values(playersRoster).filter(p => p && p.online).length; }
+
+    function leaveRoom() {
+      if (!confirm(t().leaveConfirm)) return;
+      clearInterval(autoTimer); autoTimer = null;
+      clearInterval(heartbeatTimer); heartbeatTimer = null;
+      clearTimeout(connectTimeout); clearTimeout(popupTimer); clearTimeout(winnerTimer);
+      closeDrawPopup(); closeWinnerReveal(); closeRandomTicketSelector(); closeWhatsAppInviteModal();
+      if (hostConn) { try { hostConn.close(); } catch (e) {} hostConn = null; }
+      connections.forEach((c) => { try { c.close(); } catch (e) {} });
+      connections.clear();
+      if (peer) { try { peer.destroy(); } catch (e) {} peer = null; }
+      isHost = false; gameStarted = false; currentRoomId = ""; calledNumbers = []; markedSet.clear();
+      myTickets = []; playersRoster = {}; top3Leaderboard = [];
+      claims = createEmptyClaims(); claimUids = createEmptyClaims();
+      document.getElementById("gameArea").style.display = "none";
+      document.getElementById("hostControls").style.display = "none";
+      document.getElementById("setupPanel").style.display = "block";
+      document.getElementById("connStatus").textContent = "";
+      document.getElementById("reconnectBtn").style.display = "none";
+      setLobbyButtonsDisabled(false);
+    }
+
+    function resumeHostedRoom() {
+      try {
+        const raw = localStorage.getItem(HOST_BACKUP_KEY);
+        if (!raw) return hostGame();
+        hostGame(0, JSON.parse(raw));
+      } catch (e) { hostGame(); }
+    }
+
+    function hostGame(retryCount = 0, resumeBackup = null) {
+      if (typeof Peer === "undefined") return showToast("⚠️ Network signaling unavailable.");
+      myName = document.getElementById("playerName").value.trim().slice(0, 20) || (resumeBackup?.hostName) || "Host";
+      hostDisplayName = myName;
+      isHost = true;
+      setLobbyButtonsDisabled(true);
+
+      let targetRoomId;
+      if (resumeBackup && resumeBackup.roomId && retryCount === 0) {
+        targetRoomId = resumeBackup.roomId;
+        roundNumber = resumeBackup.roundNumber || 1;
+        calledNumbers = Array.isArray(resumeBackup.calledNumbers) ? resumeBackup.calledNumbers : [];
+        enabledPrizes = { ...DEFAULT_ENABLED_PRIZES, ...(resumeBackup.enabledPrizes || {}) };
+        claims = { ...createEmptyClaims(), ...(resumeBackup.claims || {}) };
+        claimUids = { ...createEmptyClaims(), ...(resumeBackup.claimUids || {}) };
+        top3Leaderboard = Array.isArray(resumeBackup.top3Leaderboard) ? resumeBackup.top3Leaderboard : [];
+        playersRoster = resumeBackup.playersRoster || {};
+        Object.values(playersRoster).forEach(p => { if (p) p.online = false; });
+        resetUniqueTicketRegistry();
+        if (resumeBackup.issuedTickets) Object.entries(resumeBackup.issuedTickets).forEach(([uid, rec]) => issuedTickets.set(uid, rec));
+        if (Array.isArray(resumeBackup.issuedSignatures)) resumeBackup.issuedSignatures.forEach(s => issuedNumberSetSignatures.add(s));
+        if (Array.isArray(resumeBackup.numberUsageCounts) && resumeBackup.numberUsageCounts.length === 91) numberUsageCounts = resumeBackup.numberUsageCounts;
+      } else {
+        targetRoomId = "VSA-" + Math.floor(1000 + Math.random() * 9000);
+        roundNumber = 1; calledNumbers = []; top3Leaderboard = [];
+        enabledPrizes = { ...DEFAULT_ENABLED_PRIZES };
+        claims = createEmptyClaims(); claimUids = createEmptyClaims(); playersRoster = {};
+      }
+
+      document.getElementById("connStatus").textContent = `${targetRoomId}...`;
+      if (peer) { try { peer.destroy(); } catch (e) {} }
+      peer = new Peer(targetRoomId, { config: ANY_NETWORK_ICE });
+
+      peer.on("open", (id) => {
+        currentRoomId = id;
+        if (!resumeBackup) resetUniqueTicketRegistry();
+        const hostRecord = allocateUniqueTicketForPlayer(myUid, desiredTicketCount);
+        myTickets = Array.isArray(hostRecord.tickets) ? hostRecord.tickets : [hostRecord.ticket];
+        ticketSerial = hostRecord.serial;
+        if (!loadLocalSession(id, roundNumber)) markedSet.clear();
+
+        playersRoster[myUid] = { name: myName, online: true, isHost: true, serial: ticketSerial };
+        startGameUI(id, `👑 ${myName}`);
+        document.getElementById("hostControls").style.display = "block";
+        renderHostPrizeConfig();
+        updateNewRoundButtonState();
+        renderTop3LeaderboardUI();
+        renderPlayersStrip();
+        startHeartbeat();
+        if (!resumeBackup && calledNumbers.length === 0) openRandomTicketSelector();
+      });
+
+      peer.on("disconnected", () => { if (peer && !peer.destroyed) { try { peer.reconnect(); } catch (e) {} } });
+      peer.on("connection", (conn) => {
+        conn.on("data", (data) => handleHostIncoming(data, conn));
+        conn.on("close", () => {
+          for (const [uid, c] of connections.entries()) {
+            if (c === conn) {
+              connections.delete(uid);
+              if (playersRoster[uid]) playersRoster[uid].online = false;
+              saveHostBackup(); renderPlayersStrip();
+              broadcast({ type: "ROSTER_UPDATE", playersRoster });
+              break;
+            }
+          }
+        });
+      });
+
+      peer.on("error", (err) => {
+        if (err.type === "unavailable-id" && retryCount < 4) { hostGame(retryCount + 1, null); return; }
+        setLobbyButtonsDisabled(false);
+        document.getElementById("connStatus").textContent = "Error: " + err.type;
+      });
+    }
+
+    function joinGame() {
+      if (typeof Peer === "undefined") return showToast("⚠️ Network signaling unavailable.");
+      myName = document.getElementById("playerName").value.trim().slice(0, 20) || "Player";
+      let rawInput = document.getElementById("joinRoomId").value.trim();
+      if (rawInput.includes("room=")) {
+        try {
+          const parsed = new URL(rawInput);
+          const parsedHost = parsed.searchParams.get("host");
+          if (parsedHost) hostDisplayName = parsedHost.trim().slice(0, 20);
+          rawInput = parsed.searchParams.get("room") || rawInput;
+        } catch (e) {
+          const match = rawInput.match(/VSA-\d{4}/i);
+          if (match) rawInput = match[0];
+        }
+      }
+      const roomId = rawInput.toUpperCase();
+      if (!roomId) return showToast(t().roomPlaceholder);
+      isHost = false; currentRoomId = roomId;
+      setLobbyButtonsDisabled(true);
+      document.getElementById("connStatus").textContent = `${roomId}...`;
+      connectToHostRoom(roomId);
+    }
+
+    function connectToHostRoom(roomId) {
+      if (peer) { try { peer.destroy(); } catch (e) {} }
+      clearTimeout(connectTimeout);
+      peer = new Peer({ config: ANY_NETWORK_ICE });
+      connectTimeout = setTimeout(() => {
+        if (!gameStarted) {
+          if (peer) { try { peer.destroy(); } catch (e) {} peer = null; }
+          setLobbyButtonsDisabled(false);
+          document.getElementById("connStatus").textContent = "⚠️ Timeout — Tap Join again";
+        }
+      }, 14000);
+
+      peer.on("open", () => {
+        hostConn = peer.connect(roomId, { reliable: true });
+        hostConn.on("open", () => {
+          document.getElementById("reconnectBtn").style.display = "none";
+          document.getElementById("connStatus").textContent = t().connectingSync;
+          hostConn.send({ type: "JOIN_HELLO", uid: myUid, name: myName });
+        });
+        hostConn.on("data", (data) => handleClientIncoming(data));
+        hostConn.on("close", () => {
+          clearTimeout(connectTimeout); setLobbyButtonsDisabled(false);
+          if (gameStarted) { document.getElementById("reconnectBtn").style.display = "inline-block"; showToast(`⚠️ ${t().reconnect}`); }
+        });
+      });
+      peer.on("error", (err) => {
+        clearTimeout(connectTimeout); setLobbyButtonsDisabled(false);
+        document.getElementById("connStatus").textContent = `❌ ${roomId} (${err.type})`;
+        if (gameStarted) document.getElementById("reconnectBtn").style.display = "inline-block";
+      });
+    }
+
+    function reconnectClient() { if (!currentRoomId || isHost) return; showToast(`🔄 ${currentRoomId}...`); connectToHostRoom(currentRoomId); }
+
+    function startGameUI(roomId, roleLabel) {
+      gameStarted = true;
+      requestScreenWakeLock();
+      document.getElementById("setupPanel").style.display = "none";
+      document.getElementById("gameArea").style.display = "grid";
+      document.getElementById("displayRoomId").textContent = roomId;
+      document.getElementById("displayRole").textContent = roleLabel;
+      document.getElementById("roundNumberBadge").textContent = roundNumber;
+      renderClaimButtonsGrid();
+      saveLocalSession();
+      syncBoardAndClaimsUI();
+      renderTicket();
+    }
+
+    function renderPlayersStrip() {
+      const tr = t(), strip = document.getElementById("playersStrip");
+      if (!strip) return;
+      const list = Object.values(playersRoster);
+      const onlineCount = list.filter(p => p && p.online).length;
+      document.getElementById("playerCountBadge").textContent = onlineCount;
+      const lobbyLabelEl = document.getElementById("connectedLobbyLabel");
+      if (lobbyLabelEl) lobbyLabelEl.innerHTML = `${tr.connectedLobby} (${onlineCount} ${tr.onlineSuffix})`;
+      strip.innerHTML = list.map(p => `
+        <span class="player-tag">
+          <span class="player-dot ${p.online ? "" : "offline"}"></span>
+          ${escapeHTML(p.name)}${p.isHost ? " 👑" : ""}
+        </span>
+      `).join("");
+    }
+
+    function broadcast(payload) { connections.forEach((conn) => { if (conn.open) conn.send(payload); }); }
+
+    function drawNextNumber(fromAutoDraw = false) {
+      if (!isHost || drawLock) return;
+      if (claims.fullHouse || calledNumbers.length >= 90) { if (autoTimer) toggleAutoDraw(); return; }
+      const available = [];
+      for (let i = 1; i <= 90; i++) if (!calledNumbers.includes(i)) available.push(i);
+      if (!available.length) return;
+      drawLock = true;
+      if (!fromAutoDraw && autoTimer) toggleAutoDraw();
+      const next = available[Math.floor(Math.random() * available.length)];
+      calledNumbers.push(next);
+      saveLocalSession();
+      renderHostPrizeConfig();
+      applyNewNumber(next);
+      broadcast({ type: "NUMBER_DRAWN", number: next, calledNumbers });
+      if (calledNumbers.length >= 90 && autoTimer) toggleAutoDraw();
+      setTimeout(() => { drawLock = false; }, 350);
+    }
+
+    function autoDrawStep() {
+      if (!isHost) { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } return; }
+      if (claims.fullHouse || calledNumbers.length >= 90) { if (autoTimer) toggleAutoDraw(); return; }
+      if (!drawLock) drawNextNumber(true);
+    }
+
+    function toggleAutoDraw() {
+      const tr = t(), btn = document.getElementById("autoBtn");
+      if (autoTimer) {
+        clearInterval(autoTimer); autoTimer = null;
+        if (btn) btn.textContent = tr.autoDrawStart;
+      } else {
+        if (!isHost) return showToast("👑 Only Host can start Auto Draw");
+        if (claims.fullHouse) return showToast(tr.hintReadyNewRound);
+        if (calledNumbers.length >= 90) return;
+        if (btn) btn.textContent = tr.autoDrawStop;
+        autoDrawStep();
+        if (calledNumbers.length < 90 && !claims.fullHouse) {
+          clearInterval(autoTimer); autoTimer = setInterval(autoDrawStep, drawIntervalMs);
+        }
+      }
+    }
+
+    function resetGameRound() {
+      if (!isHost) return;
+      if (!claims.fullHouse) { showToast(t().hintCompleteFH); return; }
+      if (autoTimer) toggleAutoDraw();
+      closeWinnerReveal(); closeDrawPopup();
+
+      roundNumber += 1; calledNumbers = []; top3Leaderboard = [];
+      claims = createEmptyClaims(); claimUids = createEmptyClaims();
+      resetUniqueTicketRegistry();
+      const hostRec = allocateUniqueTicketForPlayer(myUid, desiredTicketCount);
+      myTickets = hostRec.tickets; ticketSerial = hostRec.serial;
+      markedSet.clear(); saveLocalSession();
+
+      document.getElementById("roundNumberBadge").textContent = roundNumber;
+      renderHostPrizeConfig();
+      syncBoardAndClaimsUI();
+      updateNewRoundButtonState();
+      renderTop3LeaderboardUI();
+      renderTicket();
+      openRandomTicketSelector();
+      showToast(`🔁 ${t().lblRoundShort}${roundNumber}!`);
+
+      connections.forEach((conn, uid) => {
+        if (conn.open) {
+          const playerRec = allocateUniqueTicketForPlayer(uid, 1);
+          conn.send({ type: "NEW_ROUND", roundNumber, enabledPrizes, assignedTickets: playerRec.tickets, assignedSerial: playerRec.serial });
+        }
+      });
+    }
+
+    function applyNewNumber(num) {
+      document.getElementById(`b-${num}`)?.classList.add("called");
+      document.getElementById("calledCount").textContent = calledNumbers.length;
+      renderLast5Strip();
+      updateChangeTicketButtonVisibility();
+      autoMarkMatchingNumbers(num);
+      updateClaimsUI();
+      showDrawPopup(num);
+    }
+
+    function syncBoardAndClaimsUI() {
+      for (let i = 1; i <= 90; i++) {
+        const cell = document.getElementById(`b-${i}`);
+        if (cell) cell.classList.toggle("called", calledNumbers.includes(i));
+      }
+      document.getElementById("calledCount").textContent = calledNumbers.length;
+      renderLast5Strip();
+      updateChangeTicketButtonVisibility();
+      autoMarkMatchingNumbers(null);
+      updateClaimsUI();
+    }
+
+    function validateSingleGridClaim(type, grid) {
+      if (!Array.isArray(grid) || grid.length !== 3) return false;
+      const isCalled = (n) => Number.isInteger(n) && n >= 1 && n <= 90 && calledNumbers.includes(n);
+      const rowNums = (r) => Array.isArray(grid[r]) ? grid[r].filter(n => n > 0) : [];
+      if (rowNums(0).length !== 5 || rowNums(1).length !== 5 || rowNums(2).length !== 5) return false;
+
+      if (type === "jaldi5" || type === "early7") {
+        let count = 0;
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (isCalled(grid[r][c])) count++;
+        return count >= (type === "early7" ? 7 : 5);
+      }
+      if (type === "topLine") return rowNums(0).every(isCalled);
+      if (type === "midLine") return rowNums(1).every(isCalled);
+      if (type === "botLine") return rowNums(2).every(isCalled);
+      if (type === "corners") {
+        const top = rowNums(0), bot = rowNums(2);
+        return [top[0], top[top.length - 1], bot[0], bot[bot.length - 1]].every(isCalled);
+      }
+      if (type === "breakfast" || type === "lunch" || type === "dinner") {
+        const startCol = type === "breakfast" ? 0 : (type === "lunch" ? 3 : 6);
+        const colNums = [];
+        for (let r = 0; r < 3; r++) for (let c = startCol; c < startCol + 3; c++) if (grid[r][c] > 0) colNums.push(grid[r][c]);
+        return colNums.length > 0 && colNums.every(isCalled);
+      }
+      if (type === "fullHouse") return [0, 1, 2].every(r => rowNums(r).every(isCalled));
+      return false;
+    }
+
+    function validateClaim(type, ticketsOrGrid) {
+      if (!enabledPrizes[type]) return false;
+      const list = (Array.isArray(ticketsOrGrid) && Array.isArray(ticketsOrGrid[0]) && Array.isArray(ticketsOrGrid[0][0]))
+        ? ticketsOrGrid : [ticketsOrGrid];
+      return list.some(g => validateSingleGridClaim(type, g));
+    }
+
+    function requestClaim(type) {
+      const now = Date.now();
+      if (now - lastClaimAttemptAt < 1200) return;
+      lastClaimAttemptAt = now;
+      const tr = t();
+      if (!enabledPrizes[type]) return;
+      if (claims[type]) return showToast(`🏅 ${tr.prizes[type]} (${claims[type]})`);
+      if (!validateClaim(type, myTickets)) {
+        playTone("bogey");
+        return showToast(`❌ Bogey! ${tr.prizes[type]}`);
+      }
+      if (isHost) {
+        processClaim(type, myName, myTickets, myUid);
+      } else if (hostConn && hostConn.open) {
+        hostConn.send({ type: "CLAIM_REQUEST", uid: myUid, prize: type, playerName: myName, tickets: myTickets });
+      } else {
+        showToast(`⚠️ ${tr.reconnect}`);
+      }
+    }
+
+    function processClaim(prize, playerName, playerTickets, claimantUid = myUid) {
+      if (claims[prize] || !enabledPrizes[prize]) return;
+      if (!validateClaim(prize, playerTickets)) return;
+      if (isHost && autoTimer) toggleAutoDraw();
+      claims[prize] = playerName;
+      claimUids[prize] = claimantUid;
+      if (prize === "fullHouse") {
+        top3Leaderboard = computeTop3Players();
+        updateNewRoundButtonState();
+        renderTop3LeaderboardUI();
+      }
+      saveLocalSession();
+      updateClaimsUI();
+      showWinnerReveal(prize, playerName, prize === "fullHouse" ? top3Leaderboard : null);
+      broadcast({ type: "CLAIM_APPROVED", prize, playerName, claims, claimUids, top3Leaderboard: prize === "fullHouse" ? top3Leaderboard : null });
+    }
+
+    function updateClaimsUI() {
+      const tr = t();
+      for (const key of ALL_PRIZE_KEYS) {
+        const btn = document.getElementById(`btn-${key}`);
+        if (!btn) continue;
+        const label = tr.prizes[key] || key;
+        const winner = claims[key];
+        if (winner) {
+          btn.classList.add("won");
+          btn.classList.remove("claim-ready");
+          btn.textContent = `🏅 ${label} (${winner})`;
+        } else {
+          btn.classList.remove("won");
+          const ready = myTickets.length > 0 && validateClaim(key, myTickets);
+          btn.classList.toggle("claim-ready", ready);
+          btn.textContent = ready ? `✨ ${label}` : label;
+        }
+      }
+    }
+
+    function handleHostIncoming(data, conn) {
+      if (!data || typeof data !== "object" || data.type === "PING") return;
+
+      if (data.type === "JOIN_HELLO" || data.type === "REQUEST_SYNC") {
+        const uid = String(data.uid || ("G-" + Math.random().toString(36).slice(2, 7)));
+        const safeName = String(data.name || playersRoster[uid]?.name || "Player").trim().slice(0, 20) || "Player";
+        const isReturningPlayer = Boolean(playersRoster[uid]);
+        if (data.type === "JOIN_HELLO" && !isReturningPlayer && getOnlinePlayerCount() >= MAX_PLAYERS_CAP) {
+          conn.send({ type: "ROOM_FULL", msg: `❌ Room ${currentRoomId} full (${MAX_PLAYERS_CAP})` });
+          setTimeout(() => { try { conn.close(); } catch (e) {} }, 400);
+          return;
+        }
+        const assignedRec = allocateUniqueTicketForPlayer(uid, 1);
+        connections.set(uid, conn);
+        playersRoster[uid] = { name: safeName, online: true, isHost: false, serial: assignedRec.serial };
+        saveHostBackup(); renderPlayersStrip();
+        conn.send({
+          type: "SYNC_STATE", hostName: myName, roundNumber, calledNumbers, enabledPrizes,
+          claims, claimUids, top3Leaderboard, playersRoster,
+          assignedTickets: assignedRec.tickets || [assignedRec.ticket], assignedSerial: assignedRec.serial
+        });
+        if (data.type === "JOIN_HELLO") broadcast({ type: "ROSTER_UPDATE", playersRoster });
+      } else if (data.type === "PLAYER_CHOSE_TICKET") {
+        const uid = String(data.uid || "");
+        const oldRec = issuedTickets.get(uid);
+        const submitted = Array.isArray(data.tickets) ? data.tickets.slice(0, 3) : (data.ticket ? [data.ticket] : []);
+        if (uid && submitted.length >= 1 && submitted.every(isValidTambolaTicket)) {
+          if (calledNumbers.length > 0 && oldRec) {
+            conn.send({ type: "TICKET_CONFIRMED", assignedTickets: oldRec.tickets || [oldRec.ticket], assignedSerial: oldRec.serial });
+            conn.send({ type: "TOAST", msg: t().ticketLocked });
+            return;
+          }
+          if (oldRec) {
+            const oldList = oldRec.tickets || [oldRec.ticket];
+            for (const g of oldList) {
+              issuedNumberSetSignatures.delete(getTicketNumberSignature(g));
+              for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (g[r][c] > 0 && numberUsageCounts[g[r][c]] > 0) numberUsageCounts[g[r][c]]--;
+            }
+          }
+          const finalTickets = [];
+          for (const g of submitted) {
+            const sig = getTicketNumberSignature(g);
+            let chosen = g;
+            if (issuedNumberSetSignatures.has(sig)) {
+              let cand, cSig, tries = 0;
+              do { cand = buildCandidateTicket(); cSig = getTicketNumberSignature(cand); tries++; }
+              while (issuedNumberSetSignatures.has(cSig) && tries < 150);
+              chosen = cand;
+            }
+            issuedNumberSetSignatures.add(getTicketNumberSignature(chosen));
+            for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) if (chosen[r][c] > 0) numberUsageCounts[chosen[r][c]]++;
+            finalTickets.push(chosen);
+          }
+          const serial = oldRec ? oldRec.serial : (issuedTickets.size + 1);
+          issuedTickets.set(uid, { tickets: finalTickets, serial });
+          if (playersRoster[uid]) playersRoster[uid].serial = serial;
+          saveHostBackup();
+          conn.send({ type: "TICKET_CONFIRMED", assignedTickets: finalTickets, assignedSerial: serial });
+        } else if (uid && oldRec) {
+          conn.send({ type: "TICKET_CONFIRMED", assignedTickets: oldRec.tickets || [oldRec.ticket], assignedSerial: oldRec.serial });
+          conn.send({ type: "TOAST", msg: "⚠️ Invalid ticket rejected!" });
+        }
+      } else if (data.type === "CLAIM_REQUEST") {
+        const safeClaimant = String(data.playerName || "Player").trim().slice(0, 20) || "Player";
+        const claimantUid = data.uid ? String(data.uid) : null;
+        const authoritativeRec = claimantUid && issuedTickets.get(claimantUid);
+        const ticketsToCheck = authoritativeRec ? (authoritativeRec.tickets || [authoritativeRec.ticket]) : (data.tickets || [data.ticket]);
+        if (claims[data.prize]) conn.send({ type: "TOAST", msg: `🏅 ${claims[data.prize]}` });
+        else if (validateClaim(data.prize, ticketsToCheck)) processClaim(data.prize, safeClaimant, ticketsToCheck, claimantUid);
+        else conn.send({ type: "TOAST", msg: "❌ Bogey!" });
+      } else if (data.type === "REACTION") {
+        const safeSender = String(data.name || "Player").slice(0, 20);
+        const safeEmoji = String(data.emoji || "🎉").slice(0, 12);
+        showFloatingReaction(safeSender, safeEmoji);
+        broadcast({ type: "REACTION", name: safeSender, emoji: safeEmoji });
+      }
+    }
+
+    function handleClientIncoming(data) {
+      if (!data || typeof data !== "object") return;
+      if (data.type === "PING") {
+        if (gameStarted && (data.roundNumber !== roundNumber || data.calledCount !== calledNumbers.length)) {
+          if (hostConn && hostConn.open) hostConn.send({ type: "REQUEST_SYNC", uid: myUid, name: myName });
+        }
+        return;
+      }
+      if (data.type === "ROOM_FULL") {
+        clearTimeout(connectTimeout); setLobbyButtonsDisabled(false);
+        document.getElementById("connStatus").textContent = data.msg; showToast(data.msg); return;
+      }
+      if (data.type === "PRIZES_CONFIG") {
+        enabledPrizes = { ...DEFAULT_ENABLED_PRIZES, ...(data.enabledPrizes || {}) };
+        renderClaimButtonsGrid(); updateClaimsUI(); return;
+      }
+      if (data.type === "REACTION") {
+        if (data.name !== myName) showFloatingReaction(data.name, data.emoji);
+        return;
+      }
+      if (data.type === "SYNC_STATE") {
+        clearTimeout(connectTimeout);
+        if (data.hostName) hostDisplayName = String(data.hostName).slice(0, 20);
+        if (data.enabledPrizes) enabledPrizes = { ...DEFAULT_ENABLED_PRIZES, ...data.enabledPrizes };
+        const incomingRound = data.roundNumber || 1;
+        const roundChanged = gameStarted && incomingRound !== roundNumber;
+        roundNumber = incomingRound;
+        const restoredLocal = loadLocalSession(currentRoomId, roundNumber);
+
+        const incomingTickets = Array.isArray(data.assignedTickets) ? data.assignedTickets : (data.assignedTicket ? [data.assignedTicket] : null);
+        if (incomingTickets && incomingTickets.length > 0) {
+          const newSig = incomingTickets.map(getTicketNumberSignature).join("|");
+          const oldSig = myTickets.map(getTicketNumberSignature).join("|");
+          myTickets = incomingTickets;
+          desiredTicketCount = incomingTickets.length;
+          if (data.assignedSerial) ticketSerial = data.assignedSerial;
+          if (!restoredLocal || roundChanged || (oldSig && oldSig !== newSig)) markedSet.clear();
+        } else if (!restoredLocal) {
+          myTickets = [buildCandidateTicket()]; markedSet.clear();
+        }
+
+        const roleLabel = hostDisplayName ? `${myName} (👑 ${hostDisplayName})` : myName;
+        if (!gameStarted) { startGameUI(currentRoomId, roleLabel); startHeartbeat(); }
+        else { document.getElementById("displayRole").textContent = roleLabel; document.getElementById("roundNumberBadge").textContent = roundNumber; renderClaimButtonsGrid(); }
+
+        calledNumbers = Array.isArray(data.calledNumbers) ? data.calledNumbers : [];
+        claims = { ...createEmptyClaims(), ...(data.claims || {}) };
+        if (data.claimUids) claimUids = { ...createEmptyClaims(), ...data.claimUids };
+        top3Leaderboard = Array.isArray(data.top3Leaderboard) ? data.top3Leaderboard : [];
+        playersRoster = data.playersRoster || playersRoster;
+        markedSet.forEach(n => { if (!calledNumbers.includes(n)) markedSet.delete(n); });
+        saveLocalSession(); syncBoardAndClaimsUI(); renderTop3LeaderboardUI(); renderPlayersStrip(); renderTicket();
+        if (!restoredLocal && calledNumbers.length === 0) openRandomTicketSelector();
+      } else if (data.type === "TICKET_CONFIRMED") {
+        const confirmed = Array.isArray(data.assignedTickets) ? data.assignedTickets : (data.assignedTicket ? [data.assignedTicket] : null);
+        if (confirmed && confirmed.length > 0) {
+          myTickets = confirmed; desiredTicketCount = confirmed.length;
+          if (data.assignedSerial) ticketSerial = data.assignedSerial;
+          markedSet.clear(); saveLocalSession(); renderTicket(); updateClaimsUI();
+        }
+      } else if (data.type === "ROSTER_UPDATE") {
+        playersRoster = data.playersRoster || playersRoster; renderPlayersStrip();
+      } else if (data.type === "NUMBER_DRAWN") {
+        calledNumbers = data.calledNumbers; applyNewNumber(data.number);
+      } else if (data.type === "CLAIM_APPROVED") {
+        claims = { ...createEmptyClaims(), ...(data.claims || {}) };
+        if (data.claimUids) claimUids = { ...createEmptyClaims(), ...data.claimUids };
+        if (Array.isArray(data.top3Leaderboard)) top3Leaderboard = data.top3Leaderboard;
+        updateClaimsUI(); renderTop3LeaderboardUI();
+        showWinnerReveal(data.prize, data.playerName, data.prize === "fullHouse" ? top3Leaderboard : null);
+      } else if (data.type === "NEW_ROUND") {
+        closeWinnerReveal(); closeDrawPopup();
+        roundNumber = data.roundNumber || (roundNumber + 1);
+        document.getElementById("roundNumberBadge").textContent = roundNumber;
+        if (data.enabledPrizes) enabledPrizes = { ...DEFAULT_ENABLED_PRIZES, ...data.enabledPrizes };
+        calledNumbers = []; top3Leaderboard = [];
+        claims = createEmptyClaims(); claimUids = createEmptyClaims();
+        myTickets = Array.isArray(data.assignedTickets) ? data.assignedTickets : (data.assignedTicket ? [data.assignedTicket] : [buildCandidateTicket()]);
+        desiredTicketCount = myTickets.length;
+        if (data.assignedSerial) ticketSerial = data.assignedSerial;
+        markedSet.clear(); saveLocalSession(); renderClaimButtonsGrid(); syncBoardAndClaimsUI(); renderTop3LeaderboardUI(); renderTicket();
+        openRandomTicketSelector();
+        showToast(`🔁 ${t().lblRoundShort}${roundNumber}!`);
+      } else if (data.type === "TOAST") {
+        showToast(data.msg);
+      }
+    }
+
+    function syncSceneAdVisibility() {
+      const anyModalOpen = Boolean(
+        document.getElementById("winnerFoldModal")?.classList.contains("active") ||
+        document.getElementById("ticketSelectModal")?.classList.contains("active") ||
+        document.getElementById("waInviteModal")?.classList.contains("active") ||
+        document.getElementById("rulesPopupModal")?.classList.contains("active")
+      );
+      document.body.classList.toggle("modal-scene-open", anyModalOpen);
+    }
+
+    (function initSceneFriendlyAds() {
+      const observer = new MutationObserver(syncSceneAdVisibility);
+      ["winnerFoldModal", "ticketSelectModal", "waInviteModal", "rulesPopupModal"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+      });
+      setTimeout(() => { try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {} }, 300);
+    })();
+
+    // Initialize selected language on load
+    setLanguage(currentLang);
+  </script>
+</body>
+</html>
